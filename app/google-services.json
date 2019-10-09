@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "422220868756",
+    "firebase_url": "https://smart-spaces-supermarket.firebaseio.com",
+    "project_id": "smart-spaces-supermarket",
+    "storage_bucket": "smart-spaces-supermarket.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422220868756:android:545e4136fd059f73ad9881",
+        "android_client_info": {
+          "package_name": "com.example.smartspacesblindshopping"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "422220868756-crup4hq2g1o6plhghv3dj5atr37d1oiv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_ZOo2lepPGYaDGAIrZh3_Okvx_vkvv1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "422220868756-crup4hq2g1o6plhghv3dj5atr37d1oiv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
