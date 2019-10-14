@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SmartSpacesBlindShopping</string>
+    <string name="hint">Item to add</string>
 </resources>
