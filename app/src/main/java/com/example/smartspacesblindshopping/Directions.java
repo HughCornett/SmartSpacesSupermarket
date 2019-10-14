@@ -146,6 +146,4 @@ public class Directions {
         }
         return direction;
     }
-
-
 }

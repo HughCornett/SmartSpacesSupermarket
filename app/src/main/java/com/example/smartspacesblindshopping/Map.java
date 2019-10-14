@@ -7,6 +7,10 @@ import android.graphics.Rect;
 
 public class Map
 {
+    //the real life width and height of the room in meters
+    public static final double ROOM_WIDTH = 100;
+    public static final double ROOM_HEIGHT = 56.25;
+
     //this assumes a map size of width 400, height 700,
     // with aisles being 100 wide and 500 long,
     // shelves being 50 wide and 500 long
@@ -14,7 +18,7 @@ public class Map
 
     public static ArrayList<Rect> aisles;
     public static ArrayList<Rect> rows;
-    public static User user = new User(new Point(200,525), 2);
+    public static User user = new User(new Point(50,50), 2);
     public static Item item = new Item(new Point(250,550), 1);
 
     public static final int AISLE_MIDDLE = 350;
