@@ -8,12 +8,14 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
-
-
+    private FirebaseAdapter Firebase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Firebase = new FirebaseAdapter();
+
     }
 
 
@@ -36,5 +38,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
-
 }
