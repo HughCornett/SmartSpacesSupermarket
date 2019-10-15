@@ -16,8 +16,6 @@ public class MapActivity extends AppCompatActivity {
     //Constant variables describing screen that are set on app launch
     public static Display display;
     //pixel distances to bottom and left sides of the actual map
-    public static int BOTTOM_BORDER;
-    public static int LEFT_BORDER;
     //pixel width and height of the map
     public static int WIDTH;
     public static int HEIGHT;
@@ -36,15 +34,16 @@ public class MapActivity extends AppCompatActivity {
 
         //initialise the display object and calculate relevant variables from this
         display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        MainActivity.display.getSize(size);
+        Point displaySize = new Point();
+        MapActivity.display.getSize(displaySize);
 
-        BOTTOM_BORDER = (int) Math.round(size.x*0.11);
-        LEFT_BORDER = (int) Math.round(size.y*0.11);
-        HEIGHT = size.x - (int) Math.round(size.x*0.19);
-        WIDTH = size.y - (int) Math.round(size.y*0.35);
-        PIXELS_PER_METER = WIDTH / 50;
+
+
+        PIXELS_PER_METER = displaySize.x / Map.ROOM_HEIGHT;
 
         drawView.updateView();
+
+        Map.init();
+        Directions.getNextDirection(Map.user, Map.item);
     }
 }

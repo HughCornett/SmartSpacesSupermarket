@@ -14,9 +14,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Map.init();
-        Directions.getNextDirection(Map.user, Map.item);
     }
 
 
@@ -33,4 +30,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    public void goToMap(View view)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+    }
+
 }

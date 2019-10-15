@@ -18,25 +18,23 @@ public class Map
 
     public static ArrayList<Rect> aisles;
     public static ArrayList<Rect> rows;
-    public static User user = new User(new Point(50,50), 2);
-    public static Item item = new Item(new Point(250,550), 1);
-
-    public static final int AISLE_MIDDLE = 350;
+    public static User user = new User(80,11, 2);
+    public static Item item = new Item(new Point(74,10), 2);
 
     public static void init()
     {
          aisles = new ArrayList<>();
          //aisle 0 (leftmost)
-         aisles.add(new Rect(0, 0, 100, 700));
+         aisles.add(new Rect(0, 0, 25, 57));
          //aisle 1 (middle)
-         aisles.add(new Rect(150, 0, 250, 700));
+         aisles.add(new Rect(37, 0, 63, 57));
          //aisle 2 (rightmost)
-         aisles.add(new Rect(300, 0, 400, 700));
+         aisles.add(new Rect(75, 0, 100, 57));
 
          rows = new ArrayList<>();
          //row 0 (bottom)
-         rows.add(new Rect(0, 600, 400, 700));
+         rows.add(new Rect(0, 8, 100, 0));
          //row 1 (top)
-         rows.add(new Rect(0, 0, 400,100));
+         rows.add(new Rect(0, 57, 100,49));
     }
 }

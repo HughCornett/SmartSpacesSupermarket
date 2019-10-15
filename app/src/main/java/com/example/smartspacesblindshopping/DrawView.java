@@ -7,8 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
-
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.graphics.Point;
@@ -18,21 +16,27 @@ import java.util.Vector;
 public class DrawView extends View
 {
     // CONSTANT VARIABLES
-    public static final int RECTANGLE_COLOR = Color.RED;
-    public static final int RECTANGLE_ALPHA = 60;
+    public static final int AISLE_ROW_COLOR = Color.BLACK;
+    public static final int AISLE_ROW_ALPHA = 0;
 
-    public static final int CIRCLE_COLOR = Color.BLUE;
-    public static final int CIRCLE_RADIUS = 25;
+    public static final int USER_COLOR = Color.BLUE;
+    public static final int USER_RADIUS = 50;
 
-    public static Point displaySize = new Point();
+    public static final int ITEM_COLOR = Color.GREEN;
+    public static final int ITEM_RADIUS = 25;
+
     public static double PIXELS_PER_METER;
 
     // OTHER VARIABLES
+    public static Point displaySize = new Point();
+    //public static int navBarHeight;
+
     private Drawable mapImage;
     public static Rect imageBounds;
     private Vector<Rect> drawnBoxes = new Vector<>();
 
     private Point userScreenPosition = new Point();
+    private Point itemScreenPosition = new Point();
 
     Paint paint = new Paint();
     public DrawView(Context context) {
@@ -56,41 +60,62 @@ public class DrawView extends View
 
         //calculate the bounds of the background image
 
-        MainActivity.display.getSize(displaySize);
+        displaySize.x = imageBounds.right - imageBounds.left;
+        displaySize.y = imageBounds.bottom - imageBounds.top;
+        //MapActivity.display.getSize(displaySize);
         mapImage.setBounds(imageBounds);
         mapImage.draw(canvas);
 
         PIXELS_PER_METER = displaySize.x/Map.ROOM_HEIGHT;
 
         //define the color, width and transparency
-        paint.setColor(RECTANGLE_COLOR);
-        paint.setAlpha(RECTANGLE_ALPHA);
+        paint.setColor(AISLE_ROW_COLOR);
+        paint.setAlpha(AISLE_ROW_ALPHA);
 
-        //draw all the rectangles
-        for(int i = 0; i < drawnBoxes.size(); i++)
+        //draw all the aisles
+        for(int i = 0; i < Map.aisles.size(); i++)
         {
-            canvas.drawRect(drawnBoxes.get(i), paint);
+            Point aisleTopLeft = getScreenCoords(Map.aisles.get(i).left, Map.aisles.get(i).top);
+            Point aisleBottomRight = getScreenCoords(Map.aisles.get(i).right, Map.aisles.get(i).bottom);
+
+            Rect aisleOnScreen = new Rect(aisleTopLeft.x, aisleTopLeft.y, aisleBottomRight.x, aisleBottomRight.y);
+            canvas.drawRect(aisleOnScreen, paint);
+        }
+
+        //draw all the rows
+        for(int i = 0; i < Map.rows.size(); i++)
+        {
+            Point rowTopLeft = getScreenCoords(Map.rows.get(i).left, Map.rows.get(i).top);
+            Point rowBottomRight = getScreenCoords(Map.rows.get(i).right, Map.rows.get(i).bottom);
+
+            Rect rowOnScreen = new Rect(rowTopLeft.x, rowTopLeft.y, rowBottomRight.x, rowBottomRight.y);
+            canvas.drawRect(rowOnScreen, paint);
         }
 
         clearBoxes();
+
         //redfine the color and transparency
-        paint.setColor(CIRCLE_COLOR);
+        paint.setColor(USER_COLOR);
 
         //draw the position circle if it has been defined
         if(Map.user != null)
-            Log.d("worldPos", ""+Map.user.getPosition());
+        {
+            userScreenPosition = getScreenCoords(Map.user.getX(), Map.user.getY());
+            canvas.drawCircle(userScreenPosition.x, userScreenPosition.y, USER_RADIUS, paint);
+        }
 
-            userScreenPosition = getScreenCoords(new Point(Map.user.getPosition().x, Map.user.getPosition().y));
-
-            Log.d("screenPos", ""+userScreenPosition);
-            canvas.drawCircle(userScreenPosition.x, userScreenPosition.y, CIRCLE_RADIUS, paint);
-
+        paint.setColor(ITEM_COLOR);
+        if(Map.item != null)
+        {
+            itemScreenPosition = getScreenCoords(Map.item.getPosition().x, Map.item.getPosition().y);
+            canvas.drawCircle(itemScreenPosition.x, itemScreenPosition.y, ITEM_RADIUS, paint);
+        }
     }
 
-    private static Point getScreenCoords(Point worldCoordinates)
+    private static Point getScreenCoords(double worldX, double worldY)
     {
-        int newX = (int) Math.round((worldCoordinates.y/Map.ROOM_HEIGHT)*displaySize.x);
-        int newY = (int) Math.round((worldCoordinates.x/Map.ROOM_WIDTH)*displaySize.y);
+        int newX = (int) Math.round((worldY/Map.ROOM_HEIGHT)*(displaySize.x));
+        int newY = (int) Math.round((worldX/Map.ROOM_WIDTH)*(displaySize.y));
         return new Point(newX, newY);
 
     }
