@@ -17,6 +17,7 @@ public class Item
     private int aisle;
     private int shelf;
     private int section;
+    private int level;
     private Point position;
 
     public Item(){
@@ -42,16 +43,13 @@ public class Item
         this.categoryName = "";
     }
 
-    public Item(int id, String name, int aisle, int shelf, int section)
+    public Item(int id, String name, int shelf, int level, int section)
     {
         this.id = id;
         this.productName = name;
-        this.aisle = aisle;
         this.shelf = shelf;
+        this.level = level;
         this.section = section;
-
-        //TODO work out position from this information?
-        //or maybe that's not needed
     }
 
 
