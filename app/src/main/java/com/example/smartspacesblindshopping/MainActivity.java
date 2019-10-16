@@ -20,16 +20,16 @@ import android.widget.Toast;
 
 import java.util.Vector;
 
-public class MainActivity extends MyActivity {
-
-    private FirebaseAdapter Firebase;
+    private FirebaseAdapter firebase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Firebase = new FirebaseAdapter();
+        firebase = new FirebaseAdapter();
 
-        Firebase.loadAllData();
+        firebase.loadAllData();
+
+        firebase.close();
 
         Map.init();
         Directions.getNextDirection(Map.user, Map.item);
