@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ListView"
-        android:id="@+id/Button"
+        android:id="@+id/addToList"
         android:layout_centerHorizontal="true"
         android:onClick="addToList"
         android:text="add"
@@ -26,7 +26,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Button"
+        android:layout_below="@+id/addToList"
         android:id="@+id/Save"
         android:layout_centerHorizontal="true"
         android:onClick="saveFile"

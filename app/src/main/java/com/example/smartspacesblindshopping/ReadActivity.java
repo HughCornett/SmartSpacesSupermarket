@@ -13,9 +13,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
-public class ReadActivity extends AppCompatActivity
+public class ReadActivity extends MyActivity
 {
     public static final String EXTRA_MESSAGE = "ReadActivity.EXTRA_MESSAGE";
 
@@ -38,6 +39,8 @@ public class ReadActivity extends AppCompatActivity
 
         fileList.addAll(ReadWriteCSV.readCSV(this, "paths.csv"));
 
+        Collections.reverse(fileList);
+
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, fileList );
 
         listView.setAdapter(arrayAdapter);
@@ -45,11 +48,7 @@ public class ReadActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String path = (String) listView.getItemAtPosition(i);
-                 //As you are using Default String Adapter
-                Intent intent = new Intent(ReadActivity.this, DisplayListActivity.class);
-                intent.putExtra(EXTRA_MESSAGE, path);
-                startActivity(intent);
+                goToList(i);
 
             }
         });
@@ -57,6 +56,13 @@ public class ReadActivity extends AppCompatActivity
 
     }
 
+    private void goToList(int i)
+    {
+        String path = (String) listView.getItemAtPosition(i);
+        Intent intent = new Intent(ReadActivity.this, DisplayListActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, path);
+        startActivity(intent);
+    }
     public void deleteFiles(View view)
     {
         for(String s: fileList)
@@ -77,4 +83,33 @@ public class ReadActivity extends AppCompatActivity
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ArrayList<String> menu = new ArrayList<>();
+
+        menu.addAll(fileList);
+        menu.add("delete lists");
+        menu.add("go back");
+
+        switchCallback((String[]) menu.toArray());
+
+    }
+
+    @Override
+    protected void chooseOption(int index) {
+        super.chooseOption(index);
+
+        if(index<fileList.size())
+        {
+            goToList(index);
+        }
+        else if(index==fileList.size())
+        {
+            ReadActivity.this.deleteFiles(findViewById(R.id.DeleteButton));
+
+        }
+        else ReadActivity.this.finish();
+
+    }
 }

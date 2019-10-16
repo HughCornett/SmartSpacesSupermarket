@@ -3,6 +3,7 @@ package com.example.smartspacesblindshopping;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
-public class DisplayListActivity extends AppCompatActivity {
+public class DisplayListActivity extends MyActivity {
 
     ArrayAdapter<String> arrayAdapter;
 
@@ -43,9 +44,34 @@ public class DisplayListActivity extends AppCompatActivity {
 
         listView.setAdapter(arrayAdapter);
 
+    }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ArrayList<String> menu = new ArrayList<>();
+
+        menu.addAll(itemList);
+
+        menu.add("go back");
+
+        switchCallback((String[]) menu.toArray());
 
     }
 
+
+    @Override
+    protected void chooseOption(int index) {
+        super.chooseOption(index);
+
+
+        if(index==itemList.size())
+        {
+            DisplayListActivity.this.finish();
+        }
+
+
+    }
 }

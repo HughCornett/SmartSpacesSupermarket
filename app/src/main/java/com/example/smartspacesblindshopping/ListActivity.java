@@ -1,11 +1,17 @@
 package com.example.smartspacesblindshopping;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -14,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,15 +36,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends MyActivity {
 
 
-
+    BluetoothService bluetoothService;
+    Intent intent;
+    boolean bound;
     ArrayAdapter<String> arrayAdapter;
 
     ArrayList<String> itemList = new ArrayList<>();
 
-
+    StringBuilder sb = new StringBuilder();
 
     ListView listView;
 
@@ -58,6 +67,12 @@ public class ListActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        switchCallback(new String[]{"add item to the list", "save the list", "go back"});
+    }
 
     public void addToList(View view) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -114,5 +129,24 @@ public class ListActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void chooseOption(int index) {
+        super.chooseOption(index);
+
+        switch (index)
+        {
+            case 0:
+                ListActivity.this.addToList(findViewById(R.id.addToList)); break;
+            case 1:
+                ListActivity.this.saveFile(findViewById(R.id.Save)); break;
+            case 2:
+                ListActivity.this.finish(); break;
+
+
+            default: break;
+        }
     }
 }
