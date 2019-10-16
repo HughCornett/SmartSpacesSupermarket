@@ -22,10 +22,14 @@ import java.util.Vector;
 
 public class MainActivity extends MyActivity {
 
+    private FirebaseAdapter Firebase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Firebase = new FirebaseAdapter();
+
+        Firebase.loadAllData();
 
         Map.init();
         Directions.getNextDirection(Map.user, Map.item);
@@ -46,7 +50,6 @@ public class MainActivity extends MyActivity {
     {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
-
     }
 
 
@@ -55,6 +58,12 @@ public class MainActivity extends MyActivity {
         Intent intent = new Intent(this, ReadActivity.class);
         startActivity(intent);
 
+    }
+
+    public void goToMap(View view)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
     }
 
 
@@ -77,7 +86,3 @@ public class MainActivity extends MyActivity {
 
             default: break;
         }
-
-    }
-}
-

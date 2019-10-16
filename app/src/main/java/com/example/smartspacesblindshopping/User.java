@@ -4,32 +4,33 @@ import android.graphics.Point;
 
 public class User
 {
-    private Point position;
+    private double x;
+    private double y;
 
     //direction user is facing: clockwise from 0=up to 4=left
     private int facing;
 
-    public User(Point position, int facing)
+    public User(double x, double y, int facing)
     {
-        this.position = position;
+        this.x = x;
+        this.y = y;
         this.facing = facing;
     }
 
-    public Point getPosition()
+    public double getX()
     {
-        return position;
+        return x;
     }
-    public int getFacing()
+    public double getY()
     {
-        return facing;
+        return y;
     }
 
-    public void setFacing(int facing)
-    {
-        this.facing = facing;
-    }
-    public void setPosition(Point position)
-    {
-        this.position = position;
-    }
+    public int getFacing() { return facing; }
+
+    public void setFacing(int facing) { this.facing = facing; }
+
+    public void setX(double x) { this.x = x; }
+
+    public void setY(double y) { this.y = y; }
 }

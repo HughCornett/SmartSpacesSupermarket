@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class Directions {
 
-    public static final int MARGIN_DISTANCE = 50;
+    public static final int MARGIN_DISTANCE = 2;
 
     public static String getNextDirection(User user, Item destination)
     {
@@ -15,7 +15,7 @@ public class Directions {
         int originAisle = -1;
         for(int i = 0; i < Map.aisles.size(); i++)
         {
-            if(Map.aisles.get(i).contains(user.getPosition().x, user.getPosition().y))
+            if(Map.aisles.get(i).contains((int) Math.round(user.getX()), (int) Math.round(user.getY())))
             {
                 originAisle = i;
             }
@@ -24,7 +24,7 @@ public class Directions {
         int originRow = -1;
         for(int i = 0; i < Map.rows.size(); i++)
         {
-            if(Map.rows.get(i).contains(user.getPosition().x, user.getPosition().y))
+            if(Map.rows.get(i).contains((int) Math.round(user.getX()), (int) Math.round(user.getY())))
             {
                 originRow = i;
             }
@@ -38,11 +38,11 @@ public class Directions {
         if(destination.getAisle() == originAisle)
         {
             //check if the user is within the margin distance of the item
-            if(user.getPosition().y < destination.getPosition().y+MARGIN_DISTANCE
-            && user.getPosition().y > destination.getPosition().y-MARGIN_DISTANCE)
+            if(user.getY() < destination.getPosition().y+MARGIN_DISTANCE
+            && user.getY() > destination.getPosition().y-MARGIN_DISTANCE)
             {
                 //if the item is to the left of the user (map left not user's left)
-                if(destination.getPosition().x < user.getPosition().x)
+                if(destination.getPosition().x < user.getX())
                 {
                     if(user.getFacing() == 0) { turn = "on your left"; }
                     else if(user.getFacing() == 1) { turn = "behind you"; }
@@ -50,7 +50,7 @@ public class Directions {
                     else if(user.getFacing() == 3) { turn = "straight ahead"; }
                 }
                 //if the item is to the right of the user (map right not user's right)
-                if(destination.getPosition().x > user.getPosition().x)
+                if(destination.getPosition().x > user.getX())
                 {
                     if(user.getFacing() == 0) { turn = "on your right"; }
                     else if(user.getFacing() == 1) { turn = "straight ahead"; }
@@ -61,13 +61,13 @@ public class Directions {
                 Log.d("direction", ""+direction);
             }
 
-            if(user.getPosition().y > destination.getPosition().y)
+            else if(user.getY() < destination.getPosition().y)
             {
                 if(user.getFacing() == 1) { turn = "Turn left and "; }
                 else if(user.getFacing() == 2) { turn = "Turn around and "; }
                 else if(user.getFacing() == 3) { turn = "Turn right and "; }
             }
-            else if(user.getPosition().y < destination.getPosition().y)
+            else if(user.getY() > destination.getPosition().y)
             {
                 if(user.getFacing() == 0) { turn = "Turn around and "; }
                 else if(user.getFacing() == 1) { turn = "Turn right and "; }
@@ -83,14 +83,14 @@ public class Directions {
             //get the turn towards the correct aisle
 
             //if user is left of the destination aisle
-            if(user.getPosition().x < Map.aisles.get(destination.getAisle()).left)
+            if(user.getX() < Map.aisles.get(destination.getAisle()).left)
             {
                 if(user.getFacing() == 0) { turn = "Turn right and "; }
                 else if(user.getFacing() == 2) { turn = "Turn left and "; }
                 else if(user.getFacing() == 3) { turn = "Turn around and "; }
             }
             //if user is right of the destination aisle
-            else if(user.getPosition().x > Map.aisles.get(destination.getAisle()).right)
+            else if(user.getX() > Map.aisles.get(destination.getAisle()).right)
             {
                 if(user.getFacing() == 0) { turn = "Turn left and "; }
                 else if (user.getFacing() == 1) { turn = "Turn around and "; }
@@ -106,7 +106,7 @@ public class Directions {
             direction = turn+"walk to aisle "+destination.getAisle();
             Log.d("direction", ""+direction);
         }
-        //if the user is in an aisle but not the right one aisle
+        //if the user is in an aisle but not the right one
         else
         {
             //direct them to the correct row
@@ -114,14 +114,14 @@ public class Directions {
             //this method assumes a supermarket with only 2 rows (top and bottom)
             //must be changed if it is to work optimally with 3+ rows
             int bestRow = -1;
-            int bestRowDistance = Integer.MAX_VALUE;
+            double bestRowDistance = Integer.MAX_VALUE;
 
             //get the best row to go to
             for(int i = 0; i < Map.rows.size(); i++)
             {
-                int thisRowOriginDistance = Math.min(Math.abs(user.getPosition().y - Map.rows.get(i).top), Math.abs(user.getPosition().y - Map.rows.get(i).bottom));
+                double thisRowOriginDistance = Math.min(Math.abs(user.getY() - Map.rows.get(i).top), Math.abs(user.getY() - Map.rows.get(i).bottom));
                 int thisRowItemDistance = Math.min(Math.abs(destination.getPosition().y - Map.rows.get(i).top), Math.abs(destination.getPosition().y - Map.rows.get(i).bottom));
-                int thisRowMinDistance = Math.min(thisRowItemDistance, thisRowOriginDistance);
+                double thisRowMinDistance = Math.min(thisRowItemDistance, thisRowOriginDistance);
                 if(thisRowMinDistance < bestRowDistance)
                 {
                     bestRow = i;
@@ -144,8 +144,7 @@ public class Directions {
             direction = turn+"walk to row "+bestRow;
             Log.d("direction: ",""+direction);
         }
+
         return direction;
     }
-
-
 }
