@@ -68,6 +68,7 @@ public class ListActivity extends MyActivity {
         fb.open();
         dbItems = fb.getItems();
 
+        Log.d("dbItems", "" +dbItems.size());
 
     }
 
@@ -127,40 +128,41 @@ public class ListActivity extends MyActivity {
                     for (Item i : dbItems){
                         //WORD MATCHES
                         //Checks for exact match on word
-                        if(result.get(0).matches(i.getProductName())){
-                            itemList.add(result.get(0));
+                        Log.d(i.getProductName(), result.get(0));
+                        if(result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())){
+                            itemList.add(i.getProductName());
                             Log.d("Match", "match found 1");
                         }
 
                         //Checks for match on word with extra letters/words on either side
-                        else if(result.get(0).matches("(.*)" + i.getProductName() + "(.*)")){
-                            itemList.add(result.get(0));
+                        else if(result.get(0).toUpperCase().matches("(.*)" + i.getProductName().toUpperCase() + "(.*)")){
+                            itemList.add(i.getProductName());
                             Log.d("Match", "match found 2");
                         }
 
                         //BRAND MATCHES
                         //Checks for exact match on word
-                        else if(result.get(0).matches(i.getBrandName())){
-                            itemList.add(result.get(0));
+                        else if(result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase())){
+                            itemList.add(i.getProductName());
                             Log.d("Match", "match found 3");
                         }
 
                         //Checks for match on word with extra letters/words on either side
-                        else if(result.get(0).matches("(.*)" + i.getBrandName() + "(.*)")){
-                            itemList.add(result.get(0));
+                        else if(result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")){
+                            itemList.add(i.getProductName());
                             Log.d("Match", "match found 4");
                         }
 
                         //CATEGORY MATCHES
                         //Checks for exact match on word
-                        else if(result.get(0).matches(i.getCategoryName())){
-                            itemList.add(result.get(0));
+                        else if(result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase())){
+                            itemList.add(i.getProductName());
                             Log.d("Match", "match found 5");
                         }
 
                         //Checks for match on word with extra letters/words on either side
-                        else if(result.get(0).matches("(.*)" + i.getCategoryName() + "(.*)")){
-                            itemList.add(result.get(0));
+                        else if(result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")){
+                            itemList.add(i.getProductName());
                             Log.d("Match", "match found 6");
                         }
                 }
