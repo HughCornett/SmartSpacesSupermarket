@@ -41,7 +41,7 @@ public class DrawView extends View
     Paint paint = new Paint();
     public DrawView(Context context) {
         super(context);
-        //mapImage = context.getResources().getDrawable(R.drawable.background);
+        mapImage = context.getResources().getDrawable(R.drawable.background);
     }
 
     /**
@@ -55,39 +55,8 @@ public class DrawView extends View
 
     @Override
     public void onDraw(Canvas canvas) {
-//        //draw the map background
-//        imageBounds = canvas.getClipBounds();
-//
-//        //calculate the bounds of the background image
-//
-//        MainActivity.display.getSize(displaySize);
-//        mapImage.setBounds(imageBounds);
-//        mapImage.draw(canvas);
-//
-//        PIXELS_PER_METER = displaySize.x/Map.ROOM_HEIGHT;
-//
-//        //define the color, width and transparency
-//        paint.setColor(RECTANGLE_COLOR);
-//        paint.setAlpha(RECTANGLE_ALPHA);
-//
-//        //draw all the rectangles
-//        for(int i = 0; i < drawnBoxes.size(); i++)
-//        {
-//            canvas.drawRect(drawnBoxes.get(i), paint);
-//        }
-//
-//        clearBoxes();
-//        //redfine the color and transparency
-//        paint.setColor(CIRCLE_COLOR);
-//
-//        //draw the position circle if it has been defined
-//        if(Map.user != null)
-//            Log.d("worldPos", ""+Map.user.getPosition());
-//
-//            userScreenPosition = getScreenCoords(new Point(Map.user.getPosition().x, Map.user.getPosition().y));
-//
-//            Log.d("screenPos", ""+userScreenPosition);
-//            canvas.drawCircle(userScreenPosition.x, userScreenPosition.y, CIRCLE_RADIUS, paint);
+        //draw the map background
+        imageBounds = canvas.getClipBounds();
 
         //calculate the bounds of the background image
 
