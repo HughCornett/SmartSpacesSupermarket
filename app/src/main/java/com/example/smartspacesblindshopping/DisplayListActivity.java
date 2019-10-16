@@ -57,7 +57,12 @@ public class DisplayListActivity extends MyActivity {
 
         menu.add("go back");
 
-        switchCallback((String[]) menu.toArray());
+        String[] array = new String[itemList.size()+1];
+
+        array = menu.toArray(array);
+        switchCallback(array);
+
+        switchCallback(array);
 
     }
 

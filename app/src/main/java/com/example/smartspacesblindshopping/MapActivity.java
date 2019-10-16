@@ -8,7 +8,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends MyActivity {
 
     //OTHER VARIABLES
     DrawView drawView;
@@ -45,5 +45,11 @@ public class MapActivity extends AppCompatActivity {
 
         Map.init();
         Directions.getNextDirection(Map.user, Map.item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 }

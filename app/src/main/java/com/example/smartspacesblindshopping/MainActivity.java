@@ -23,6 +23,7 @@ import java.util.Vector;
 public class MainActivity extends MyActivity {
 
     private FirebaseAdapter Firebase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,9 +31,6 @@ public class MainActivity extends MyActivity {
         Firebase = new FirebaseAdapter();
 
         Firebase.loadAllData();
-
-        Map.init();
-        Directions.getNextDirection(Map.user, Map.item);
 
         startService(intent);
 
@@ -42,26 +40,23 @@ public class MainActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
-        switchCallback(new String[]{"go to list", "read lists"});
+        switchCallback(new String[]{"create a list", "read lists"});
 
     }
 
-    public void goToList(View view)
-    {
+    public void goToList(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
 
 
-    public void readList(View view)
-    {
+    public void readList(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
         startActivity(intent);
 
     }
 
-    public void goToMap(View view)
-    {
+    public void goToMap(View view) {
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
@@ -77,12 +72,17 @@ public class MainActivity extends MyActivity {
     protected void chooseOption(int index) {
         super.chooseOption(index);
 
-        switch (index)
-        {
+        switch (index) {
             case 0:
-                MainActivity.this.goToList(findViewById(R.id.createButton)); break;
+                MainActivity.this.goToList(findViewById(R.id.createButton));
+                break;
             case 1:
-                MainActivity.this.readList(findViewById(R.id.readButton)); break;
+                MainActivity.this.readList(findViewById(R.id.readButton));
+                break;
 
-            default: break;
+
+            default:
+                break;
         }
+    }
+}

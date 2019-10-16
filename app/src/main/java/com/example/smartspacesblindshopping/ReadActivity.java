@@ -80,19 +80,15 @@ public class ReadActivity extends MyActivity
 
         arrayAdapter.notifyDataSetChanged();
 
+
+
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        ArrayList<String> menu = new ArrayList<>();
-
-        menu.addAll(fileList);
-        menu.add("delete lists");
-        menu.add("go back");
-
-        switchCallback((String[]) menu.toArray());
+        switchMenu();
 
     }
 
@@ -112,4 +108,20 @@ public class ReadActivity extends MyActivity
         else ReadActivity.this.finish();
 
     }
+
+
+    private void switchMenu()
+    {
+        ArrayList<String> menu = new ArrayList<>();
+
+        menu.addAll(fileList);
+        menu.add("delete lists");
+        menu.add("go back");
+
+        String[] array = new String[fileList.size()+2];
+
+        array = menu.toArray(array);
+        switchCallback(array);
+    }
+
 }
