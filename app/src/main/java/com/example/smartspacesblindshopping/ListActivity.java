@@ -46,6 +46,9 @@ public class ListActivity extends MyActivity {
 
     ArrayList<String> itemList = new ArrayList<>();
 
+    //Database items to compare
+    ArrayList<Item> dbItems;
+
     StringBuilder sb = new StringBuilder();
 
     ListView listView;
@@ -55,14 +58,15 @@ public class ListActivity extends MyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_activity);
 
-
-
-
         listView = (ListView) findViewById(R.id.ListView);
 
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, itemList );
 
         listView.setAdapter(arrayAdapter);
+
+        FirebaseAdapter fb = new FirebaseAdapter();
+        fb.open();
+        dbItems = fb.getItems();
 
 
     }
@@ -118,17 +122,54 @@ public class ListActivity extends MyActivity {
             case 10:
                 if(resultCode == RESULT_OK && data != null)
                 {
-
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    itemList.add(result.get(0));
+
+                    for (Item i : dbItems){
+                        //WORD MATCHES
+                        //Checks for exact match on word
+                        if(result.get(0).matches(i.getProductName())){
+                            itemList.add(result.get(0));
+                            Log.d("Match", "match found 1");
+                        }
+
+                        //Checks for match on word with extra letters/words on either side
+                        else if(result.get(0).matches("(.*)" + i.getProductName() + "(.*)")){
+                            itemList.add(result.get(0));
+                            Log.d("Match", "match found 2");
+                        }
+
+                        //BRAND MATCHES
+                        //Checks for exact match on word
+                        else if(result.get(0).matches(i.getBrandName())){
+                            itemList.add(result.get(0));
+                            Log.d("Match", "match found 3");
+                        }
+
+                        //Checks for match on word with extra letters/words on either side
+                        else if(result.get(0).matches("(.*)" + i.getBrandName() + "(.*)")){
+                            itemList.add(result.get(0));
+                            Log.d("Match", "match found 4");
+                        }
+
+                        //CATEGORY MATCHES
+                        //Checks for exact match on word
+                        else if(result.get(0).matches(i.getCategoryName())){
+                            itemList.add(result.get(0));
+                            Log.d("Match", "match found 5");
+                        }
+
+                        //Checks for match on word with extra letters/words on either side
+                        else if(result.get(0).matches("(.*)" + i.getCategoryName() + "(.*)")){
+                            itemList.add(result.get(0));
+                            Log.d("Match", "match found 6");
+                        }
+                }
                     arrayAdapter.notifyDataSetChanged();
                 }
+
+
                 break;
-
-
-
         }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -40,9 +40,24 @@ public class FirebaseAdapter {
 
 
     public FirebaseAdapter() {
+        open();
         productsMap = new HashMap<>();
         categoryMap = new HashMap<>();
         brandMap = new HashMap<>();
+    }
+
+    public void open(){
+        db.enableNetwork();
+    }
+
+    public void close(){
+        db.clearPersistence();
+        db.disableNetwork();
+        db.terminate();
+    }
+
+    public ArrayList<Item> getItems(){
+        return products;
     }
 
     //ONLY USE ONCE
