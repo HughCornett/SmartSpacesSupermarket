@@ -4,9 +4,8 @@ import android.graphics.Point;
 
 import com.google.firebase.firestore.DocumentReference;
 
-public class Item
-{
-    private int id;
+public class Item {
+    private String id;
     private String productName;
     private DocumentReference productBrand;
     private String brandName;
@@ -19,19 +18,18 @@ public class Item
     private int section;
     private Point position;
 
-    public Item(){
+    public Item() {
         //public no-arg constructor needed for firebase DB
     }
 
     //for testing, before shelf/section/aisle layout is sorted out
-    public Item(Point position, int aisle)
-    {
+    public Item(Point position, int aisle) {
         this.position = position;
         this.aisle = aisle;
     }
 
     //Custom constructor to serialise DB data into objects - Josh
-    public Item(String Name,DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row){
+    public Item(String Name, DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row) {
         this.productName = Name;
         this.productBrand = Brand;
         this.productCategory = Category;
@@ -43,8 +41,7 @@ public class Item
         this.categoryName = "";
     }
 
-    public Item(int id, String name, int aisle, int shelf, int section)
-    {
+    public Item(String id, String name, int aisle, int shelf, int section) {
         this.id = id;
         this.productName = name;
         this.aisle = aisle;
@@ -58,19 +55,19 @@ public class Item
 
     //GETTERS & SETTERS
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public void setName(String name) {
+    public void setProductName(String name) {
         this.productName = name;
     }
 
-    public void setBrand(DocumentReference brand) {
+    public void setProductBrand(DocumentReference brand) {
         this.productBrand = brand;
     }
 
-    public void setCategory(DocumentReference category) {
+    public void setProductCategory(DocumentReference category) {
         this.productCategory = category;
     }
 
@@ -93,16 +90,16 @@ public class Item
     public void setPosition(Point position) {
         this.position = position;
     }
-    public int getAisle()
-    {
+
+    public int getAisle() {
         return this.aisle;
     }
-    public Point getPosition()
-    {
+
+    public Point getPosition() {
         return this.position;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -130,7 +127,7 @@ public class Item
         return section;
     }
 
-    public int getRow(){
+    public int getRow() {
         return row;
     }
 
@@ -152,32 +149,41 @@ public class Item
 }
 
 //Smaller Classes for firebase serialisation
- class Category{
+class Category {
     private String category;
 
-    public Category(){
+    public Category() {
     }
 
-    public Category(String categoryName){
+    public Category(String categoryName) {
         this.category = categoryName;
     }
 
-    public String getCategoryName() {
+    public String getCategory() {
+
         return category;
+    }
+
+    public void setCategory(String c) {
+        this.category = c;
     }
 }
 
- class Brand{
+class Brand {
     private String brand;
 
-    public Brand(){
+    public Brand() {
     }
 
-    public Brand(String brandName){
+    public Brand(String brandName) {
         this.brand = brandName;
     }
 
-    public String getBrandName() {
+    public String getBrand() {
         return brand;
+    }
+
+    public void setBrand(String b) {
+        this.brand = b;
     }
 }

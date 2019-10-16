@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         Firebase = new FirebaseAdapter();
 
-        Firebase.init();
+        Firebase.loadAllData();
 
     }
 

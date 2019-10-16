@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -20,26 +21,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class FirebaseAdapter {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private CollectionReference products = db.collection("Products");
-    private CollectionReference brands = db.collection("Brands");
-    private CollectionReference categories = db.collection("Categories");
+    private CollectionReference productsRef = db.collection("Products");
+    private CollectionReference brandsRef = db.collection("Brands");
+    private CollectionReference categoriesRef = db.collection("Categories");
 
-    private HashMap<String, Item> productsMap = new HashMap<String, Item>();
-    private HashMap<String, Category> categoryMap = new HashMap<String, Category>();
-    private HashMap<String, Brand> brandMap = new HashMap<String, Brand>();
+    private HashMap<String, Item> productsMap;
+    private HashMap<String, Category> categoryMap;
+    private HashMap<String, Brand> brandMap;
+
+    static private ArrayList<Item> products = new ArrayList<>();
 
 
     public FirebaseAdapter() {
-
+        productsMap = new HashMap<>();
+        categoryMap = new HashMap<>();
+        brandMap = new HashMap<>();
     }
 
     //ONLY USE ONCE
-    public void loadDummyData() {
+    public void insertDummyData() {
 //
 //        //BRANDS
 ////        HashMap<String, Object> brand1 = new HashMap<>();
@@ -187,32 +194,56 @@ public class FirebaseAdapter {
 
     }
 
-    public void init() {
+    public void loadAllData() {
         loadBrands();
         loadCategories();
+
+        //Delay to ensure categories and brands are loaded first
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         loadAllProducts();
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        listAllProducts();
+
     }
 
-    public Boolean close() {
-
-        return true;
+    public void listAllProducts() {
+        if (products.size() == 0) {
+            Log.d("array is empty", "products array is empty");
+        }
+        for (Item i : products) {
+            Log.d("List all Products", i.getProductName() + ", Brand: " + i.getBrandName() + " AND Category: " + i.getCategoryName());
+        }
     }
 
     /**
      * Loads all products upon app start up, saves them to productsMap
      */
     public void loadAllProducts() {
-        products.get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        productsRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        ArrayList<Item> items = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            Log.d("Load Products success", document.getId() + " => " + document.getData());
-                            Item i = document.toObject(Item.class);
-                            i.setBrandName(getBrandNameByRef(i.getProductBrand()));
-                            //Log.d("item Brand is ", i.getBrandName().toString());
-                            productsMap.put(document.getId(), i);
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult() != null) {
+                                List<Item> data = task.getResult().toObjects(Item.class);
+                                for (Item i : data) {
+                                    i.setBrandName(getBrandNameByRef(i.getProductBrand()));
+                                    i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
+                                    //
+                                    products.add(i);
+                                }
+                            }
                         }
                     }
                 })
@@ -224,6 +255,7 @@ public class FirebaseAdapter {
                 });
     }
 
+
     /**
      * Returns the category name
      *
@@ -231,21 +263,14 @@ public class FirebaseAdapter {
      * @return The category name
      */
     public String getCategoryNameByRef(DocumentReference ref) {
-        Iterator it = categoryMap.entrySet().iterator();
+        for (HashMap.Entry<String, Category> entry : categoryMap.entrySet()) {
+            if (ref.getId().equals(entry.getKey().toString())) {
 
-        if (it != null) {
-            while (it.hasNext()) {
-                HashMap.Entry entry = (HashMap.Entry) it.next();
-                if (ref.getId().equals(entry.getKey().toString())) {
-                    return entry.getValue().toString();
-                }
+                return entry.getValue().getCategory().toString();
             }
-        } else {
-            Log.d("iterator is empty ", "empty iterator");
         }
         return null;
     }
-
 
     /**
      * Returns the brand name
@@ -254,19 +279,21 @@ public class FirebaseAdapter {
      * @return the brand name
      */
     public String getBrandNameByRef(DocumentReference ref) {
-        Iterator it = brandMap.entrySet().iterator();
-        if (it != null) {
-            while (it.hasNext()) {
-                HashMap.Entry entry = (HashMap.Entry) it.next();
-                Log.d("entry id is", entry.getKey().toString());
-                Log.d("reference id is", ref.getId());
-                if (ref.getId().equals(entry.getKey().toString())) {
-                    return entry.getValue().toString();
-                }
+        for (HashMap.Entry<String, Brand> entry : brandMap.entrySet()) {
+            if (ref.getId().equals(entry.getKey().toString())) {
+                return entry.getValue().getBrand();
             }
-        } else {
-            Log.d("iterator is empty ", "empty iterator");
         }
+
+//
+//        if (it != null) {
+//            while (it.hasNext()) {
+//                HashMap.Entry entry = (HashMap.Entry) it.next();
+//
+//            }
+//        } else {
+//            Log.d("iterator is empty ", "empty iterator");
+//        }
         return null;
     }
 
@@ -274,14 +301,13 @@ public class FirebaseAdapter {
      * Loads all categories upon app start up, saves them to categoriesMap
      */
     public void loadCategories() {
-        categories.get()
+        categoriesRef.get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        ArrayList<Item> items = new ArrayList<>();
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            Log.d("Load Category success", document.getId() + " => " + document.getData());
                             Category c = document.toObject(Category.class);
+
                             categoryMap.put(document.getId(), c);
                         }
                     }
@@ -298,13 +324,11 @@ public class FirebaseAdapter {
      * Loads all brands upon app start up, saves them to brandsMaps
      */
     public void loadBrands() {
-        brands.get()
+        brandsRef.get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        ArrayList<Item> items = new ArrayList<>();
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            Log.d("Load brands success", document.getId() + " => " + document.getData());
                             Brand b = document.toObject(Brand.class);
                             brandMap.put(document.getId(), b);
                         }
@@ -321,14 +345,14 @@ public class FirebaseAdapter {
     /**
      * Returns a list of products by specified brand
      *
-     * @param brandRef a document reference to the brand
+     * @param brandName a document reference to the brand
      * @return List of products
      */
-    public ArrayList<Item> getProductsByBrand(DocumentReference brandRef) {
+    public ArrayList<Item> getProductsByBrand(String brandName) {
         ArrayList<Item> items = new ArrayList<>();
 
-        for (Item i : productsMap.values()) {
-            if (i.getProductBrand().equals(brandRef)) {
+        for (Item i : products) {
+            if (i.getBrandName().equals(brandName)) {
                 items.add(i);
             }
         }
@@ -338,14 +362,14 @@ public class FirebaseAdapter {
     /**
      * Returns a list of products by specified category
      *
-     * @param categoryRef a document reference to the category
+     * @param categoryName a document reference to the category
      * @return List of products
      */
-    public ArrayList<Item> getProductsByCategory(DocumentReference categoryRef) {
+    public ArrayList<Item> getProductsByCategory(String categoryName) {
         ArrayList<Item> items = new ArrayList<>();
 
-        for (Item i : productsMap.values()) {
-            if (i.getProductBrand().equals(categoryRef)) {
+        for (Item i : products) {
+            if (i.getCategoryName().equals(categoryName)) {
                 items.add(i);
             }
         }
