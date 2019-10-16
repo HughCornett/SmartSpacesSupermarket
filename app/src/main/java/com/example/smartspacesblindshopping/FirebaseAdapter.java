@@ -56,6 +56,10 @@ public class FirebaseAdapter {
         db.terminate();
     }
 
+    public ArrayList<Item> getItems(){
+        return products;
+    }
+
     //ONLY USE ONCE
     public void insertDummyData() {
 //

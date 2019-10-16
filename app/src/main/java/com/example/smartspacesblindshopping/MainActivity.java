@@ -20,7 +20,11 @@ import android.widget.Toast;
 
 import java.util.Vector;
 
+public class MainActivity extends MyActivity {
+
+
     private FirebaseAdapter firebase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,22 +50,19 @@ import java.util.Vector;
 
     }
 
-    public void goToList(View view)
-    {
+    public void goToList(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
 
 
-    public void readList(View view)
-    {
+    public void readList(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
         startActivity(intent);
 
     }
 
-    public void goToMap(View view)
-    {
+    public void goToMap(View view) {
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
@@ -77,12 +78,16 @@ import java.util.Vector;
     protected void chooseOption(int index) {
         super.chooseOption(index);
 
-        switch (index)
-        {
+        switch (index) {
             case 0:
-                MainActivity.this.goToList(findViewById(R.id.createButton)); break;
+                MainActivity.this.goToList(findViewById(R.id.createButton));
+                break;
             case 1:
-                MainActivity.this.readList(findViewById(R.id.readButton)); break;
+                MainActivity.this.readList(findViewById(R.id.readButton));
+                break;
 
-            default: break;
+            default:
+                break;
         }
+    }
+}
