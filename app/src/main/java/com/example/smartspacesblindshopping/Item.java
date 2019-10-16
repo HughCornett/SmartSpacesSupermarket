@@ -32,12 +32,13 @@ public class Item
     }
 
     //Custom constructor to serialise DB data into objects - Josh
-    public Item(String Name,DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int row){
+    public Item(String Name,DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row){
         this.productName = Name;
         this.productBrand = Brand;
         this.productCategory = Category;
         this.nfcTag = nfcTag;
         this.aisle = aisle;
+        this.shelf = shelf;
         this.row = row;
         this.brandName = "";
         this.categoryName = "";
@@ -52,6 +53,8 @@ public class Item
         this.section = section;
     }
 
+
+    //GETTERS & SETTERS
 
     public void setId(int id) {
         this.id = id;
@@ -148,31 +151,31 @@ public class Item
 
 //Smaller Classes for firebase serialisation
  class Category{
-    private String categoryName;
+    private String category;
 
     public Category(){
     }
 
     public Category(String categoryName){
-        this.categoryName = categoryName;
+        this.category = categoryName;
     }
 
     public String getCategoryName() {
-        return categoryName;
+        return category;
     }
 }
 
  class Brand{
-    private String brandName;
+    private String brand;
 
     public Brand(){
     }
 
     public Brand(String brandName){
-        this.brandName = brandName;
+        this.brand = brandName;
     }
 
     public String getBrandName() {
-        return brandName;
+        return brand;
     }
 }
