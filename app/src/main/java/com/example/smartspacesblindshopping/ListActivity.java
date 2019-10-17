@@ -138,12 +138,14 @@ public class ListActivity extends MyActivity {
 
         String tempBrand = "";
         String tempCat = "";
+        String match = "";
         Log.d("result", result.get(0));
         Log.d("debug", "" + dbItems.size());
         for (Item i : dbItems) {
             Log.d("debug",i.getBrandName()+" "+i.getCategoryName()+" "+i.getProductName());
             if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
                 exactMatch = true;
+                match = i.getBrandName() + " " + i.getProductName();
             }
 
             //Does not match "NESCAFÉ" with "NESCAFÉ" ??
@@ -166,7 +168,7 @@ public class ListActivity extends MyActivity {
 
 
         if (exactMatch){
-            itemList.add(result.get(0));
+            itemList.add(match);
         }
         else if (categoryMatch) {
             promptForCategory(tempCat);
@@ -176,6 +178,8 @@ public class ListActivity extends MyActivity {
         }else if(brandMatch) {
             promptForBrand(tempBrand);
             //Pop up window here
+        }else{
+            TTSHandler.speak("I'm sorry i did not find any matches for that item");
         }
     }
 
