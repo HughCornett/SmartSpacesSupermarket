@@ -16,8 +16,6 @@ public class TextToSpeechHandler {
     boolean ttsIsInitialized = false;
 
     TextToSpeechHandler(Context context)
-
-    public static void speak(String message, Context context)
     {
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override

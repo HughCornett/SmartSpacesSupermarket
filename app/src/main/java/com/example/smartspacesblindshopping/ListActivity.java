@@ -116,70 +116,81 @@ public class ListActivity extends MyActivity {
             case 10:
                 if(resultCode == RESULT_OK && data != null) {
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    ArrayList<String> matched = new ArrayList<>();
-                    int previousSize = itemList.size();
 
+                    int previousSize = itemList.size();
+                    int matches = 0;
+                    Boolean category = false;
+                    Boolean brand = false;
                     for (Item i : dbItems) {
                         //WORD MATCHES
                         //Checks for exact match on word
 
-                        if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
-                            matched.add(i.getProductName());
-                            Log.d("Match", "match found 1");
+                        if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase()) ||
+                                result.get(0).toUpperCase().matches("(.*)" + i.getProductName().toUpperCase() + "(.*)") ) {
+                            itemList.add(i.getProductName());
+                            Log.d("Match", "match found on word");
                         }
 
-                        //Checks for match on word with extra letters/words on either side
-                        else if (result.get(0).toUpperCase().matches("(.*)" + i.getProductName().toUpperCase() + "(.*)")) {
-                            matched.add(i.getProductName());
-                            Log.d("Match", "match found 2");
-                        }
+//                        //Checks for match on word with extra letters/words on either side
+//                        else if () {
+//                            itemList.add(i.getProductName());
+//                            Log.d("Match", "match found 2");
+//                        }
 
                         //BRAND MATCHES
                         //Checks for exact match on word
-                        else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase())) {
-                            promptForBrand(i.getBrandName());
-                            matched.add(i.getProductName());
-                            Log.d("Match", "match found 3");
+                        else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase()) ||
+                                result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
+                            //promptForBrand(i.getBrandName());
+                            itemList.add(i.getProductName());
+                            brand = true;
+                            Log.d("Match", "match found on brand");
                         }
 
-                        //Checks for match on word with extra letters/words on either side
-                        else if (result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
-                            promptForBrand(i.getBrandName());
-                            matched.add(i.getProductName());
-                            Log.d("Match", "match found 4");
-                        }
+//                        //Checks for match on word with extra letters/words on either side
+//                        else if () {
+//                            promptForBrand(i.getBrandName());
+//                            itemList.add(i.getProductName());
+//                            Log.d("Match", "match found 4");
+//                        }
 
                         //CATEGORY MATCHES
                         //Checks for exact match on word
-                        else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase())) {
-                            promptForCategory(i.getCategoryName());
-                            matched.add(i.getProductName());
-                            Log.d("Match", "match found 5");
+                        else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase()) ||
+                                result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
+                            //promptForCategory(i.getCategoryName());
+                            itemList.add(i.getProductName());
+                            category = true;
+                            Log.d("Match", "match found on category");
                         }
 
-                        //Checks for match on word with extra letters/words on either side
-                        else if (result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
-                            promptForCategory(i.getCategoryName());
-                            matched.add(i.getProductName());
-                            Log.d("Match", "match found 6");
-                        }
+//                        //Checks for match on word with extra letters/words on either side
+//                        else if () {
+//                            promptForCategory(i.getCategoryName());
+//                            itemList.add(i.getProductName());
+//                            Log.d("Match", "match found 6");
+//                        }
 
                         //Detects if a match has been found
-                        if (matched.size() >= 2) {
-                            Log.d("list activity", "Two matches found" );
+                        if (itemList.size() > previousSize) {
+                            Log.d("Match", "item list size is now  " + itemList.size());
+                            matches++;
 
-                            promptForOptions();
+                            if(matches >= 2){
+                                Log.d("Match",  matches + " matches found ");
 
-                        }else{
-                            if(!matched.isEmpty() && !itemList.contains(matched.get(0))){
-                                itemList.add(matched.get(0));
+                                if(brand){
+                                    promptForBrand(i.getBrandName());
+                                    break;
+                                }else if(category){
+                                    promptForCategory(i.getCategoryName());
+                                    break;
+                                }
                             }
-
                         }
                     }
                     arrayAdapter.notifyDataSetChanged();
                 }
-
                 break;
         }
     }
@@ -192,11 +203,11 @@ public class ListActivity extends MyActivity {
     protected void promptForCategory(String categoryName){
         Log.d("Test", "in prompt for category");
         ArrayList<Item> items = firebase.getItemsByCategory(categoryName);
-
-        TextToSpeechHandler.speak("did you want", this);
-        for (Item i : items){
-            TextToSpeechHandler.speak(i.getProductName() + " or ", this);
-        }
+        Log.d("prompt for category", items.size() + " items by category of " + categoryName);
+//        TTSHandler.speak("did you want");
+//        for (Item i : items){
+//            TTSHandler.speak(i.getProductName() + " or ");
+//        }
 
     }
 
@@ -204,9 +215,9 @@ public class ListActivity extends MyActivity {
         Log.d("Test", "in prompt for brand");
         ArrayList<Item> items = firebase.getItemsByBrand(brandName);
 
-        TextToSpeechHandler.speak("did you want", this);
+        TTSHandler.speak("did you want");
         for (Item i : items){
-            TextToSpeechHandler.speak(i.getProductName()  + " + or ", this);
+            TTSHandler.speak(i.getProductName()  + " + or ");
         }
 
     }
