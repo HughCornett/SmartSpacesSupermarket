@@ -37,8 +37,7 @@ public class ReadActivity extends MyActivity
 
         listView = (ListView) findViewById(R.id.FileList);
 
-        fileList.addAll(ReadWriteCSV.readCSV(this, "paths.csv"));
-
+        readPaths();
         Collections.reverse(fileList);
 
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, fileList );
@@ -88,6 +87,8 @@ public class ReadActivity extends MyActivity
     @Override
     protected void onResume() {
         super.onResume();
+        readPaths();
+        arrayAdapter.notifyDataSetChanged();
         switchMenu();
 
     }
@@ -122,6 +123,14 @@ public class ReadActivity extends MyActivity
 
         array = menu.toArray(array);
         switchCallback(array);
+    }
+
+
+    private void readPaths()
+    {
+        fileList.clear();
+        fileList.addAll(ReadWriteCSV.readCSV(this, "paths.csv"));
+
     }
 
 }

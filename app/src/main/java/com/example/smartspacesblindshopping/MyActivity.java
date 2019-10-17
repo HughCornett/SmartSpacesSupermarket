@@ -32,6 +32,8 @@ public class MyActivity extends Activity {
     public static final String NAME = "Wearable";
     private final String NAME1 = "Galaxy A40";
 
+    public final String PATH = "paths.csv";
+
     protected BluetoothService bluetoothService;
     protected Intent intent;
     protected boolean bound;
@@ -54,6 +56,7 @@ public class MyActivity extends Activity {
         firebase.open();
         dbItems = firebase.getItems();
         firebase.close();
+
     }
 
     @Override
