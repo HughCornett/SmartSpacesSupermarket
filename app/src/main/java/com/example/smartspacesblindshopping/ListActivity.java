@@ -28,6 +28,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import org.apache.commons.lang3.text.StrBuilder;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
@@ -58,17 +60,15 @@ public class ListActivity extends MyActivity {
 
         listView = (ListView) findViewById(R.id.ListView);
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, itemList );
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, itemList);
 
         listView.setAdapter(arrayAdapter);
-
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         switchCallback(new String[]{"add item to the list", "save the list", "go back"});
     }
 
@@ -89,8 +89,7 @@ public class ListActivity extends MyActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void saveFile(View view)
-    {
+    public void saveFile(View view) {
         LocalDateTime now = LocalDateTime.now();
 
         String fileName = now.toString() + ".csv";
@@ -111,115 +110,94 @@ public class ListActivity extends MyActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch(requestCode)
-        {
+        switch (requestCode) {
             case 10:
-                if(resultCode == RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK && data != null) {
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-                    int previousSize = itemList.size();
-                    int matches = 0;
-                    Boolean category = false;
-                    Boolean brand = false;
-                    for (Item i : dbItems) {
-                        //WORD MATCHES
-                        //Checks for exact match on word
-
-                        if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase()) ||
-                                result.get(0).toUpperCase().matches("(.*)" + i.getProductName().toUpperCase() + "(.*)") ) {
-                            itemList.add(i.getProductName());
-                            Log.d("Match", "match found on word");
-                        }
-
-//                        //Checks for match on word with extra letters/words on either side
-//                        else if () {
-//                            itemList.add(i.getProductName());
-//                            Log.d("Match", "match found 2");
-//                        }
-
-                        //BRAND MATCHES
-                        //Checks for exact match on word
-                        else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase()) ||
-                                result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
-                            //promptForBrand(i.getBrandName());
-                            itemList.add(i.getProductName());
-                            brand = true;
-                            Log.d("Match", "match found on brand");
-                        }
-
-//                        //Checks for match on word with extra letters/words on either side
-//                        else if () {
-//                            promptForBrand(i.getBrandName());
-//                            itemList.add(i.getProductName());
-//                            Log.d("Match", "match found 4");
-//                        }
-
-                        //CATEGORY MATCHES
-                        //Checks for exact match on word
-                        else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase()) ||
-                                result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
-                            //promptForCategory(i.getCategoryName());
-                            itemList.add(i.getProductName());
-                            category = true;
-                            Log.d("Match", "match found on category");
-                        }
-
-//                        //Checks for match on word with extra letters/words on either side
-//                        else if () {
-//                            promptForCategory(i.getCategoryName());
-//                            itemList.add(i.getProductName());
-//                            Log.d("Match", "match found 6");
-//                        }
-
-                        //Detects if a match has been found
-                        if (itemList.size() > previousSize) {
-                            Log.d("Match", "item list size is now  " + itemList.size());
-                            matches++;
-
-                            if(matches >= 2){
-                                Log.d("Match",  matches + " matches found ");
-
-                                if(brand){
-                                    promptForBrand(i.getBrandName());
-                                    break;
-                                }else if(category){
-                                    promptForCategory(i.getCategoryName());
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    matchResults(result);
                     arrayAdapter.notifyDataSetChanged();
                 }
-                break;
+
+                default: break;
         }
     }
 
-    protected void promptForOptions(){
+    protected void matchResults(ArrayList<String> result){
+        boolean brandMatch = false;
+        boolean categoryMatch = false;
+        boolean exactMatch = false;
 
+        String tempBrand = "";
+        String tempCat = "";
+        Log.d("result", result.get(0));
+        for (Item i : dbItems) {
+
+            Log.d("item ", i.getProductName() + " BRAND " + i.getBrandName() + " CATEGORY" + i.getCategoryName());
+            if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
+                exactMatch = true;
+            }
+
+            //Does not match "NESCAFÉ" with "NESCAFÉ" ??
+            else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase()) ||
+                    result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
+                brandMatch = true;
+                tempBrand = i.getBrandName();
+            }
+
+            else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase()) ||
+                    result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
+                categoryMatch = true;
+                tempCat = i.getCategoryName();
+            }
+        }
+
+        Log.d("booleans", "exact match is " + exactMatch);
+        Log.d("booleans", "cat match is " + categoryMatch);
+        Log.d("booleans", "brand match is " + brandMatch);
+
+
+        if (exactMatch){
+            itemList.add(result.get(0));
+        }
+        else if (categoryMatch) {
+            promptForCategory(tempCat);
+            //Pop up window here
+
+        }else if(brandMatch) {
+            promptForBrand(tempBrand);
+            //Pop up window here
+        }
     }
 
-
-    protected void promptForCategory(String categoryName){
-        Log.d("Test", "in prompt for category");
+    protected void promptForCategory(String categoryName) {
+        Log.d("prompt for category", "in prompt for category");
         ArrayList<Item> items = firebase.getItemsByCategory(categoryName);
-        Log.d("prompt for category", items.size() + " items by category of " + categoryName);
-//        TTSHandler.speak("did you want");
-//        for (Item i : items){
-//            TTSHandler.speak(i.getProductName() + " or ");
-//        }
+        StrBuilder builder = new StrBuilder();
 
-    }
+        builder.append("Did you want ");
+        for (Item i : items) {
+            builder.append(i.getBrandName() + "'s" + i.getProductName() + " or ");
 
-    protected void promptForBrand(String brandName){
-        Log.d("Test", "in prompt for brand");
-        ArrayList<Item> items = firebase.getItemsByBrand(brandName);
-
-        TTSHandler.speak("did you want");
-        for (Item i : items){
-            TTSHandler.speak(i.getProductName()  + " + or ");
         }
 
+        builder.delete(builder.length() - 3, builder.length() - 1);
+        TTSHandler.speak(builder.build());
+    }
+
+    protected void promptForBrand(String brandName) {
+        Log.d("prompt for brand", "in prompt for brand" + brandName);
+        ArrayList<Item> items = firebase.getItemsByBrand(brandName);
+        StrBuilder builder = new StrBuilder();
+
+        Log.d("prompt for brand", "matches found in DB is " + items.size());
+        builder.append("Did you want " + brandName + "'s");
+
+        for (Item i : items) {
+            builder.append(i.getProductName() + " or ");
+        }
+
+        builder.delete(builder.length() - 3, builder.length() - 1);
+        TTSHandler.speak(builder.build());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -227,17 +205,20 @@ public class ListActivity extends MyActivity {
     protected void chooseOption(int index) {
         super.chooseOption(index);
 
-        switch (index)
-        {
+        switch (index) {
             case 0:
-                ListActivity.this.addToList(findViewById(R.id.addToList)); break;
+                ListActivity.this.addToList(findViewById(R.id.addToList));
+                break;
             case 1:
-                ListActivity.this.saveFile(findViewById(R.id.Save)); break;
+                ListActivity.this.saveFile(findViewById(R.id.Save));
+                break;
             case 2:
-                ListActivity.this.finish(); break;
+                ListActivity.this.finish();
+                break;
 
 
-            default: break;
+            default:
+                break;
         }
     }
 }

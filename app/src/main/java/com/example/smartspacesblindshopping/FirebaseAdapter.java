@@ -234,8 +234,7 @@ public class FirebaseAdapter {
 
     public void listAllProducts() {
         if (products.size() == 0) {
-            Log.d("array is empty", "products array is empty");
-            loadAllProducts();
+                Log.d("array is empty", "products array is empty");
         }else{
             for (Item i : products) {
                 Log.d("List all Products", i.getProductName() + ", Brand: " + i.getBrandName() + " AND Category: " + i.getCategoryName());
@@ -375,7 +374,7 @@ public class FirebaseAdapter {
      */
     public ArrayList<Item> getItemsByCategory(String categoryName) {
         ArrayList<Item> items = new ArrayList<>();
-
+        Log.d("itemsbycategory", " products size is " + products.size());
         for (Item i : products) {
             if (i.getCategoryName().compareToIgnoreCase(categoryName) == 0) {
                 items.add(i);

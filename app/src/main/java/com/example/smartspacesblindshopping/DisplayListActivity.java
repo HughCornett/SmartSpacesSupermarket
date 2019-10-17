@@ -53,10 +53,7 @@ public class DisplayListActivity extends MyActivity {
 
         switchMenu();
 
-
-
     }
-
 
     @Override
     protected void chooseOption(int index) {
