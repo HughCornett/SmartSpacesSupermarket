@@ -16,6 +16,8 @@ public class TextToSpeechHandler {
     boolean ttsIsInitialized = false;
 
     TextToSpeechHandler(Context context)
+
+    public static void speak(String message, Context context)
     {
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -42,5 +44,4 @@ public class TextToSpeechHandler {
                 textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, LocalDateTime.now().toString());
 
     }
-
 }

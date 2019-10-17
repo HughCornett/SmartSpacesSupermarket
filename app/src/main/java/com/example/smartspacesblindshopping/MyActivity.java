@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class MyActivity extends Activity {
 
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -36,6 +38,8 @@ public class MyActivity extends Activity {
     protected StringBuilder sb = new StringBuilder();
 
     protected TextToSpeechHandler TTSHandler ;
+    protected ArrayList<Item> dbItems;
+    protected FirebaseAdapter firebase = new FirebaseAdapter();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +50,9 @@ public class MyActivity extends Activity {
         intent.putExtra(BluetoothService.BT_NAME, NAME);
         intent.putExtra(BluetoothService.BT_ADDRESS, MAC);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        firebase.open();
+        dbItems = firebase.getItems();
     }
 
     @Override

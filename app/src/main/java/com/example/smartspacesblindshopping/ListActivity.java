@@ -46,8 +46,6 @@ public class ListActivity extends MyActivity {
 
     ArrayList<String> itemList = new ArrayList<>();
 
-    //Database items to compare
-    ArrayList<Item> dbItems;
 
     StringBuilder sb = new StringBuilder();
 
@@ -64,11 +62,6 @@ public class ListActivity extends MyActivity {
 
         listView.setAdapter(arrayAdapter);
 
-        FirebaseAdapter fb = new FirebaseAdapter();
-        fb.open();
-        dbItems = fb.getItems();
-
-        Log.d("dbItems", "" +dbItems.size());
 
     }
 
@@ -121,57 +114,101 @@ public class ListActivity extends MyActivity {
         switch(requestCode)
         {
             case 10:
-                if(resultCode == RESULT_OK && data != null)
-                {
+                if(resultCode == RESULT_OK && data != null) {
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    ArrayList<String> matched = new ArrayList<>();
+                    int previousSize = itemList.size();
 
-                    for (Item i : dbItems){
+                    for (Item i : dbItems) {
                         //WORD MATCHES
                         //Checks for exact match on word
-                        Log.d(i.getProductName(), result.get(0));
-                        if(result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())){
-                            itemList.add(i.getProductName());
+
+                        if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
+                            matched.add(i.getProductName());
                             Log.d("Match", "match found 1");
                         }
 
                         //Checks for match on word with extra letters/words on either side
-                        else if(result.get(0).toUpperCase().matches("(.*)" + i.getProductName().toUpperCase() + "(.*)")){
-                            itemList.add(i.getProductName());
+                        else if (result.get(0).toUpperCase().matches("(.*)" + i.getProductName().toUpperCase() + "(.*)")) {
+                            matched.add(i.getProductName());
                             Log.d("Match", "match found 2");
                         }
 
                         //BRAND MATCHES
                         //Checks for exact match on word
-                        else if(result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase())){
-                            itemList.add(i.getProductName());
+                        else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase())) {
+                            promptForBrand(i.getBrandName());
+                            matched.add(i.getProductName());
                             Log.d("Match", "match found 3");
                         }
 
                         //Checks for match on word with extra letters/words on either side
-                        else if(result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")){
-                            itemList.add(i.getProductName());
+                        else if (result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
+                            promptForBrand(i.getBrandName());
+                            matched.add(i.getProductName());
                             Log.d("Match", "match found 4");
                         }
 
                         //CATEGORY MATCHES
                         //Checks for exact match on word
-                        else if(result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase())){
-                            itemList.add(i.getProductName());
+                        else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase())) {
+                            promptForCategory(i.getCategoryName());
+                            matched.add(i.getProductName());
                             Log.d("Match", "match found 5");
                         }
 
                         //Checks for match on word with extra letters/words on either side
-                        else if(result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")){
-                            itemList.add(i.getProductName());
+                        else if (result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
+                            promptForCategory(i.getCategoryName());
+                            matched.add(i.getProductName());
                             Log.d("Match", "match found 6");
                         }
-                }
+
+                        //Detects if a match has been found
+                        if (matched.size() >= 2) {
+                            Log.d("list activity", "Two matches found" );
+
+                            promptForOptions();
+
+                        }else{
+                            if(!matched.isEmpty() && !itemList.contains(matched.get(0))){
+                                itemList.add(matched.get(0));
+                            }
+
+                        }
+                    }
                     arrayAdapter.notifyDataSetChanged();
                 }
 
-
                 break;
         }
+    }
+
+    protected void promptForOptions(){
+
+    }
+
+
+    protected void promptForCategory(String categoryName){
+        Log.d("Test", "in prompt for category");
+        ArrayList<Item> items = firebase.getItemsByCategory(categoryName);
+
+        TextToSpeechHandler.speak("did you want", this);
+        for (Item i : items){
+            TextToSpeechHandler.speak(i.getProductName() + " or ", this);
+        }
+
+    }
+
+    protected void promptForBrand(String brandName){
+        Log.d("Test", "in prompt for brand");
+        ArrayList<Item> items = firebase.getItemsByBrand(brandName);
+
+        TextToSpeechHandler.speak("did you want", this);
+        for (Item i : items){
+            TextToSpeechHandler.speak(i.getProductName()  + " + or ", this);
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

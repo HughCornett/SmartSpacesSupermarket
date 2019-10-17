@@ -235,14 +235,17 @@ public class FirebaseAdapter {
     public void listAllProducts() {
         if (products.size() == 0) {
             Log.d("array is empty", "products array is empty");
+            loadAllProducts();
+        }else{
+            for (Item i : products) {
+                Log.d("List all Products", i.getProductName() + ", Brand: " + i.getBrandName() + " AND Category: " + i.getCategoryName());
+            }
         }
-        for (Item i : products) {
-            Log.d("List all Products", i.getProductName() + ", Brand: " + i.getBrandName() + " AND Category: " + i.getCategoryName());
-        }
+
     }
 
     /**
-     * Loads all products upon app start up, saves them to productsMap
+     * Loads all products upon app start up, saves them to products array
      */
     public void loadAllProducts() {
         productsRef.get()
@@ -255,7 +258,6 @@ public class FirebaseAdapter {
                                 for (Item i : data) {
                                     i.setBrandName(getBrandNameByRef(i.getProductBrand()));
                                     i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
-                                    //
                                     products.add(i);
                                 }
                             }
@@ -279,9 +281,9 @@ public class FirebaseAdapter {
      */
     public String getCategoryNameByRef(DocumentReference ref) {
         for (HashMap.Entry<String, Category> entry : categoryMap.entrySet()) {
-            if (ref.getId().equals(entry.getKey().toString())) {
+            if (ref.getId().equals(entry.getKey())) {
 
-                return entry.getValue().getCategory().toString();
+                return entry.getValue().getCategory();
             }
         }
         return null;
@@ -299,16 +301,6 @@ public class FirebaseAdapter {
                 return entry.getValue().getBrand();
             }
         }
-
-//
-//        if (it != null) {
-//            while (it.hasNext()) {
-//                HashMap.Entry entry = (HashMap.Entry) it.next();
-//
-//            }
-//        } else {
-//            Log.d("iterator is empty ", "empty iterator");
-//        }
         return null;
     }
 
@@ -363,16 +355,17 @@ public class FirebaseAdapter {
      * @param brandName a document reference to the brand
      * @return List of products
      */
-    public ArrayList<Item> getProductsByBrand(String brandName) {
+    public ArrayList<Item> getItemsByBrand(String brandName) {
         ArrayList<Item> items = new ArrayList<>();
 
         for (Item i : products) {
-            if (i.getBrandName().equals(brandName)) {
+            if (i.getBrandName().compareToIgnoreCase(brandName) == 0)  {
                 items.add(i);
             }
         }
         return items;
     }
+
 
     /**
      * Returns a list of products by specified category
@@ -380,14 +373,31 @@ public class FirebaseAdapter {
      * @param categoryName a document reference to the category
      * @return List of products
      */
-    public ArrayList<Item> getProductsByCategory(String categoryName) {
+    public ArrayList<Item> getItemsByCategory(String categoryName) {
         ArrayList<Item> items = new ArrayList<>();
 
         for (Item i : products) {
-            if (i.getCategoryName().equals(categoryName)) {
+            if (i.getCategoryName().compareToIgnoreCase(categoryName) == 0) {
                 items.add(i);
             }
         }
         return items;
     }
+
+    /**
+     * Returns a  products by specified NFC Tag
+     *
+     * @param NFC NFC tag to match
+     * @return The item
+     */
+    public Item getItemByNFCTag(String NFC) {
+
+        for (Item i : products) {
+            if (i.getNfcTag().equals(NFC)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
 }
