@@ -54,9 +54,10 @@ public class MyActivity extends Activity {
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         firebase.open();
+        firebase.loadAllProducts();
         dbItems = firebase.getItems();
         firebase.close();
-
+        Log.d("debug", "" + dbItems.size());
     }
 
     @Override
