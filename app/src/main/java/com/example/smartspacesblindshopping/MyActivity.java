@@ -35,10 +35,13 @@ public class MyActivity extends Activity {
     protected boolean bound;
     protected StringBuilder sb = new StringBuilder();
 
+    protected TextToSpeechHandler TTSHandler ;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        TTSHandler = new TextToSpeechHandler(getApplicationContext());
         intent = new Intent(this, BluetoothService.class);
         intent.putExtra(BluetoothService.BT_NAME, NAME);
         intent.putExtra(BluetoothService.BT_ADDRESS, MAC);
@@ -103,9 +106,13 @@ public class MyActivity extends Activity {
                                 case "Left":
                                     index=(index-1)%menu.length;
                                     if(index<0) index = menu.length + index;
+                                    TTSHandler.speak(menu[index]);
+
                                     break;
                                 case "Right":
-                                    index=(index+1)%menu.length; break;
+                                    index=(index+1)%menu.length;
+                                    TTSHandler.speak(menu[index]);
+                                    break;
                                 case "Acc":
                                     chooseOption(index);
                                     break;
@@ -115,7 +122,6 @@ public class MyActivity extends Activity {
 
                             }
                             Log.d("debug", ""+menu[index]);
-
                         }
 
                         return true;

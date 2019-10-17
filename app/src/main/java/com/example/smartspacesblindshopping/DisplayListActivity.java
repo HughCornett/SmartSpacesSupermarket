@@ -51,6 +51,49 @@ public class DisplayListActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
+        switchMenu();
+
+
+
+    }
+
+
+    @Override
+    protected void chooseOption(int index) {
+        super.chooseOption(index);
+
+        int state=0;
+        int item=0;
+
+        if(state == 0) {
+            if (index == itemList.size()) {
+                DisplayListActivity.this.finish();
+            } else {
+                switchCallback(new String[]{"delete", "cancel"});
+                item=index;
+                state = 1;
+            }
+        }
+        else if (state==1)
+        {
+            if(index == 0)
+            {
+                itemList.remove(item);
+                switchMenu();
+                arrayAdapter.notifyDataSetChanged();
+                state = 0;
+
+            }
+            else {
+                switchMenu();
+                state = 0;
+            }
+        }
+
+    }
+
+    private void switchMenu()
+    {
         ArrayList<String> menu = new ArrayList<>();
 
         menu.addAll(itemList);
@@ -61,22 +104,5 @@ public class DisplayListActivity extends MyActivity {
 
         array = menu.toArray(array);
         switchCallback(array);
-
-        switchCallback(array);
-
-    }
-
-
-    @Override
-    protected void chooseOption(int index) {
-        super.chooseOption(index);
-
-
-        if(index==itemList.size())
-        {
-            DisplayListActivity.this.finish();
-        }
-
-
     }
 }

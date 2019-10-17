@@ -1,12 +1,14 @@
 package com.example.smartspacesblindshopping;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -50,9 +52,11 @@ public class MainActivity extends MyActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void goToList(View view) {
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
+        TTSHandler.speak("create a list");
+        //Intent intent = new Intent(this, ListActivity.class);
+        //startActivity(intent);
     }
 
 

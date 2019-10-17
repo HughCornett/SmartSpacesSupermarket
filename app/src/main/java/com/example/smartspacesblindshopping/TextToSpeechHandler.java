@@ -1,25 +1,45 @@
 package com.example.smartspacesblindshopping;
 
 import android.content.Context;
+import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 public class TextToSpeechHandler {
 
     static TextToSpeech textToSpeech;
-    public static void speak(String message, Context context)
+    boolean ttsIsInitialized = false;
+
+    TextToSpeechHandler(Context context)
     {
-         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.UK);
+                if (status == TextToSpeech.SUCCESS){
+                    int result = textToSpeech.setLanguage(Locale.ENGLISH);
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                        Log.e("TTS", "Language not supported");
+                    } else {
+                        ttsIsInitialized = true; // flag tts as initialized
+                    }
+                } else {
+                    Log.e("TTS", "Failed");
                 }
             }
-         });
-         textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
+        });
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void speak(String message)
+    {
+            if(ttsIsInitialized)
+
+                textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, LocalDateTime.now().toString());
 
     }
 
