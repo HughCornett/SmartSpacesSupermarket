@@ -53,6 +53,7 @@ public class MyActivity extends Activity {
 
         firebase.open();
         dbItems = firebase.getItems();
+        firebase.close();
     }
 
     @Override

@@ -3,4 +3,7 @@
     <string name="hint">Item to add</string>
     <string name="error_connect_failed">error_connect_failed</string>
     <string name="error_connect_lost">error_connect_lost</string>
+    <string name="delete">delete</string>
+    <string name="cancel">cancel</string>
+    <string name="deletetext">delete?</string>
 </resources>

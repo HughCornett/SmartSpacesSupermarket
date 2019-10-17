@@ -25,17 +25,11 @@ import java.util.Vector;
 public class MainActivity extends MyActivity {
 
 
-    private FirebaseAdapter firebase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        firebase = new FirebaseAdapter();
-
-        firebase.loadAllData();
-
-        firebase.close();
 
         Map.init();
         Directions.getNextDirection(Map.user, Map.item);
@@ -54,9 +48,9 @@ public class MainActivity extends MyActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void goToList(View view) {
-        TTSHandler.speak("create a list");
-        //Intent intent = new Intent(this, ListActivity.class);
-        //startActivity(intent);
+
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
     }
 
 
