@@ -34,9 +34,6 @@ public class MainActivity extends MyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Map.init();
-        Directions.getNextDirection(Map.user, Map.item);
-
         startService(intent);
 
 

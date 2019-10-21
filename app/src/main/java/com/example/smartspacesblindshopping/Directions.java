@@ -35,14 +35,14 @@ public class Directions {
         }
 
         //if the destination is in the same aisle as the user
-        if(destination.getAisle() == originAisle)
+        if(Map.shelves.get(destination.getShelf()).getAisle() == originAisle)
         {
             //check if the user is within the margin distance of the item
-            if(user.getY() < destination.getPosition().y+MARGIN_DISTANCE
-            && user.getY() > destination.getPosition().y-MARGIN_DISTANCE)
+            if(user.getY() < destination.getYPosition()+MARGIN_DISTANCE
+            && user.getY() > destination.getYPosition()-MARGIN_DISTANCE)
             {
                 //if the item is to the left of the user (map left not user's left)
-                if(destination.getPosition().x < user.getX())
+                if(destination.getXPosition() < user.getX())
                 {
                     if(user.getFacing() == 0) { turn = "on your left"; }
                     else if(user.getFacing() == 1) { turn = "behind you"; }
@@ -50,7 +50,7 @@ public class Directions {
                     else if(user.getFacing() == 3) { turn = "straight ahead"; }
                 }
                 //if the item is to the right of the user (map right not user's right)
-                if(destination.getPosition().x > user.getX())
+                if(destination.getXPosition() > user.getX())
                 {
                     if(user.getFacing() == 0) { turn = "on your right"; }
                     else if(user.getFacing() == 1) { turn = "straight ahead"; }
@@ -61,13 +61,13 @@ public class Directions {
                 Log.d("direction", ""+direction);
             }
 
-            else if(user.getY() < destination.getPosition().y)
+            else if(user.getY() < destination.getYPosition())
             {
                 if(user.getFacing() == 1) { turn = "Turn left and "; }
                 else if(user.getFacing() == 2) { turn = "Turn around and "; }
                 else if(user.getFacing() == 3) { turn = "Turn right and "; }
             }
-            else if(user.getY() > destination.getPosition().y)
+            else if(user.getY() > destination.getYPosition())
             {
                 if(user.getFacing() == 0) { turn = "Turn around and "; }
                 else if(user.getFacing() == 1) { turn = "Turn right and "; }
@@ -120,7 +120,7 @@ public class Directions {
             for(int i = 0; i < Map.rows.size(); i++)
             {
                 double thisRowOriginDistance = Math.min(Math.abs(user.getY() - Map.rows.get(i).top), Math.abs(user.getY() - Map.rows.get(i).bottom));
-                int thisRowItemDistance = Math.min(Math.abs(destination.getPosition().y - Map.rows.get(i).top), Math.abs(destination.getPosition().y - Map.rows.get(i).bottom));
+                double thisRowItemDistance = Math.min(Math.abs(destination.getYPosition() - Map.rows.get(i).top), Math.abs(destination.getYPosition() - Map.rows.get(i).bottom));
                 double thisRowMinDistance = Math.min(thisRowItemDistance, thisRowOriginDistance);
                 if(thisRowMinDistance < bestRowDistance)
                 {
@@ -131,15 +131,16 @@ public class Directions {
 
             if(bestRow == 0)
             {
-                if(user.getFacing() == 0) {turn = "Turn around and ";}
-                else if(user.getFacing() == 1) {turn = "Turn right and ";}
-                else if(user.getFacing() == 3) {turn = "Turn left and ";}
-            }
-            else if(bestRow == 1)
-            {
                 if(user.getFacing() == 1) {turn = "Turn left and ";}
                 else if(user.getFacing() == 2) {turn = "Turn around and ";}
                 else if(user.getFacing() == 3) {turn = "Turn right and ";}
+            }
+            else if(bestRow == 1)
+            {
+                if(user.getFacing() == 0) {turn = "Turn around and ";}
+                else if(user.getFacing() == 1) {turn = "Turn right and ";}
+                else if(user.getFacing() == 3) {turn = "Turn left and ";}
+
             }
             direction = turn+"walk to row "+bestRow;
             Log.d("direction: ",""+direction);

@@ -21,6 +21,7 @@ public class MapActivity extends MyActivity {
     public static int HEIGHT;
     //number of pixels per real world meter
     public static double PIXELS_PER_METER;
+    protected TextToSpeechHandler TTSHandler ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +43,10 @@ public class MapActivity extends MyActivity {
         PIXELS_PER_METER = displaySize.x / Map.ROOM_HEIGHT;
 
         drawView.updateView();
-
         Map.init();
-        Directions.getNextDirection(Map.user, Map.item);
+        //TTSHandler = new TextToSpeechHandler(getApplicationContext());
+
+        //TTSHandler.speak(Directions.getNextDirection(Map.user, Map.item));
     }
 
     @Override
