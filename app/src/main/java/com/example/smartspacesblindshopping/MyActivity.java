@@ -129,7 +129,9 @@ public class MyActivity extends Activity {
                                     break;
 
 
-                                default: break;
+                                default:
+                                    Toast.makeText(getApplicationContext(), sbprint, Toast.LENGTH_SHORT).show();
+                                break;
 
                             }
                             Log.d("debug", ""+menu[index]);

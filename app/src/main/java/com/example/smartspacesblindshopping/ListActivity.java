@@ -41,21 +41,17 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class ListActivity extends MyActivity {
 
-
-    BluetoothService bluetoothService;
-    Intent intent;
-    boolean bound;
+    int state = 0;
     ArrayAdapter<String> arrayAdapter;
 
     ArrayList<String> itemList = new ArrayList<>();
+    ArrayList<String> chosenItemStrings = new ArrayList<>();
 
 
-    StringBuilder sb = new StringBuilder();
 
     PopupWindow mPopupWindow;
     ListView listView;
@@ -223,33 +219,40 @@ public class ListActivity extends MyActivity {
     protected void chooseOption(int index) {
         super.chooseOption(index);
 
-        switch (index) {
-            case 0:
-                ListActivity.this.addToList(findViewById(R.id.addToList));
-                break;
-            case 1:
-                ListActivity.this.saveFile(findViewById(R.id.Save));
-                break;
-            case 2:
-                ListActivity.this.finish();
-                break;
+        if(state==0) {
+            switch (index) {
+                case 0:
+                    ListActivity.this.addToList(findViewById(R.id.addToList));
+                    break;
+                case 1:
+                    ListActivity.this.saveFile(findViewById(R.id.Save));
+                    break;
+                case 2:
+                    ListActivity.this.finish();
+                    break;
 
 
-            default:
-                break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+
         }
     }
 
     private void createPopUp(final ArrayList<Item> chosenItemList)
     {
-        final ArrayList<String> chosenItemStrings = new ArrayList<>();
+        chosenItemStrings = new ArrayList<>();
         for(Item i: chosenItemList)
         {
             chosenItemStrings.add(i.getProductName());
         }
+
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        View customView = inflater.inflate(R.layout.popup_delete,null);
+        View customView = inflater.inflate(R.layout.popup_list,null);
 
         mPopupWindow = new PopupWindow(
                 customView,
@@ -261,20 +264,40 @@ public class ListActivity extends MyActivity {
             mPopupWindow.setElevation(5.0f);
         }
 
-        ListView listView = (ListView) findViewById(R.id.ListView);
+        ListView listView = (ListView) customView.findViewById(R.id.PopUpList);
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, chosenItemStrings);
-
 
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ListActivity.this.itemList.add(chosenItemStrings.get(i));
-                mPopupWindow.dismiss();
+                popUpOnClick(i);
             }
         });
-        mPopupWindow.showAtLocation(findViewById(R.id.displaylayout), Gravity.CENTER,0,0);
+        mPopupWindow.showAtLocation(findViewById(R.id.ListLayout), Gravity.CENTER,0,0);
+
+
+        state = 1;
+        ArrayList<String> menu = new ArrayList<>();
+
+        menu.addAll(chosenItemStrings);
+
+        String[] array = new String[chosenItemStrings.size()];
+
+        array = menu.toArray(array);
+
+        switchCallback(array);
+    }
+
+    private void popUpOnClick(int i)
+    {
+        ListActivity.this.itemList.add(chosenItemStrings.get(i));
+        state = 0;
+        switchCallback(new String[]{"add item to the list", "save the list", "go back"});
+        arrayAdapter.notifyDataSetChanged();
+        mPopupWindow.dismiss();
+
     }
 }
