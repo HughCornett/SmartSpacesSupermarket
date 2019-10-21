@@ -196,6 +196,8 @@ public class ListActivity extends MyActivity {
 
         builder.delete(builder.length() - 3, builder.length() - 1);
         TTSHandler.speak(builder.build());
+
+        createPopUp(items);
     }
 
     protected void promptForBrand(String brandName) {
@@ -212,7 +214,10 @@ public class ListActivity extends MyActivity {
 
         builder.delete(builder.length() - 3, builder.length() - 1);
         TTSHandler.speak(builder.build());
+        createPopUp(items);
     }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -236,8 +241,13 @@ public class ListActivity extends MyActivity {
         }
     }
 
-    private void createPopUp(final ArrayList<String> chosenItemList)
+    private void createPopUp(final ArrayList<Item> chosenItemList)
     {
+        final ArrayList<String> chosenItemStrings = new ArrayList<>();
+        for(Item i: chosenItemList)
+        {
+            chosenItemStrings.add(i.getProductName());
+        }
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
         View customView = inflater.inflate(R.layout.popup_delete,null);
@@ -254,7 +264,7 @@ public class ListActivity extends MyActivity {
 
         ListView listView = (ListView) findViewById(R.id.ListView);
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, chosenItemList);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, chosenItemStrings);
 
 
         listView.setAdapter(arrayAdapter);
@@ -262,7 +272,7 @@ public class ListActivity extends MyActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ListActivity.this.itemList.add(chosenItemList.get(i));
+                ListActivity.this.itemList.add(chosenItemStrings.get(i));
                 mPopupWindow.dismiss();
             }
         });
