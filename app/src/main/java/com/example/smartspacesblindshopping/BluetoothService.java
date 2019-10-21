@@ -82,7 +82,6 @@ public class BluetoothService extends Service {
                 return START_STICKY_COMPATIBILITY;
             }
         }
-
         return START_STICKY;
     }
 

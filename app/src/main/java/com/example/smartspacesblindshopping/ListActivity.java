@@ -136,7 +136,7 @@ public class ListActivity extends MyActivity {
         String tempCat = "";
         String match = "";
         Log.d("result", result.get(0));
-        for (Item i : dbItems) {
+        for (Item i : MainActivity.getDbItems()) {
             Log.d("debug",i.getBrandName()+" "+i.getCategoryName()+" "+i.getProductName());
             if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
                 exactMatch = true;
@@ -173,6 +173,7 @@ public class ListActivity extends MyActivity {
         }else if(brandMatch) {
             promptForBrand(tempBrand);
             //Pop up window here
+
         }else{
             TTSHandler.speak("I'm sorry i did not find any matches for that item");
         }

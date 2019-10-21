@@ -40,8 +40,10 @@ public class MyActivity extends Activity {
     protected StringBuilder sb = new StringBuilder();
 
     protected TextToSpeechHandler TTSHandler ;
-    protected ArrayList<Item> dbItems;
+
     protected FirebaseAdapter firebase = new FirebaseAdapter();
+
+    static protected ArrayList<Item> dbItems = new ArrayList<Item>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,10 +55,21 @@ public class MyActivity extends Activity {
         intent.putExtra(BluetoothService.BT_ADDRESS, MAC);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        firebase.loadAllData();
-        dbItems = firebase.getItems();
+        if(dbItems.isEmpty()){
+            Log.d("DB debug", "database is loading data");
+            firebase.loadAllData();
+            setDbItems(firebase.getItems());
+            Log.d("DB debug", "database size is " + dbItems.size());
+        }
 
-        Log.d("debug", "database size is " + dbItems.size());
+    }
+
+    static public ArrayList<Item> getDbItems(){
+        return dbItems;
+    }
+
+    protected void setDbItems(ArrayList<Item> list){
+        dbItems = list;
     }
 
     @Override
@@ -78,7 +91,7 @@ public class MyActivity extends Activity {
             // interact with the service.  We are communicating with the
             // service using a Messenger, so here we get a client-side
             // representation of that from the raw IBinder object.
-            //messenger = new Messenger(service);
+            // messenger = new Messenger(service);
             bluetoothService = ((BluetoothService.LocalBinder) service).getService();
             bound = true;
         }
