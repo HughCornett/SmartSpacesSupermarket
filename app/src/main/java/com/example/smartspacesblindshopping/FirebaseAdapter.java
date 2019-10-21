@@ -40,7 +40,6 @@ public class FirebaseAdapter {
 
 
     public FirebaseAdapter() {
-        open();
         productsMap = new HashMap<>();
         categoryMap = new HashMap<>();
         brandMap = new HashMap<>();
@@ -51,7 +50,7 @@ public class FirebaseAdapter {
     }
 
     public void close(){
-        db.clearPersistence();
+
         db.disableNetwork();
         db.terminate();
     }
@@ -247,6 +246,7 @@ public class FirebaseAdapter {
      * Loads all products upon app start up, saves them to products array
      */
     public void loadAllProducts() {
+        products.clear();
         productsRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

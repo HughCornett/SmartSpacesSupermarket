@@ -53,11 +53,10 @@ public class MyActivity extends Activity {
         intent.putExtra(BluetoothService.BT_ADDRESS, MAC);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        firebase.open();
-        firebase.loadAllProducts();
+        firebase.loadAllData();
         dbItems = firebase.getItems();
-        firebase.close();
-        Log.d("debug", "" + dbItems.size());
+
+        Log.d("debug", "database size is " + dbItems.size());
     }
 
     @Override
