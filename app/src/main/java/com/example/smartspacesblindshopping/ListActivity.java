@@ -140,7 +140,6 @@ public class ListActivity extends MyActivity {
         String tempCat = "";
         String match = "";
         Log.d("result", result.get(0));
-        Log.d("debug", "" + dbItems.size());
         for (Item i : dbItems) {
             Log.d("debug",i.getBrandName()+" "+i.getCategoryName()+" "+i.getProductName());
             if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
