@@ -38,7 +38,6 @@ public class FirebaseAdapter {
 
     static private ArrayList<Item> products = new ArrayList<>();
 
-
     public FirebaseAdapter() {
         productsMap = new HashMap<>();
         categoryMap = new HashMap<>();
@@ -219,7 +218,12 @@ public class FirebaseAdapter {
             e.printStackTrace();
         }
 
-        loadAllProducts();
+        getData(new FirestoreCallback() {
+            @Override
+            public void onCallback(ArrayList<Item> list) {
+                Log.d("on callback", list.toString());
+            }
+        });
 
         try {
             TimeUnit.SECONDS.sleep(1);
@@ -246,6 +250,15 @@ public class FirebaseAdapter {
      * Loads all products upon app start up, saves them to products array
      */
     public void loadAllProducts() {
+
+    }
+
+    private interface FirestoreCallback{
+        void onCallback(ArrayList<Item> list);
+
+    }
+
+    private void getData(final FirestoreCallback firestoreCallback){
         products.clear();
         productsRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -259,18 +272,14 @@ public class FirebaseAdapter {
                                     i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
                                     products.add(i);
                                 }
+                                firestoreCallback.onCallback(products);
                             }
+                        }else{
+                            Log.d("DB Loadallproducts", "task unsuccesfull");
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("Load Products failed", "Failed to load products");
                     }
                 });
     }
-
 
     /**
      * Returns the category name

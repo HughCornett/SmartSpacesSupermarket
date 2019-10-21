@@ -3,6 +3,7 @@ package com.example.smartspacesblindshopping;
 import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -22,6 +23,7 @@ public class TextToSpeechHandler {
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS){
                     int result = textToSpeech.setLanguage(Locale.ENGLISH);
+
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
                         Log.e("TTS", "Language not supported");
                     } else {
