@@ -374,7 +374,6 @@ public class FirebaseAdapter {
         return items;
     }
 
-
     /**
      * Returns a list of products by specified category
      *
@@ -401,6 +400,15 @@ public class FirebaseAdapter {
     public Item getItemByNFCTag(String NFC) {
         for (Item i : products) {
             if (i.getNfcTag().equals(NFC)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    public Item fullNameToItem(String fullname){
+        for (Item i: products) {
+            if((i.getBrandName() + i.getProductName()).equals(fullname)){
                 return i;
             }
         }
