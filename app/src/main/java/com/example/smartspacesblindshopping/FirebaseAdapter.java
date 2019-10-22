@@ -396,10 +396,9 @@ public class FirebaseAdapter {
      * Returns a  products by specified NFC Tag
      *
      * @param NFC NFC tag to match
-     * @return The item
+     * @return The item or null if item does not exist in the database
      */
     public Item getItemByNFCTag(String NFC) {
-
         for (Item i : products) {
             if (i.getNfcTag().equals(NFC)) {
                 return i;
@@ -407,5 +406,4 @@ public class FirebaseAdapter {
         }
         return null;
     }
-
 }

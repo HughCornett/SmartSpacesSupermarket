@@ -119,13 +119,16 @@ public class MyActivity extends Activity {
                 switch (message.what) {
                     case MyActivity.MESSAGE_READ:
                         byte[] readBuf = (byte[]) message.obj;
-                        String strIncom = new String(readBuf, 0, message.arg1);                 // create string from bytes array
-                        sb.append(strIncom);                                                // append string
-                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
+
+                        String strIncom = new String(readBuf, 0, message.arg1);       //create string from bytes array
+
+                        sb.append(strIncom);                                                //append string
+
+                        int endOfLineIndex = sb.indexOf("\r\n");                            //determine the end-of-line
+
                         if (endOfLineIndex > 0) {
                             String sbprint = sb.substring(0, endOfLineIndex);
                             sb.delete(0, sb.length());
-                            //Toast.makeText(getApplicationContext(), sbprint, Toast.LENGTH_SHORT).show();
                             Log.d("debug", sbprint);
 
 
@@ -140,15 +143,17 @@ public class MyActivity extends Activity {
                                     index=(index+1)%menu.length;
                                     TTSHandler.speak(menu[index]);
                                     break;
+
                                 case "Acc":
                                     chooseOption(index);
                                     break;
 
-
                                 default:
-                                    if(firebase.getItemByNFCTag(sbprint)!=null)
-                                    Toast.makeText(getApplicationContext(), firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
-                                break;
+                                    Item i = firebase.getItemByNFCTag(sbprint);
+                                    if(i != null)
+                                        Toast.makeText(getApplicationContext(), firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
+
+                                    break;
 
                             }
                             Log.d("debug", ""+menu[index]);

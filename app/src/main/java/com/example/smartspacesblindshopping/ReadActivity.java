@@ -25,8 +25,6 @@ public class ReadActivity extends MyActivity
 
     ArrayList<String> fileList = new ArrayList<>();
 
-
-
     ListView listView;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -35,10 +33,10 @@ public class ReadActivity extends MyActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.read_activity);
 
-
         listView = (ListView) findViewById(R.id.FileList);
 
         readPaths();
+
         Collections.reverse(fileList);
 
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, fileList );
@@ -49,11 +47,8 @@ public class ReadActivity extends MyActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 goToList(i);
-
             }
         });
-
-
     }
 
     private void goToList(int i)
