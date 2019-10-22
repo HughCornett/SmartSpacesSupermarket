@@ -1,49 +1,22 @@
 package com.example.smartspacesblindshopping;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Vector;
-
-
+import androidx.annotation.RequiresApi;
 
 public class MainActivity extends MyActivity {
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Map.init();
         Directions.getNextDirection(Map.user, Map.item);
-
         startService(intent);
-
-
-
     }
-
-
 
     @Override
     protected void onResume() {
