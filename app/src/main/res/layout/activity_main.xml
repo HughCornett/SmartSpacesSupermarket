@@ -35,6 +35,16 @@
         android:onClick="goToMap"
         ></Button>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mapButton"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/shoppingButton"
+        android:text="do shopping"
+        android:onClick="doShopping"
+        ></Button>
+
 
 
 </RelativeLayout>

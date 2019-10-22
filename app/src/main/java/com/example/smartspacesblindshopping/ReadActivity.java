@@ -3,6 +3,7 @@ package com.example.smartspacesblindshopping;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -60,7 +61,7 @@ public class ReadActivity extends MyActivity
         String path = (String) listView.getItemAtPosition(i);
         Intent intent = new Intent(ReadActivity.this, DisplayListActivity.class);
         intent.putExtra(EXTRA_MESSAGE, path);
-        startActivity(intent);
+        startActivityForResult(intent, 10);
     }
     public void deleteFiles(View view)
     {
@@ -133,4 +134,15 @@ public class ReadActivity extends MyActivity
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 10)
+        {
+            if (resultCode == RESULT_OK && data != null) {
+                setResult(RESULT_OK, data);
+                finish();
+            }
+        }
+    }
 }

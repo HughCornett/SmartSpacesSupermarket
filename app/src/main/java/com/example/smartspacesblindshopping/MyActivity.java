@@ -34,6 +34,9 @@ public class MyActivity extends Activity {
 
     public final String PATH = "paths.csv";
 
+    public final String CHOOSE_LIST = "choose list";
+
+
     protected BluetoothService bluetoothService;
     protected Intent intent;
     protected boolean bound;
@@ -122,7 +125,7 @@ public class MyActivity extends Activity {
                         if (endOfLineIndex > 0) {
                             String sbprint = sb.substring(0, endOfLineIndex);
                             sb.delete(0, sb.length());
-                            Toast.makeText(getApplicationContext(), sbprint, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), sbprint, Toast.LENGTH_SHORT).show();
                             Log.d("debug", sbprint);
 
 
@@ -143,7 +146,8 @@ public class MyActivity extends Activity {
 
 
                                 default:
-                                    Toast.makeText(getApplicationContext(), sbprint, Toast.LENGTH_SHORT).show();
+                                    if(firebase.getItemByNFCTag(sbprint)!=null)
+                                    Toast.makeText(getApplicationContext(), firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
                                 break;
 
                             }

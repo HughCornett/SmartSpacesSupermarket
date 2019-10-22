@@ -72,6 +72,12 @@ public class MainActivity extends MyActivity {
         startActivity(intent);
     }
 
+    public void doShopping(View view)
+    {
+        Intent intent = new Intent(this, ShoppingActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     protected void onDestroy() {

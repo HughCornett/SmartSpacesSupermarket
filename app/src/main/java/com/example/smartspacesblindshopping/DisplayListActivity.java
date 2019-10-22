@@ -173,4 +173,12 @@ public class DisplayListActivity extends MyActivity {
         });
 
     }
+
+    public void chooseList(View  view)
+    {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(CHOOSE_LIST, path);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+    }
 }
