@@ -53,6 +53,20 @@ public class ShoppingActivity extends MyActivity {
         }
     }
 
+    @Override
+    protected void chooseOption(int index) {
+        super.chooseOption(index);
+
+        switch (index) {
+            case 0:
+                ShoppingActivity.this.readLists(findViewById(R.id.nextItem));
+                break;
+            default:
+                break;
+        }
+    }
+
+
 
     @Override
     public void switchCallback(final String[] menu)
@@ -96,22 +110,23 @@ public class ShoppingActivity extends MyActivity {
                                     break;
 
                                 default:
+                                    //At this point we have hopefully successfully routed the user to the next item on their shopping list
+                                    //if they scan the correct item it will alert them and cycle to the next item on the list
                                     Item i = firebase.getItemByNFCTag(sbprint);
                                     Log.d("Default debug", "item by nfc tag is " + i.getProductName());
                                     if(i != null)
-                                        //Toast.makeText(getApplicationContext(), "Scanned: " + firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "Scanned: " + firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
+
                                         if((i.getBrandName() + " " + i.getProductName()).equals(currentItemText.getText())){
                                             TTSHandler.speak("That item is on your list");
-                                            Log.d("Default debug", "currentItemText is " + currentItemText.getText());
-                                            //Play ding sound?
+                                            //Log.d("Default debug", "currentItemText is " + currentItemText.getText())
                                             Toast.makeText(getApplicationContext(), "Item is on shopping list" , Toast.LENGTH_SHORT).show();
                                             shoppingList.remove(currentItemText.getText());
 
-                                            //works
+                                            //works - no touchy
                                             if(!shoppingList.isEmpty()){
                                                 currentItemText.setText(shoppingList.get(0));
-                                                Log.d("Default debug", "new currentItemText is " + currentItemText.getText());
-
+                                                //Log.d("Default debug", "new currentItemText is " + currentItemText.getText());
                                                 TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
                                             }else{
                                                 TTSHandler.speak("Your shopping list is empty");

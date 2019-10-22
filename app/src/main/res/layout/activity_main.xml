@@ -1,50 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
     <Button
+        android:id="@+id/createButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:id="@+id/createButton"
-        android:text="Create Lists"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="192dp"
         android:onClick="goToList"
-        ></Button>
+        android:text="Create Lists"></Button>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/createButton"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/readButton"
-        android:text="Read Lists"
-        android:onClick="readList"
-        ></Button>
-
-    <Button
+        android:id="@+id/mapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/readButton"
         android:layout_centerHorizontal="true"
-        android:id="@+id/mapButton"
-        android:text="Go to map"
         android:onClick="goToMap"
-        ></Button>
+        android:text="Go to map"></Button>
 
     <Button
+        android:id="@+id/shoppingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mapButton"
         android:layout_centerHorizontal="true"
-        android:id="@+id/shoppingButton"
-        android:text="do shopping"
         android:onClick="doShopping"
-        ></Button>
+        android:text="do shopping"></Button>
 
+    <Button
+        android:id="@+id/readButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/createButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="0dp"
+        android:onClick="readList"
+        android:text="Read Lists"></Button>
 
 
 </RelativeLayout>
