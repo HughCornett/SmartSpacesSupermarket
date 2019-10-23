@@ -25,30 +25,42 @@ public class Directions {
         int turnToDirection = path.get(0).getEdgeTo(path.get(1)).getDirection();
 
         //if the user is facing the right way
-        if(turnToDirection == Map.user.getFacing()) { turn = ""; }
+        if(turnToDirection == Map.user.getFacing()) { turn = "Walk forward"; }
 
         //if the user is facing left of the direction they should be
-        else if(turnToDirection == (Map.user.getFacing() + 1) % 4) { turn = "Turn right and "; }
+        else if(turnToDirection == (Map.user.getFacing() + 1) % 4) { turn = "Turn right and walk"; }
 
         //if the user is facing the opposite way they should be
-        else if(turnToDirection == (Map.user.getFacing() + 2) % 4) { turn = "Turn around and "; }
+        else if(turnToDirection == (Map.user.getFacing() + 2) % 4) { turn = "Turn around and walk"; }
 
         //if the user is facing right of the way they should be
-        else if(turnToDirection == (Map.user.getFacing() + 3) % 4) { turn = "Turn left and "; }
+        else if(turnToDirection == (Map.user.getFacing() + 3) % 4) { turn = "Turn left and walk"; }
 
         //else something went wrong
         else { Log.e("Turn error", "Logic to determine turn direction failed (Directions.pathToString())"); }
 
-        int nextTurn = 1;
-        while(path.size() >= nextTurn &&
+        int nextTurn = 0;
+        while(path.size() > nextTurn + 1 &&
                 path.get(nextTurn).getEdgeTo(path.get(nextTurn+1)).getDirection() == turnToDirection)
         {
             nextTurn++;
         }
-        String destination = "";
-        if(path.get(nextTurn).getRow() != -1) { destination = "row "+path.get(nextTurn).getRow(); }
-        else { destination = "aisle "+path.get(nextTurn).getAisle(); }
-        return turn+"walk forwards to "+destination;
+        String destination = " forward";
+        if(path.size() > nextTurn + 1)
+        {
+            int nextDirection = path.get(nextTurn).getEdgeTo(path.get(nextTurn+1)).getDirection();
+            //if the next direction is horizontal (therefore if it is a row)
+            if(nextDirection  == 1 || nextDirection == 3)
+            {
+                destination = " to row "+path.get(nextTurn).getRow();
+            }
+            //if it is vertical (therefore if it is an aisle)
+            else
+            {
+                destination = " to aisle "+path.get(nextTurn).getAisle();
+            }
+        }
+        return turn+destination;
     }
 
     //used Floyd Warshall algorithm to compute the distance between all pairs of nodes
@@ -163,8 +175,19 @@ public class Directions {
     {
         return Math.sqrt(Math.pow(x1-x0,2)+Math.pow(y1-y0,2));
     }
-    //gets the closest node to a position by euclidean distance
-    public static Node getClosestNode(double x, double y)
+
+    /**
+     *
+     * @param x
+     *  the x coordinate of the point we are getting the closest node to
+     * @param y
+     *  the y coordinate of the point we are getting the closest node to
+     * @param aisle
+     *  true if the node must be in an aisle, false if it doesn't matter
+     * @return
+     *  the closest appropriate node to the point
+     */
+    public static Node getClosestNode(double x, double y, boolean aisle)
     {
         double minDistance = Double.MAX_VALUE;
         Node closestNode = null;
@@ -172,7 +195,7 @@ public class Directions {
         {
             Node node = Map.nodes.get(i);
             double thisDistance = distance(x, y, node.getXPosition(), node.getYPosition());
-            if(thisDistance < minDistance)
+            if(thisDistance < minDistance && !(aisle && node.getAisle() == -1))
             {
                 minDistance = thisDistance;
                 closestNode = node;

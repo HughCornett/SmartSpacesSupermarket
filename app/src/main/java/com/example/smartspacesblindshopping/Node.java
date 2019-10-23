@@ -13,7 +13,7 @@ public class Node
     private boolean exit;
     private ArrayList<Edge> edges;
     private RectF rect;
-    private static final float NODE_AREA_WIDTH = 2f;
+    private static final float NODE_AREA_WIDTH = 1.5f;
     private static final float NODE_AREA_HEIGHT = 0.5f;
     private boolean pathNode = false;
     private int aisle = -1;

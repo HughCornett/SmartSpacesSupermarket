@@ -55,7 +55,8 @@ public class MapActivity extends MyActivity {
         drawView.updateView();
         Map.init();
 
-        Map.addBlockage(6, 7);
+        Map.addBlockage(7, 12);
+
 
         Directions.computeMatrices();
 
@@ -85,8 +86,8 @@ public class MapActivity extends MyActivity {
                 }
             }
 
-            ArrayList<Node> path = Directions.getPath(Directions.getClosestNode(Map.user.getX(), Map.user.getY()),
-                    Directions.getClosestNode(Map.item.getXPosition(), Map.item.getYPosition()));
+            ArrayList<Node> path = Directions.getPath(Directions.getClosestNode(Map.user.getX(), Map.user.getY(), false),
+                    Directions.getClosestNode(Map.item.getXPosition(), Map.item.getYPosition(), true));
             if(path.size()>1)
             {
                 Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);

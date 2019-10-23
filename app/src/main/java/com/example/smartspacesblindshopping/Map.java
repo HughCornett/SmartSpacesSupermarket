@@ -27,7 +27,7 @@ public class Map
     public static ArrayList<Node> nodes;
     public static ArrayList<Edge> edges;
 
-    public static User user = new User(7,4, 0);
+    public static User user = new User(0,0, 3);
     public static Item item;
 
     public static void init()
@@ -86,8 +86,8 @@ public class Map
             {
                 //add edge to previous node in row
 
-                edges.add(newNode.addEdge(nodes.get(nodes.size()-6)));
-                edges.add(nodes.get(nodes.size()-6).addEdge(newNode));
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-3)));
+                edges.add(nodes.get(nodes.size()-3).addEdge(newNode));
             }
 
             //nodes in the middle of the aisles, one for each section
@@ -111,6 +111,25 @@ public class Map
                 //add the previous node of the row
                 edges.add(newNode.addEdge(nodes.get(nodes.size()-6)));
                 edges.add(nodes.get(nodes.size()-6).addEdge(newNode));
+            }
+
+            //if there is another aisle after this, add nodes between them on the rows
+            if(i != aisles.size()-1)
+            {
+                nodeXPos = aisles.get(i).right + ((aisles.get(i+1).left - aisles.get(i).right)/2);
+                nodeYPos = rows.get(0).bottom - ((rows.get(0).bottom - rows.get(0).top)/2);
+
+                newNode = new Node(nodeXPos, nodeYPos, false);
+                nodes.add(newNode);
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-6)));
+                edges.add(nodes.get(nodes.size()-6).addEdge(newNode));
+
+                nodeYPos = rows.get(1).bottom - ((rows.get(1).bottom - rows.get(1).top)/2);
+
+                newNode = new Node(nodeXPos, nodeYPos, false);
+                nodes.add(newNode);
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-3)));
+                edges.add(nodes.get(nodes.size()-3).addEdge(newNode));
             }
         }
         //add the exit node
