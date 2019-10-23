@@ -3,6 +3,7 @@ package com.example.smartspacesblindshopping;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,8 +25,6 @@ public class ReadActivity extends MyActivity
 
     ArrayList<String> fileList = new ArrayList<>();
 
-
-
     ListView listView;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -34,10 +33,10 @@ public class ReadActivity extends MyActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.read_activity);
 
-
         listView = (ListView) findViewById(R.id.FileList);
 
         readPaths();
+
         Collections.reverse(fileList);
 
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, fileList );
@@ -48,11 +47,8 @@ public class ReadActivity extends MyActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 goToList(i);
-
             }
         });
-
-
     }
 
     private void goToList(int i)
@@ -60,7 +56,7 @@ public class ReadActivity extends MyActivity
         String path = (String) listView.getItemAtPosition(i);
         Intent intent = new Intent(ReadActivity.this, DisplayListActivity.class);
         intent.putExtra(EXTRA_MESSAGE, path);
-        startActivity(intent);
+        startActivityForResult(intent, 10);
     }
     public void deleteFiles(View view)
     {
@@ -133,4 +129,15 @@ public class ReadActivity extends MyActivity
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 10)
+        {
+            if (resultCode == RESULT_OK && data != null) {
+                setResult(RESULT_OK, data);
+                finish();
+            }
+        }
+    }
 }
