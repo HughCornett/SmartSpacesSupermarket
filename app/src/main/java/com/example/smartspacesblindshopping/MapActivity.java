@@ -1,14 +1,25 @@
 package com.example.smartspacesblindshopping;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Display;
 
+import java.util.ArrayList;
+
 public class MapActivity extends MyActivity {
+
+    //CONSTANTS
+
+    //number of milliseconds to wait before repeating direction checks
+    public static final int REPEAT_DELAY = 10000;
 
     //OTHER VARIABLES
     DrawView drawView;
@@ -21,7 +32,6 @@ public class MapActivity extends MyActivity {
     public static int HEIGHT;
     //number of pixels per real world meter
     public static double PIXELS_PER_METER;
-    protected TextToSpeechHandler TTSHandler ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +54,61 @@ public class MapActivity extends MyActivity {
 
         drawView.updateView();
         Map.init();
-        //TTSHandler = new TextToSpeechHandler(getApplicationContext());
 
-        //TTSHandler.speak(Directions.getNextDirection(Map.user, Map.item));
+        Map.addBlockage(6, 7);
+
+        Directions.computeMatrices();
+
+        started = true;
+        handler.postDelayed(runnable, 1000);
+
+
+
+    }
+    private boolean started = false;
+    private Handler handler = new Handler();
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run()
+        {
+            drawView.updateView();
+
+            //see if the user is at a node
+            //Log.d("user pos", ""+(float) Map.user.getX()+", "+(float) Map.user.getY());
+            for(int i = 0; i < Map.nodes.size(); i++)
+            {
+                if(Map.nodes.get(i).getRect().contains((float) Map.user.getX(), (float) Map.user.getY()))
+                {
+                    Directions.lastNode = Map.nodes.get(i);
+                    break;
+                }
+            }
+
+            ArrayList<Node> path = Directions.getPath(Directions.getClosestNode(Map.user.getX(), Map.user.getY()),
+                    Directions.getClosestNode(Map.item.getXPosition(), Map.item.getYPosition()));
+            if(path.size()>1)
+            {
+                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
+                Log.d("direction", ""+Directions.pathToString(path));
+                TTSHandler.speak(Directions.pathToString(path));
+            }
+
+            if(started)
+            {
+                start();
+            }
+        }
+    };
+
+    public void stop() {
+        started = false;
+        handler.removeCallbacks(runnable);
+    }
+
+    public void start() {
+        started = true;
+        handler.postDelayed(runnable, REPEAT_DELAY);
     }
 
     @Override

@@ -27,7 +27,9 @@ public class DrawView extends View
     public static final int ITEM_RADIUS = 25;
 
     public static final int NODE_COLOR = Color.RED;
+    public static final int PATH_NODE_COLOR = Color.GREEN;
     public static final int NODE_RADIUS = 50;
+    public static final float EDGE_WIDTH = 10.0f;
 
     public static double PIXELS_PER_METER;
 
@@ -121,7 +123,7 @@ public class DrawView extends View
         {
             userScreenPosition = getScreenCoords(Map.user.getX(), Map.user.getY());
             canvas.drawCircle(userScreenPosition.x, userScreenPosition.y, USER_RADIUS, paint);
-            Log.d("user pos", ""+userScreenPosition);
+            //Log.d("user pos", ""+userScreenPosition);
         }
 
         //draw the item if it has been defined
@@ -130,15 +132,42 @@ public class DrawView extends View
         {
             itemScreenPosition = getScreenCoords(Map.item.getXPosition(), Map.item.getYPosition());
             canvas.drawCircle(itemScreenPosition.x, itemScreenPosition.y, ITEM_RADIUS, paint);
-            Log.d("item pos", ""+itemScreenPosition);
+            //Log.d("item pos", ""+itemScreenPosition);
         }
 
-        paint.setColor(NODE_COLOR);
+        //draw the edges
+        paint.setStrokeWidth(EDGE_WIDTH);
+        for(int i = 0; i < Map.edges.size(); i++)
+        {
+            if(Map.edges.get(i).getPathEdge()) { paint.setColor(PATH_NODE_COLOR); }
+            else { paint.setColor(NODE_COLOR); }
+            Point from = getScreenCoords(Map.edges.get(i).getFrom().getXPosition(), Map.edges.get(i).getFrom().getYPosition());
+            Point to = getScreenCoords(Map.edges.get(i).getTo().getXPosition(), Map.edges.get(i).getTo().getYPosition());
+
+            canvas.drawLine(from.x, from.y, to.x, to.y, paint);
+        }
+
+        paint.setColor(Color.BLACK);
+        paint.setAlpha(50);
+        //draw the nodes rects
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            Point nodeTopLeft = getScreenCoords(Map.nodes.get(i).getRect().left, Map.nodes.get(i).getRect().top);
+            Point nodeBottomRight = getScreenCoords(Map.nodes.get(i).getRect().right, Map.nodes.get(i).getRect().bottom);
+
+            Rect nodeOnScreen = new Rect(nodeTopLeft.x, nodeTopLeft.y, nodeBottomRight.x, nodeBottomRight.y);
+            canvas.drawRect(nodeOnScreen, paint);
+        }
+
+        paint.setAlpha(255);
         //draw the nodes
         for(int i = 0; i < Map.nodes.size(); i++) {
-            itemScreenPosition = getScreenCoords(Map.nodes.get(i).getXPosition(), Map.nodes.get(i).getYPosition());
+            Node node = Map.nodes.get(i);
+            if(node.getPathNode()) { paint.setColor(PATH_NODE_COLOR); }
+            else { paint.setColor(NODE_COLOR); }
+            itemScreenPosition = getScreenCoords(node.getXPosition(), node.getYPosition());
             canvas.drawCircle(itemScreenPosition.x, itemScreenPosition.y, NODE_RADIUS, paint);
-            Log.d("item pos", "" + itemScreenPosition);
+            //Log.d("node pos", "" + itemScreenPosition);
         }
 
     }
@@ -148,12 +177,6 @@ public class DrawView extends View
         int newX = (int) Math.round((worldY/Map.ROOM_HEIGHT)*(displaySize.x));
         int newY = (int) Math.round((worldX/Map.ROOM_WIDTH)*(displaySize.y));
         return new Point(newX, newY);
-
-    }
-    //adds a box to the list
-    public void addBox(Rect box)
-    {
-        drawnBoxes.add(box);
     }
 
     @Override
