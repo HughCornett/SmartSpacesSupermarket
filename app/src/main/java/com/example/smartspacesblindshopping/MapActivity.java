@@ -55,7 +55,7 @@ public class MapActivity extends MyActivity {
         drawView.updateView();
         Map.init();
 
-        Map.addBlockage(7, 12);
+        //Map.addBlockage(7, 12);
 
 
         Directions.computeMatrices();
