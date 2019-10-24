@@ -71,7 +71,7 @@ public class ReadActivity extends MyActivity
 
         fileList.clear();
 
-        ReadWriteCSV.flush(this, "paths.csv");
+        ReadWriteCSV.flush(this, PATH);
 
         arrayAdapter.notifyDataSetChanged();
 
@@ -125,7 +125,7 @@ public class ReadActivity extends MyActivity
     private void readPaths()
     {
         fileList.clear();
-        fileList.addAll(ReadWriteCSV.readCSV(this, "paths.csv"));
+        fileList.addAll(ReadWriteCSV.readCSV(this, PATH));
 
     }
 

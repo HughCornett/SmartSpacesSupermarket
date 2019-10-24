@@ -26,10 +26,10 @@ public class MyActivity extends Activity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_READ = 4;
 
-    public static final String MAC = "3C:71:BF:59:2D:52";
+    public static String MAC = "3C:71:BF:59:2D:52";
     private final String MAC1 = "6C:00:6B:30:EE:1A";
 
-    public static final String NAME = "Wearable";
+    public static String NAME = "Wearable";
     private final String NAME1 = "Galaxy A40";
 
     public final String PATH = "paths.csv";
@@ -40,6 +40,8 @@ public class MyActivity extends Activity {
     protected BluetoothService bluetoothService;
     protected Intent intent;
     protected boolean bound;
+
+    public static boolean isBluetoothOn = false;
     protected StringBuilder sb = new StringBuilder();
 
     protected TextToSpeechHandler TTSHandler ;
@@ -53,6 +55,7 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         TTSHandler = new TextToSpeechHandler(getApplicationContext());
+
         intent = new Intent(this, BluetoothService.class);
         intent.putExtra(BluetoothService.BT_NAME, NAME);
         intent.putExtra(BluetoothService.BT_ADDRESS, MAC);

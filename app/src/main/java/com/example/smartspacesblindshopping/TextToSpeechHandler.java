@@ -23,7 +23,7 @@ public class TextToSpeechHandler {
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS){
                     int result = textToSpeech.setLanguage(Locale.ENGLISH);
-                    
+
 
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
                         Log.e("TTS", "Language not supported");

@@ -51,6 +51,18 @@ public class MainActivity extends MyActivity {
         startActivity(intent);
     }
 
+    public void localize(View view)
+    {
+        Intent intent =  new Intent (this, LocalizationActivity.class);
+        startActivity(intent);
+    }
+
+    public void connect(View view)
+    {
+        Intent intent =  new Intent (this, ConnectingActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     protected void onDestroy() {

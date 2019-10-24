@@ -28,7 +28,7 @@ public class MapActivity extends MyActivity {
         setContentView(R.layout.activity_map);
 
         //initialise the drawView
-        drawView = new DrawView(this);
+        drawView = new DrawView(this,getWindowManager().getDefaultDisplay());
         drawView.setBackgroundColor(Color.WHITE);
         setContentView(drawView);
 
