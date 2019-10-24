@@ -34,8 +34,7 @@ public class ShoppingActivity extends MyActivity {
 
     }
 
-    public void readLists(View view)
-    {
+    public void readLists(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
         startActivityForResult(intent, 10);
     }
@@ -43,8 +42,7 @@ public class ShoppingActivity extends MyActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 10)
-        {
+        if (requestCode == 10) {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST)));
                 currentItemText.setText(shoppingList.get(0));
@@ -67,10 +65,8 @@ public class ShoppingActivity extends MyActivity {
     }
 
 
-
     @Override
-    public void switchCallback(final String[] menu)
-    {
+    public void switchCallback(final String[] menu) {
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
             boolean first = true;
@@ -93,56 +89,43 @@ public class ShoppingActivity extends MyActivity {
                             Log.d("debug", sbprint);
 
 
-                            switch (sbprint){
+                            switch (sbprint) {
                                 case "Left":
-                                    index=(index-1)%menu.length;
-                                    if(index<0) index = menu.length + index;
+                                    index = (index - 1) % menu.length;
+                                    if (index < 0) index = menu.length + index;
                                     TTSHandler.speak(menu[index]);
 
                                     break;
                                 case "Right":
-                                    index=(index+1)%menu.length;
+                                    index = (index + 1) % menu.length;
                                     TTSHandler.speak(menu[index]);
                                     break;
 
                                 case "Acc":
                                     chooseOption(index);
+                                    //rout user from here?
                                     break;
 
                                 default:
-                                    //At this point we have hopefully successfully routed the user to the next item on their shopping list
-                                    //if they scan the correct item it will alert them and cycle to the next item on the list
+                                    //or here?
                                     Item i = firebase.getItemByNFCTag(sbprint);
-                                    Log.d("Default debug", "item by nfc tag is " + i.getProductName());
-                                    if(i != null)
-                                        Toast.makeText(getApplicationContext(), "Scanned: " + firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
-
-                                        if((i.getBrandName() + " " + i.getProductName()).equals(currentItemText.getText())){
-                                            TTSHandler.speak("That item is on your list");
-                                            //Log.d("Default debug", "currentItemText is " + currentItemText.getText())
-                                            Toast.makeText(getApplicationContext(), "Item is on shopping list" , Toast.LENGTH_SHORT).show();
-                                            shoppingList.remove(currentItemText.getText());
-
-                                            //works - no touchy
-                                            if(!shoppingList.isEmpty()){
-                                                currentItemText.setText(shoppingList.get(0));
-                                                //Log.d("Default debug", "new currentItemText is " + currentItemText.getText());
-                                                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-                                            }else{
-                                                TTSHandler.speak("Your shopping list is empty");
-                                            }
-                                        }else{
-                                            TTSHandler.speak("That item is not on your shopping list - ");
+                                    if (matchItem(i)) {
+                                        if (!shoppingList.isEmpty()) {
+                                            currentItemText.setText(shoppingList.get(0));
+                                            TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
+                                        } else {
+                                            TTSHandler.speak("Your shopping list is empty");
                                         }
+                                    }
                                     break;
 
                             }
-                            Log.d("debug", ""+menu[index]);
+                            Log.d("debug", "" + menu[index]);
                         }
 
                         return true;
                     case MyActivity.MESSAGE_STATE_CHANGE:
-                        Log.d("debug", "state:"+message.arg1);
+                        Log.d("debug", "state:" + message.arg1);
                         return true;
                     case MyActivity.MESSAGE_TOAST:
                         Log.d("debug", "message_toast");
@@ -150,7 +133,6 @@ public class ShoppingActivity extends MyActivity {
                         return true;
                     case MyActivity.MESSAGE_WRITE:
                         Log.d("debug", "write");
-
                         return true;
 
                     default:
@@ -158,5 +140,19 @@ public class ShoppingActivity extends MyActivity {
                 }
             }
         });
+    }
+
+    public boolean matchItem(Item i) {
+        if (i != null) {
+            if ((i.getBrandName() + " " + i.getProductName()).equals(currentItemText.getText())) {
+                TTSHandler.speak("That item is on your list");
+                shoppingList.remove(currentItemText.getText());
+                return true;
+            } else {
+                TTSHandler.speak("That item is not correct - the next item on your shopping list is " + currentItemText.getText());
+                return false;
+            }
+        }
+        return false;
     }
 }

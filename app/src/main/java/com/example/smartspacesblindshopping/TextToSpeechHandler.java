@@ -22,8 +22,8 @@ public class TextToSpeechHandler {
             @Override
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS){
-                    int result = textToSpeech.setLanguage(Locale.CANADA_FRENCH);
-                    Voice voice = new Voice("Bruh", Locale.ENGLISH, Voice.QUALITY_VERY_HIGH, Voice.LATENCY_NORMAL, true, null);
+                    int result = textToSpeech.setLanguage(Locale.CANADA);
+                    Voice voice = new Voice("Bruh", Locale.CANADA, Voice.QUALITY_VERY_HIGH, Voice.LATENCY_HIGH, true, null);
                     textToSpeech.setVoice(voice);
                     
 

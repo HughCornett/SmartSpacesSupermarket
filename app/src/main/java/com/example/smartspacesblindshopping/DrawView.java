@@ -52,7 +52,7 @@ public class DrawView extends View
     Paint paint = new Paint();
     public DrawView(Context context, Display display) {
         super(context);
-        mapImage = ContextCompat.getDrawable(context, R.drawable.map);
+        mapImage = ContextCompat.getDrawable(context, R.drawable.background);
 
         this.display = display;
         display.getSize(displaySize);

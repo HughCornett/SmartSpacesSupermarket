@@ -51,8 +51,6 @@ public class ListActivity extends MyActivity {
     ArrayList<String> itemList = new ArrayList<>();
     ArrayList<String> chosenItemStrings = new ArrayList<>();
 
-
-
     PopupWindow mPopupWindow;
     ListView listView;
 
@@ -68,8 +66,9 @@ public class ListActivity extends MyActivity {
         listView.setAdapter(arrayAdapter);
 
 
-
     }
+
+
 
     @Override
     protected void onResume() {
@@ -82,15 +81,12 @@ public class ListActivity extends MyActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
 
-
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, 10);
         } else {
             Toast.makeText(this, "give permissions to the app", Toast.LENGTH_SHORT).show();
 
         }
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -123,11 +119,12 @@ public class ListActivity extends MyActivity {
                     arrayAdapter.notifyDataSetChanged();
                 }
 
-                default: break;
+            default:
+                break;
         }
     }
 
-    protected void matchResults(ArrayList<String> result){
+    protected void matchResults(ArrayList<String> result) {
         boolean brandMatch = false;
         boolean categoryMatch = false;
         boolean exactMatch = false;
@@ -137,82 +134,75 @@ public class ListActivity extends MyActivity {
         String match = "";
         Log.d("result", result.get(0));
         for (Item i : MainActivity.getDbItems()) {
-            Log.d("debug",i.getBrandName()+" "+i.getCategoryName()+" "+i.getProductName());
-            if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
-                exactMatch = true;
-                match = i.getBrandName() + " " + i.getProductName();
-            }
+            if(i != null){
 
-            //Does not match "NESCAFÉ" with "NESCAFÉ" ??
-            else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase()) ||
-                    result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
-                brandMatch = true;
-                tempBrand = i.getBrandName();
-            }
-
-            else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase()) ||
-                    result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
-                categoryMatch = true;
-                tempCat = i.getCategoryName();
+                if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
+                    exactMatch = true;
+                    match = i.getBrandName() + " " + i.getProductName();
+                } else if (result.get(0).toUpperCase().matches(i.getBrandName().toUpperCase()) ||
+                        result.get(0).toUpperCase().matches("(.*)" + i.getBrandName().toUpperCase() + "(.*)")) {
+                    brandMatch = true;
+                    tempBrand = i.getBrandName();
+                } else if (result.get(0).toUpperCase().matches(i.getCategoryName().toUpperCase()) ||
+                        result.get(0).toUpperCase().matches("(.*)" + i.getCategoryName().toUpperCase() + "(.*)")) {
+                    categoryMatch = true;
+                    tempCat = i.getCategoryName();
+                }
+            }else{
+                TTSHandler.speak("item is null");
             }
         }
-
-        Log.d("booleans", "exact match is " + exactMatch);
-        Log.d("booleans", "cat match is " + categoryMatch);
-        Log.d("booleans", "brand match is " + brandMatch);
-
-
-        if (exactMatch){
+        if (exactMatch) {
             itemList.add(match);
-        }
-        else if (categoryMatch) {
+
+        } else if (categoryMatch) {
             promptForCategory(tempCat);
-            //Pop up window here
 
-
-        }else if(brandMatch) {
+        } else if (brandMatch) {
             promptForBrand(tempBrand);
-            //Pop up window here
 
-        }else{
+        } else {
             TTSHandler.speak("I'm sorry i did not find any matches for that item");
         }
     }
 
     protected void promptForCategory(String categoryName) {
-        Log.d("prompt for category", "in prompt for category");
         ArrayList<Item> items = firebase.getItemsByCategory(categoryName);
         StrBuilder builder = new StrBuilder();
-
         builder.append("Did you want ");
         for (Item i : items) {
-            builder.append(i.getBrandName() + "'s" + i.getProductName() + " or ");
-
+            int str = i.getProductName().indexOf(' ');
+            String firstWord = i.getProductName().substring(0, str);
+            if(i.getBrandName().equals(firstWord)){
+                builder.append(i.getProductName() + " or ");
+            }else{
+                builder.append(i.getBrandName() + "'s" + i.getProductName() + " or ");
+            }
         }
-
         builder.delete(builder.length() - 3, builder.length() - 1);
         TTSHandler.speak(builder.build());
-
         createPopUp(items);
     }
 
     protected void promptForBrand(String brandName) {
-        Log.d("prompt for brand", "in prompt for brand" + brandName);
         ArrayList<Item> items = firebase.getItemsByBrand(brandName);
         StrBuilder builder = new StrBuilder();
-
-        Log.d("prompt for brand", "matches found in DB is " + items.size());
-        builder.append("Did you want " + brandName + "'s");
+        builder.append("Did you want ");
 
         for (Item i : items) {
-            builder.append(i.getProductName() + " or ");
+            int str = i.getProductName().indexOf(' ');
+            String firstWord = i.getProductName().substring(0, str);
+            if(i.getBrandName().equals(firstWord)){
+                builder.append(i.getProductName() + " or ");
+            }else{
+                builder.append(i.getBrandName() + "'s" + i.getProductName() + " or ");
+            }
         }
 
         builder.delete(builder.length() - 3, builder.length() - 1);
         TTSHandler.speak(builder.build());
         createPopUp(items);
     }
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -220,7 +210,7 @@ public class ListActivity extends MyActivity {
     protected void chooseOption(int index) {
         super.chooseOption(index);
 
-        if(state==0) {
+        if (state == 0) {
             switch (index) {
                 case 0:
                     ListActivity.this.addToList(findViewById(R.id.addToList));
@@ -236,24 +226,20 @@ public class ListActivity extends MyActivity {
                 default:
                     break;
             }
-        }
-        else
-        {
+        } else {
 
         }
     }
 
-    private void createPopUp(final ArrayList<Item> chosenItemList)
-    {
+    private void createPopUp(final ArrayList<Item> chosenItemList) {
         chosenItemStrings = new ArrayList<>();
-        for(Item i: chosenItemList)
-        {
+        for (Item i : chosenItemList) {
             chosenItemStrings.add(i.getBrandName() + " " + i.getProductName());
         }
 
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        View customView = inflater.inflate(R.layout.popup_list,null);
+        View customView = inflater.inflate(R.layout.popup_list, null);
 
         mPopupWindow = new PopupWindow(
                 customView,
@@ -261,7 +247,7 @@ public class ListActivity extends MyActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
 
-        if(Build.VERSION.SDK_INT>=21){
+        if (Build.VERSION.SDK_INT >= 21) {
             mPopupWindow.setElevation(5.0f);
         }
 
@@ -277,7 +263,7 @@ public class ListActivity extends MyActivity {
                 popUpOnClick(i);
             }
         });
-        mPopupWindow.showAtLocation(findViewById(R.id.ListLayout), Gravity.CENTER,0,0);
+        mPopupWindow.showAtLocation(findViewById(R.id.ListLayout), Gravity.CENTER, 0, 0);
 
 
         state = 1;
@@ -292,8 +278,7 @@ public class ListActivity extends MyActivity {
         switchCallback(array);
     }
 
-    private void popUpOnClick(int i)
-    {
+    private void popUpOnClick(int i) {
         ListActivity.this.itemList.add(chosenItemStrings.get(i));
         state = 0;
         switchCallback(new String[]{"add item to the list", "save the list", "go back"});

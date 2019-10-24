@@ -17,6 +17,7 @@ public class MainActivity extends MyActivity {
         startService(intent);
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -80,10 +81,10 @@ public class MainActivity extends MyActivity {
             case 1:
                 MainActivity.this.readList(findViewById(R.id.readButton));
                 break;
-            case 3:
+            case 2:
                 MainActivity.this.goToMap(findViewById(R.id.mapButton));
                 break;
-            case 4:
+            case 3:
                 MainActivity.this.doShopping(findViewById(R.id.shoppingButton));
                 break;
             default:

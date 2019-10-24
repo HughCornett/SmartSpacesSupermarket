@@ -92,7 +92,7 @@ public class MapActivity extends MyActivity {
             {
                 Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
                 Log.d("direction", ""+Directions.pathToString(path));
-                TTSHandler.speak(Directions.pathToString(path));
+                //TTSHandler.speak(Directions.pathToString(path));
             }
 
             if(started)

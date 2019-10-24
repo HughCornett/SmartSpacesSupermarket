@@ -1,8 +1,13 @@
 package com.example.smartspacesblindshopping;
 
 import android.graphics.Point;
+import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Item {
     private String id;
@@ -20,12 +25,21 @@ public class Item {
     private double xPosition;
     private double yPosition;
 
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     public Item() {
         //public no-arg constructor needed for firebase DB
     }
 
     //Custom constructor to serialise DB data into objects - Josh
-    public Item(String Name, DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row) {
+    public Item(String Name, DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row, int section, int level) {
         this.productName = Name;
         this.productBrand = Brand;
         this.productCategory = Category;
@@ -33,8 +47,10 @@ public class Item {
         this.aisle = aisle;
         this.shelf = shelf;
         this.row = row;
+        this.section = section;
         this.brandName = "";
         this.categoryName = "";
+        this.level = level;
     }
 
     public Item(String id, String name, int shelf, int level, int section)
@@ -55,6 +71,7 @@ public class Item {
 
 
     //GETTERS & SETTERS
+
 
     public void setId(String id) {
         this.id = id;
@@ -194,4 +211,116 @@ class Brand {
     public void setBrand(String b) {
         this.brand = b;
     }
+}
+
+class Store {
+
+    public ArrayList<StoreShelf> shelves = new ArrayList<>();
+
+
+    public Store(ArrayList<Item> items) {
+        //Log.d("Creating store", "Creating new store");
+        //Log.d("items to add", "store items size is "+ items.size());
+        int aisle = 0;
+        for (int i = 1; i <= 3; i++) {
+
+            ArrayList<Item> shelfItems = new ArrayList<Item>();
+            for (Item item : items) {
+                aisle = item.getAisle();
+                if (item.getShelf() == i) {
+                    //Log.d("Shelf List", "Adding item " + item.getProductName() + " with shelf number " + item.getShelf() +" to shelf " + i );
+                    if (!shelfItems.contains(item)) {
+                        shelfItems.add(item);
+                    }
+                }
+
+            }
+            if (!shelfItems.isEmpty()) {
+                StoreShelf shelf = new StoreShelf(i, aisle, shelfItems);
+                shelves.add(shelf);
+            }
+        }
+        printStore();
+    }
+
+    public void printStore() {
+        for (StoreShelf s : shelves) {
+            s.printShelf();
+        }
+        //testProximity();
+    }
+
+
+}
+
+class StoreShelf {
+
+    public List<ArrayList<Item>> itemsOnShelf = new ArrayList<ArrayList<Item>>(2);
+    public int shelfNo;
+
+    public int aisle;
+
+    public StoreShelf(int shelfNo, int aisle, ArrayList<Item> itemsToAdd) {
+        initArray();
+        fillShelf(itemsToAdd);
+        this.shelfNo = shelfNo;
+        this.aisle = aisle;
+    }
+
+    public List<ArrayList<Item>> getItems() {
+        return itemsOnShelf;
+    }
+
+    public void setItems(ArrayList<ArrayList<Item>> items) {
+        this.itemsOnShelf = items;
+    }
+
+    public void initArray() {
+        for (int i = 0; i < itemsOnShelf.size(); i++) {
+            itemsOnShelf.add(new ArrayList<Item>());
+        }
+    }
+
+    public void printShelf() {
+        Log.d("SHELF " + shelfNo, "PRINTING SHELF " + shelfNo);
+
+        for (int i = 0; i < itemsOnShelf.size(); i++) {
+            int inner = itemsOnShelf.get(i).size();
+            Log.d("level " + i, "printing level " + i);
+
+            for (int j = 0; j < inner; j++) {
+                Log.d("section " + j, "item is " + itemsOnShelf.get(i).get(j).getProductName());
+
+            }
+        }
+    }
+
+    public void fillShelf(ArrayList<Item> itemsToAdd) {
+
+        for (int i = 0; i < 2; i++) {
+            //outer level
+            ArrayList<Item> innerList = new ArrayList<Item>();
+            for (int j = 0; j < 3; j++) {
+                for (Item toAdd : itemsToAdd) {
+                    if (toAdd.getLevel() == i && toAdd.getSection() == j) {
+                        // Log.d("Inner List", "Adding item " + toAdd.getProductName() +" at level " + toAdd.getLevel() + " and section " + toAdd.getSection() );
+                        innerList.add(toAdd);
+                    }
+                }
+            }
+            itemsOnShelf.add(innerList);
+        }
+    }
+
+
+
+    public int getAisle() {
+        return aisle;
+    }
+
+    public void setAisle(int aisle) {
+        this.aisle = aisle;
+    }
+
+
 }
