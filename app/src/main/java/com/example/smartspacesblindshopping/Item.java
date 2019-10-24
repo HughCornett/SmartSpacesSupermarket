@@ -17,16 +17,11 @@ public class Item {
     private int shelf;
     private int section;
     private int level;
-    private Point position;
+    private double xPosition;
+    private double yPosition;
 
     public Item() {
         //public no-arg constructor needed for firebase DB
-    }
-
-    //for testing, before shelf/section/aisle layout is sorted out
-    public Item(Point position, int aisle) {
-        this.position = position;
-        this.aisle = aisle;
     }
 
     //Custom constructor to serialise DB data into objects - Josh
@@ -42,12 +37,20 @@ public class Item {
         this.categoryName = "";
     }
 
-    public Item(String id, String name, int aisle, int shelf, int section) {
+    public Item(String id, String name, int shelf, int level, int section)
+    {
         this.id = id;
         this.productName = name;
         this.shelf = shelf;
         this.level = level;
         this.section = section;
+
+        //the x position is the middle of the shelf's rectangle
+        Shelf thisShelf = Map.shelves.get(shelf);
+        this.xPosition = (thisShelf.getRect().left + ((thisShelf.getRect().right - thisShelf.getRect().left)/2));
+        //the y position is the position of the section on the shelf
+        double sectionWidth = (thisShelf.getRect().bottom - thisShelf.getRect().top) / thisShelf.getNumberOfSections();
+        this.yPosition = thisShelf.getRect().top + (section+0.5)*sectionWidth;
     }
 
 
@@ -85,16 +88,23 @@ public class Item {
         this.section = section;
     }
 
-    public void setPosition(Point position) {
-        this.position = position;
+    public void setXPosition(double xPosition) {
+        this.xPosition = xPosition;
+    }
+    public void setYPosition(double yPosition) {
+        this.yPosition = yPosition;
     }
 
     public int getAisle() {
         return this.aisle;
     }
-
-    public Point getPosition() {
-        return this.position;
+    public double getXPosition()
+    {
+        return this.xPosition;
+    }
+    public double getYPosition()
+    {
+        return this.yPosition;
     }
 
     public String getId() {

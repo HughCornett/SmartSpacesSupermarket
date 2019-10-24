@@ -248,7 +248,7 @@ public class ListActivity extends MyActivity {
         chosenItemStrings = new ArrayList<>();
         for(Item i: chosenItemList)
         {
-            chosenItemStrings.add(i.getProductName());
+            chosenItemStrings.add(i.getBrandName() + " " + i.getProductName());
         }
 
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);

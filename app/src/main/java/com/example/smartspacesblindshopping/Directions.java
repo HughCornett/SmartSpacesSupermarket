@@ -2,149 +2,206 @@ package com.example.smartspacesblindshopping;
 
 import android.util.Log;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class Directions {
 
     public static final int MARGIN_DISTANCE = 2;
 
-    public static String getNextDirection(User user, Item destination)
+    //array of distances from every node to every other node
+    public static double[][] distanceMatrix;
+    //array of nodes that should be taken to get from one to another
+    //(e.g  nextMatrix[0][2] contains the neighbour of node 0 that should be taken to get to node 2
+    public static Node[][] nextMatrix;
+
+    //the last node the user was at
+    public static Node lastNode = null;
+
+    public static String pathToString(ArrayList<Node> path)
     {
-        String direction =  "";
-        String turn = "";
+        String turn = "[Error]";
+        //the direction the user must face to walk to the next node
+        int turnToDirection = path.get(0).getEdgeTo(path.get(1)).getDirection();
 
-        //get aisle information about origin
-        int originAisle = -1;
-        for(int i = 0; i < Map.aisles.size(); i++)
+        //if the user is facing the right way
+        if(turnToDirection == Map.user.getFacing()) { turn = "Walk forward"; }
+
+        //if the user is facing left of the direction they should be
+        else if(turnToDirection == (Map.user.getFacing() + 1) % 4) { turn = "Turn right and walk"; }
+
+        //if the user is facing the opposite way they should be
+        else if(turnToDirection == (Map.user.getFacing() + 2) % 4) { turn = "Turn around and walk"; }
+
+        //if the user is facing right of the way they should be
+        else if(turnToDirection == (Map.user.getFacing() + 3) % 4) { turn = "Turn left and walk"; }
+
+        //else something went wrong
+        else { Log.e("Turn error", "Logic to determine turn direction failed (Directions.pathToString())"); }
+
+        int nextTurn = 0;
+        while(path.size() > nextTurn + 1 &&
+                path.get(nextTurn).getEdgeTo(path.get(nextTurn+1)).getDirection() == turnToDirection)
         {
-            if(Map.aisles.get(i).contains((int) Math.round(user.getX()), (int) Math.round(user.getY())))
-            {
-                originAisle = i;
-            }
+            nextTurn++;
         }
-        //get row information about origin
-        int originRow = -1;
-        for(int i = 0; i < Map.rows.size(); i++)
+        String destination = " forward";
+        if(path.size() > nextTurn + 1)
         {
-            if(Map.rows.get(i).contains((int) Math.round(user.getX()), (int) Math.round(user.getY())))
+            int nextDirection = path.get(nextTurn).getEdgeTo(path.get(nextTurn+1)).getDirection();
+            //if the next direction is horizontal (therefore if it is a row)
+            if(nextDirection  == 1 || nextDirection == 3)
             {
-                originRow = i;
+                destination = " to row "+path.get(nextTurn).getRow();
             }
-        }
-        if(originAisle == -1 && originRow == -1)
-        {
-            Log.e("location error","origin not in aisle or row");
-        }
-
-        //if the destination is in the same aisle as the user
-        if(destination.getAisle() == originAisle)
-        {
-            //check if the user is within the margin distance of the item
-            if(user.getY() < destination.getPosition().y+MARGIN_DISTANCE
-            && user.getY() > destination.getPosition().y-MARGIN_DISTANCE)
-            {
-                //if the item is to the left of the user (map left not user's left)
-                if(destination.getPosition().x < user.getX())
-                {
-                    if(user.getFacing() == 0) { turn = "on your left"; }
-                    else if(user.getFacing() == 1) { turn = "behind you"; }
-                    else if(user.getFacing() == 2) { turn = "on your right"; }
-                    else if(user.getFacing() == 3) { turn = "straight ahead"; }
-                }
-                //if the item is to the right of the user (map right not user's right)
-                if(destination.getPosition().x > user.getX())
-                {
-                    if(user.getFacing() == 0) { turn = "on your right"; }
-                    else if(user.getFacing() == 1) { turn = "straight ahead"; }
-                    else if(user.getFacing() == 2) { turn = "on your left"; }
-                    else if(user.getFacing() == 3) { turn = "behind you"; }
-                }
-                direction = "The item is "+turn;
-                Log.d("direction", ""+direction);
-            }
-
-            else if(user.getY() < destination.getPosition().y)
-            {
-                if(user.getFacing() == 1) { turn = "Turn left and "; }
-                else if(user.getFacing() == 2) { turn = "Turn around and "; }
-                else if(user.getFacing() == 3) { turn = "Turn right and "; }
-            }
-            else if(user.getY() > destination.getPosition().y)
-            {
-                if(user.getFacing() == 0) { turn = "Turn around and "; }
-                else if(user.getFacing() == 1) { turn = "Turn right and "; }
-                else if(user.getFacing() == 3) { turn = "Turn left and "; }
-            }
-            direction = turn+"walk forwards";
-            Log.d("direction", ""+direction);
-
-        }
-        //if the user is already in a row
-        else if(originRow != -1)
-        {
-            //get the turn towards the correct aisle
-
-            //if user is left of the destination aisle
-            if(user.getX() < Map.aisles.get(destination.getAisle()).left)
-            {
-                if(user.getFacing() == 0) { turn = "Turn right and "; }
-                else if(user.getFacing() == 2) { turn = "Turn left and "; }
-                else if(user.getFacing() == 3) { turn = "Turn around and "; }
-            }
-            //if user is right of the destination aisle
-            else if(user.getX() > Map.aisles.get(destination.getAisle()).right)
-            {
-                if(user.getFacing() == 0) { turn = "Turn left and "; }
-                else if (user.getFacing() == 1) { turn = "Turn around and "; }
-                else if(user.getFacing() == 2) { turn = "Turn right and "; }
-            }
-            //this should never be called
+            //if it is vertical (therefore if it is an aisle)
             else
             {
-                //something is wrong, user was found to not be in the destination aisle,
-                // and is not left or right of it either
-                Log.e("location error", "user not in aisle, left of it or right of it");
+                destination = " to aisle "+path.get(nextTurn).getAisle();
             }
-            direction = turn+"walk to aisle "+destination.getAisle();
-            Log.d("direction", ""+direction);
         }
-        //if the user is in an aisle but not the right one
-        else
-        {
-            //direct them to the correct row
-            //the correct row is the one that is closest to origin or destination
-            //this method assumes a supermarket with only 2 rows (top and bottom)
-            //must be changed if it is to work optimally with 3+ rows
-            int bestRow = -1;
-            double bestRowDistance = Integer.MAX_VALUE;
+        return turn+destination;
+    }
 
-            //get the best row to go to
-            for(int i = 0; i < Map.rows.size(); i++)
+    //used Floyd Warshall algorithm to compute the distance between all pairs of nodes
+    //this is used to find optimal order to get items as well as get paths to items
+    public static void computeMatrices()
+    {
+        //initialise the distanceMatrix to max double values
+        //(i.e. assuming very large distances initially)
+        distanceMatrix = new double[Map.nodes.size()][Map.nodes.size()];
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            for(int j = 0; j < Map.nodes.size(); j++)
             {
-                double thisRowOriginDistance = Math.min(Math.abs(user.getY() - Map.rows.get(i).top), Math.abs(user.getY() - Map.rows.get(i).bottom));
-                int thisRowItemDistance = Math.min(Math.abs(destination.getPosition().y - Map.rows.get(i).top), Math.abs(destination.getPosition().y - Map.rows.get(i).bottom));
-                double thisRowMinDistance = Math.min(thisRowItemDistance, thisRowOriginDistance);
-                if(thisRowMinDistance < bestRowDistance)
+                distanceMatrix[i][j] = Double.MAX_VALUE;
+            }
+        }
+        //initialise nextMatrix to null
+        //(i.e. assuming no path between nodes initially)
+        nextMatrix = new Node[Map.nodes.size()][Map.nodes.size()];
+
+        //get distances between neighbours and change next accordingly
+        for(int i = 0; i < Map.edges.size(); i++)
+        {
+            int nodeFrom = Map.nodes.indexOf(Map.edges.get(i).getFrom());
+            int nodeTo = Map.nodes.indexOf(Map.edges.get(i).getTo());
+            distanceMatrix[nodeFrom][nodeTo] = Map.edges.get(i).getWeight();
+            nextMatrix[nodeFrom][nodeTo] = Map.edges.get(i).getTo();
+        }
+
+        //get distances from each node to itself and set the next node to itself
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            distanceMatrix[i][i] = 0;
+            nextMatrix[i][i] = Map.nodes.get(i);
+        }
+
+        //k = intermediate node, i = origin node, j = destination node
+        //for each combination of origins and destination through each k
+        for(int k = 0; k < Map.nodes.size(); k++)
+        {
+            for(int i = 0; i < Map.nodes.size(); i++)
+            {
+                for(int j = 0; j < Map.nodes.size(); j++)
                 {
-                    bestRow = i;
-                    bestRowDistance = thisRowMinDistance;
+                    //if this pair of nodes (i, j) can have a shorter distance by going through k,
+                    //set the distance from (i, j) to that distance
+                    if(distanceMatrix[i][j] > distanceMatrix[i][k] + distanceMatrix[k][j])
+                    {
+                        distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
+                        nextMatrix[i][j] = nextMatrix[i][k];
+                    }
                 }
             }
-
-            if(bestRow == 0)
-            {
-                if(user.getFacing() == 0) {turn = "Turn around and ";}
-                else if(user.getFacing() == 1) {turn = "Turn right and ";}
-                else if(user.getFacing() == 3) {turn = "Turn left and ";}
-            }
-            else if(bestRow == 1)
-            {
-                if(user.getFacing() == 1) {turn = "Turn left and ";}
-                else if(user.getFacing() == 2) {turn = "Turn around and ";}
-                else if(user.getFacing() == 3) {turn = "Turn right and ";}
-            }
-            direction = turn+"walk to row "+bestRow;
-            Log.d("direction: ",""+direction);
         }
 
-        return direction;
+        /*print the distance matrix
+        Log.d("distance matrix",""+distanceMatrix);
+        for(int i = 0; i < distanceMatrix.length; i++)
+        {
+            Log.d("row",""+i);
+            for(int j = 0; j < distanceMatrix[i].length; j++)
+            {
+                Log.d("n",""+j+": "+distanceMatrix[i][j]);
+            }
+        }
+
+        //print the next matrix
+        Log.d("next matrix",""+nextMatrix);
+        for(int i = 0; i < nextMatrix.length; i++)
+        {
+            Log.d("row",""+i);
+            for(int j = 0; j < nextMatrix[i].length; j++)
+            {
+                Log.d("n",""+j+": "+Map.nodes.indexOf(nextMatrix[i][j]));
+            }
+        }
+         */
+    }
+
+    //gets an arrayList of nodes that is the shortest path from one node to another
+    public static ArrayList<Node> getPath(Node origin, Node destination)
+    {
+        //initialise path
+        ArrayList<Node> path = new ArrayList<>();
+
+        //get indexes of nodes
+        int originIndex = Map.nodes.indexOf(origin);
+        int destinationIndex = Map.nodes.indexOf(destination);
+        //if there is no route, return blank and log error
+        if(nextMatrix[originIndex][destinationIndex] == null)
+        {
+            Log.e("path not found", "no path found between"+originIndex+", "+destinationIndex);
+            return path;
+        }
+        Node currentNode = origin;
+        path.add(currentNode);
+        currentNode.setPathNode(true);
+        //while not at the destination
+        while(!currentNode.equals(destination))
+        {
+            currentNode = nextMatrix[Map.nodes.indexOf(currentNode)][destinationIndex];
+            path.add(currentNode);
+            currentNode.setPathNode(true);
+            currentNode.getEdgeTo(path.get(path.size()-2)).setPathEdge(true);
+            path.get(path.size()-2).getEdgeTo(currentNode).setPathEdge(true);
+        }
+
+        return path;
+    }
+
+    private static double distance(double x0, double y0, double x1, double y1)
+    {
+        return Math.sqrt(Math.pow(x1-x0,2)+Math.pow(y1-y0,2));
+    }
+
+    /**
+     *
+     * @param x
+     *  the x coordinate of the point we are getting the closest node to
+     * @param y
+     *  the y coordinate of the point we are getting the closest node to
+     * @param aisle
+     *  true if the node must be in an aisle, false if it doesn't matter
+     * @return
+     *  the closest appropriate node to the point
+     */
+    public static Node getClosestNode(double x, double y, boolean aisle)
+    {
+        double minDistance = Double.MAX_VALUE;
+        Node closestNode = null;
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            Node node = Map.nodes.get(i);
+            double thisDistance = distance(x, y, node.getXPosition(), node.getYPosition());
+            if(thisDistance < minDistance && !(aisle && node.getAisle() == -1))
+            {
+                minDistance = thisDistance;
+                closestNode = node;
+            }
+        }
+
+        return closestNode;
     }
 }

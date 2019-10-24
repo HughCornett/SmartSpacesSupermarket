@@ -91,10 +91,17 @@ public class DrawView extends View
     @Override
     public void onDraw(Canvas canvas) {
         //draw the map background
+        imageBounds = canvas.getClipBounds();
 
+        //calculate the bounds of the background image
+
+        displaySize.x = imageBounds.right - imageBounds.left;
+        displaySize.y = imageBounds.bottom - imageBounds.top;
         //MapActivity.display.getSize(displaySize);
         mapImage.setBounds(imageBounds);
         mapImage.draw(canvas);
+
+        PIXELS_PER_METER = displaySize.x/Map.ROOM_HEIGHT;
 
         //define the color, width and transparency
         paint.setColor(RECT_COLOR);

@@ -13,8 +13,7 @@ public class MainActivity extends MyActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Map.init();
-        Directions.getNextDirection(Map.user, Map.item);
+
         startService(intent);
     }
 
@@ -22,13 +21,13 @@ public class MainActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
-        switchCallback(new String[]{"create a list", "read lists"});
+        switchCallback(new String[]{"create a new list", "read shopping lists","Go to the Map", "Do your shopping"});
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void goToList(View view) {
-        TTSHandler.speak("create a list");
+
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
@@ -81,7 +80,12 @@ public class MainActivity extends MyActivity {
             case 1:
                 MainActivity.this.readList(findViewById(R.id.readButton));
                 break;
-
+            case 3:
+                MainActivity.this.goToMap(findViewById(R.id.mapButton));
+                break;
+            case 4:
+                MainActivity.this.doShopping(findViewById(R.id.shoppingButton));
+                break;
             default:
                 break;
         }
