@@ -219,37 +219,44 @@ public class BluetoothService extends Service {
                 e.printStackTrace();
             }
             mmSocket = tmp;
+            if(mmSocket==null)
+                connectionFailed();
         }
 
         @Override
         public void run() {
             setName("ConnectThread");
             mBluetoothAdapter.cancelDiscovery();
-            try {
-                mmSocket.connect();
-            } catch (IOException e) {
+            if(mmSocket!=null) {
                 try {
-                    mmSocket.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+
+                    mmSocket.connect();
+                } catch (IOException e) {
+                    try {
+                        mmSocket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+
+                    }
+                    connectionFailed();
+
+                    return;
 
                 }
-                connectionFailed();
-
-                return;
-
+                synchronized (BluetoothService.this) {
+                    mConnectThread = null;
+                }
+                connected(mmSocket, mmDevice);
             }
-            synchronized (BluetoothService.this) {
-                mConnectThread = null;
-            }
-            connected(mmSocket, mmDevice);
         }
 
         public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) {
-                Log.e("BluetoothService", "close() of connect socket failed", e);
+            if (mmSocket != null){
+                try {
+                    mmSocket.close();
+                } catch (IOException e) {
+                    Log.e("BluetoothService", "close() of connect socket failed", e);
+                }
             }
         }
     }

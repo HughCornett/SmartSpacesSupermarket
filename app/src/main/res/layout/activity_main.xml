@@ -21,10 +21,10 @@
         android:id="@+id/mapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/readButton"
         android:layout_centerHorizontal="true"
         android:onClick="goToMap"
         android:text="Go to map"></Button>
+
 
     <Button
         android:id="@+id/shoppingButton"
@@ -44,6 +44,15 @@
         android:layout_marginTop="0dp"
         android:onClick="readList"
         android:text="Read Lists"></Button>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shoppingButton"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/bluetoothButton"
+        android:text="connect to the device"
+        android:onClick="connect"
+        ></Button>
 
 
 </RelativeLayout>

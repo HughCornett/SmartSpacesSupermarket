@@ -103,7 +103,7 @@ public class ListActivity extends MyActivity {
 
         data.add(fileName);
 
-        ReadWriteCSV.writeToCSV(this, data, "paths.csv");
+        ReadWriteCSV.writeToCSV(this, data, PATH);
 
         ReadWriteCSV.writeToCSV(this, itemList, fileName);
 

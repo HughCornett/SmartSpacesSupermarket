@@ -32,7 +32,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".ReadActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".ShoppingActivity">
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,7 +47,6 @@
         </activity>
         <service android:name=".BluetoothService"
             />
-        <service android:name=".MessengerService"/>
         <activity android:name=".MapActivity"
             android:parentActivityName=".MainActivity">
             <!-- The meta-data tag is required if you support API level 15 and lower -->
@@ -56,6 +55,20 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".ShoppingActivity"
+            android:parentActivityName=".MainActivity">
+            <!-- The meta-data tag is required if you support API level 15 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".LocalizationActivity"
+            android:parentActivityName=".MainActivity">
+            <!-- The meta-data tag is required if you support API level 15 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".ConnectingActivity"
             android:parentActivityName=".MainActivity">
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
