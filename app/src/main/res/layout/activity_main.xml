@@ -32,7 +32,7 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/mapButton"
         android:text="Go to map"
-        android:onClick="goToMap"
+        android:onClick="localize"
         ></Button>
 
     <Button
@@ -44,7 +44,15 @@
         android:text="do shopping"
         android:onClick="doShopping"
         ></Button>
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shoppingButton"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/bluetoothButton"
+        android:text="connect to the device"
+        android:onClick="connect"
+        ></Button>
 
 
 </RelativeLayout>
