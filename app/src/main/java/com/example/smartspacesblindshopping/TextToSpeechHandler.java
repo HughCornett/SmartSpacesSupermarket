@@ -22,8 +22,10 @@ public class TextToSpeechHandler {
             @Override
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS){
-                    int result = textToSpeech.setLanguage(Locale.ENGLISH);
-
+                    int result = textToSpeech.setLanguage(Locale.CANADA);
+                    Voice voice = new Voice("Bruh", Locale.CANADA, Voice.QUALITY_VERY_HIGH, Voice.LATENCY_HIGH, true, null);
+                    textToSpeech.setVoice(voice);
+                    
 
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
                         Log.e("TTS", "Language not supported");

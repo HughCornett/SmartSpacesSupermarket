@@ -15,11 +15,6 @@ public class Map
 
     public static final int SECTIONS_PER_SHELF = 3;
 
-    //this assumes a map size of width 400, height 700,
-    // with aisles being 100 wide and 500 long,
-    // shelves being 50 wide and 500 long
-    // and rows being 100 wide and 700 long
-
     public static ArrayList<RectF> aisles;
     public static ArrayList<RectF> rows;
     public static ArrayList<Shelf> shelves;
@@ -27,7 +22,7 @@ public class Map
     public static ArrayList<Node> nodes;
     public static ArrayList<Edge> edges;
 
-    public static User user = new User(0,0, 3);
+    public static User user = new User(1,4, 0);
     public static Item item;
 
     public static void init()
@@ -65,7 +60,7 @@ public class Map
         shelfRect = new RectF((aisles.get(1).right + (aisles.get(2).left - aisles.get(1).right)/2), rows.get(0).top, aisles.get(2).left, rows.get(1).bottom);
         shelves.add(new Shelf(3, 2, false, SECTIONS_PER_SHELF, 2, shelfRect));
 
-        item = new Item("", "Coffee 150g", 2, 0, 0);
+        item = new Item("", "Coffee 150g", 0, 1, 2);
 
         //initialise direction nodes
         //assumes all shelves are level and the same length

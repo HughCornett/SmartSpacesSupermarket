@@ -31,6 +31,7 @@ public class FirebaseAdapter {
     private CollectionReference productsRef = db.collection("Products");
     private CollectionReference brandsRef = db.collection("Brands");
     private CollectionReference categoriesRef = db.collection("Categories");
+    private CollectionReference fingerprintsRef = db.collection("Fingerprints");
 
     private HashMap<String, Item> productsMap;
     private HashMap<String, Category> categoryMap;
@@ -246,11 +247,13 @@ public class FirebaseAdapter {
 
     }
 
-    /**
-     * Loads all products upon app start up, saves them to products array
-     */
-    public void loadAllProducts() {
-
+    public Item getItemByFullName(String fullname){
+        for(Item i: products){
+            if((i.getBrandName() + i.getProductName()).equals(fullname)){
+                return i;
+            }
+        }
+        return null;
     }
 
     private interface FirestoreCallback{
@@ -335,6 +338,15 @@ public class FirebaseAdapter {
                 });
     }
 
+    public Item getByLevelandSection(int level, int section){
+        for (Item i : products) {
+            if(i.getLevel() == level && i.getSection() == section){
+                return i;
+            }
+        }
+        return null;
+    }
+
     /**
      * Loads all brands upon app start up, saves them to brandsMaps
      */
@@ -413,5 +425,10 @@ public class FirebaseAdapter {
             }
         }
         return null;
+    }
+
+    public boolean addFingerprint(){
+
+        return true;
     }
 }

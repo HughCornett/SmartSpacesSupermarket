@@ -1,6 +1,7 @@
 package com.example.smartspacesblindshopping;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ public class MyActivity extends Activity {
     public static final String TOAST = "TOAST";
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_READ = 4;
+    public static final int MESSAGE_CONNECTEED = 5;
 
     public static String MAC = "3C:71:BF:59:2D:52";
     private final String MAC1 = "6C:00:6B:30:EE:1A";
@@ -35,6 +37,8 @@ public class MyActivity extends Activity {
     public final String PATH = "paths.csv";
 
     public final String CHOOSE_LIST = "choose list";
+    public final String CHOOSE_BTDEVICE_MAC = "choose btdevice mac";
+    public final String CHOOSE_BTDEVICE_NAME = "choose btdevice name";
 
 
     protected BluetoothService bluetoothService;
@@ -44,11 +48,13 @@ public class MyActivity extends Activity {
     public static boolean isBluetoothOn = false;
     protected StringBuilder sb = new StringBuilder();
 
-    protected TextToSpeechHandler TTSHandler ;
+    protected TextToSpeechHandler TTSHandler;
 
     protected FirebaseAdapter firebase = new FirebaseAdapter();
 
     static protected ArrayList<Item> dbItems = new ArrayList<Item>();
+
+    static protected Store store;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,35 +63,44 @@ public class MyActivity extends Activity {
         TTSHandler = new TextToSpeechHandler(getApplicationContext());
 
         intent = new Intent(this, BluetoothService.class);
-        intent.putExtra(BluetoothService.BT_NAME, NAME);
-        intent.putExtra(BluetoothService.BT_ADDRESS, MAC);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        if(dbItems.isEmpty()){
+        if (dbItems.isEmpty()) {
             Log.d("DB debug", "database is loading data");
             firebase.loadAllData();
             setDbItems(firebase.getItems());
             Log.d("DB debug", "database size is " + dbItems.size());
         }
 
+        if (dbItems.size() == 9) {
+            store = new Store(dbItems);
+        }
+
+
     }
 
-    static public ArrayList<Item> getDbItems(){
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+
+
+    static public ArrayList<Item> getDbItems() {
         return dbItems;
     }
 
-    protected void setDbItems(ArrayList<Item> list){
+    protected void setDbItems(ArrayList<Item> list) {
         dbItems = list;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(bound)
-        {
+        if (bound) {
             unbindService(mConnection);
             stopService(intent);
-            bound=false;
+            bound = false;
 
         }
     }
@@ -111,8 +126,7 @@ public class MyActivity extends Activity {
     };
 
 
-    public void switchCallback(final String[] menu)
-    {
+    public void switchCallback(final String[] menu) {
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
             boolean first = true;
@@ -135,15 +149,15 @@ public class MyActivity extends Activity {
                             Log.d("debug", sbprint);
 
 
-                            switch (sbprint){
+                            switch (sbprint) {
                                 case "Left":
-                                    index=(index-1)%menu.length;
-                                    if(index<0) index = menu.length + index;
+                                    index = (index - 1) % menu.length;
+                                    if (index < 0) index = menu.length + index;
                                     TTSHandler.speak(menu[index]);
 
                                     break;
                                 case "Right":
-                                    index=(index+1)%menu.length;
+                                    index = (index + 1) % menu.length;
                                     TTSHandler.speak(menu[index]);
                                     break;
 
@@ -153,18 +167,19 @@ public class MyActivity extends Activity {
 
                                 default:
                                     Item i = firebase.getItemByNFCTag(sbprint);
-                                    if(i != null)
+                                    if (i != null)
                                         Toast.makeText(getApplicationContext(), firebase.getItemByNFCTag(sbprint).getProductName(), Toast.LENGTH_SHORT).show();
 
                                     break;
 
                             }
-                            Log.d("debug", ""+menu[index]);
+                            Log.d("debug", "" + menu[index]);
                         }
 
                         return true;
                     case MyActivity.MESSAGE_STATE_CHANGE:
-                        Log.d("debug", "state:"+message.arg1);
+                        Log.d("debug", "state:" + message.arg1);
+
                         return true;
                     case MyActivity.MESSAGE_TOAST:
                         Log.d("debug", "message_toast");
@@ -183,9 +198,8 @@ public class MyActivity extends Activity {
     }
 
 
-    protected void chooseOption(int index)
-    {
-             
+    protected void chooseOption(int index) {
+
     }
 
 
