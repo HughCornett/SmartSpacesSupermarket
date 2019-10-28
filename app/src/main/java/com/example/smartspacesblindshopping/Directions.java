@@ -19,12 +19,17 @@ public class Directions {
     //the last node the user was at
     public static Node lastNode = null;
 
+    public static ArrayList<Node> currentPath;
+    public static ArrayList<Node> currentPathTurns;
+    public static int currentPathTurnsPos;
+    public static Item nextItem;
 
-    public static String pathToString(ArrayList<Node> path)
+
+    public static String pathToString()
     {
         String turn = "[Error]";
         //the direction the user must face to walk to the next node
-        int turnToDirection = path.get(0).getEdgeTo(path.get(1)).getDirection();
+        int turnToDirection = currentPath.get(0).getEdgeTo(currentPath.get(1)).getDirection();
 
         //if the user is facing the right way
         if(turnToDirection == Map.user.getFacing()) { turn = "Walk forward "; }
@@ -42,16 +47,16 @@ public class Directions {
         else { Log.e("Turn error", "Logic to determine turn direction failed (Directions.pathToString())"); }
 
         int nodesUntilNextTurn = 0;
-        while(path.size() > nodesUntilNextTurn + 1 &&
-                path.get(nodesUntilNextTurn).getEdgeTo(path.get(nodesUntilNextTurn+1)).getDirection() == turnToDirection)
+        while(currentPath.size() > nodesUntilNextTurn + 1 &&
+                currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection() == turnToDirection)
         {
             nodesUntilNextTurn++;
         }
         String destination = "[Error]";
         String nextTurn = "[Error] ";
-        if(path.size() > nodesUntilNextTurn + 1)
+        if(currentPath.size() > nodesUntilNextTurn + 1)
         {
-            int nextDirection = path.get(nodesUntilNextTurn).getEdgeTo(path.get(nodesUntilNextTurn+1)).getDirection();
+            int nextDirection = currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection();
 
             //figure out which way to turn once at destination
             //if the user will be facing left of the direction they should be
@@ -68,7 +73,7 @@ public class Directions {
             {
                 for(int i = 1; i < nodesUntilNextTurn; i++)
                 {
-                    if(path.get(i).getRow() != -1)
+                    if(currentPath.get(i).getRow() != -1)
                     {
                         turnIn++;
                     }
@@ -81,7 +86,7 @@ public class Directions {
             {
                 for(int i = 1; i < nodesUntilNextTurn; i++)
                 {
-                    if(path.get(i).getAisle() != -1)
+                    if(currentPath.get(i).getAisle() != -1)
                     {
                         turnIn++;
                     }
@@ -96,15 +101,15 @@ public class Directions {
             double distance = (double) Math.round(Math.abs(Map.user.getY() - Map.item.getYPosition()) * 10) / 10;
             destination = distance+" meters. ";
             //if the item is left of its node
-            if(Map.item.getXPosition() < path.get(path.size()-1).getXPosition())
+            if(Map.item.getXPosition() < currentPath.get(currentPath.size()-1).getXPosition())
             {
                 //if the user will be facing up
-                if(path.get(path.size()-2).getEdgeTo(path.get(path.size()-1)).getDirection() == 0)
+                if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 0)
                 {
                     nextTurn = "Your item is on the left";
                 }
                 //if the user will be facing down
-                else if(path.get(path.size()-2).getEdgeTo(path.get(path.size()-1)).getDirection() == 2)
+                else if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 2)
                 {
                     nextTurn = "Your item is on the right";
                 }
@@ -115,12 +120,12 @@ public class Directions {
             else
             {
                 //if the user will be facing up
-                if(path.get(path.size()-2).getEdgeTo(path.get(path.size()-1)).getDirection() == 0)
+                if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 0)
                 {
                     nextTurn = "Your item is on the left";
                 }
                 //if the user will be facing down
-                else if(path.get(path.size()-2).getEdgeTo(path.get(path.size()-1)).getDirection() == 2)
+                else if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 2)
                 {
                     nextTurn = "Your item is on the right";
                 }
@@ -129,6 +134,29 @@ public class Directions {
             }
         }
         return turn+" | "+destination+" | "+nextTurn;
+    }
+
+    public static void setCurrentPathTurns()
+    {
+        currentPathTurns = new ArrayList<>();
+        for(int i = 0; i < currentPath.size(); i++)
+        {
+            //if this is the first or last node of the currentPath, it must be in the list
+            if(i == 0 || i == currentPath.size()-1)
+            {
+                currentPathTurns.add(currentPath.get(i));
+            }
+            //if this is a node where there is a turn
+            //(so if the direction from the previous node to this one is different to
+            //the direction from this node to the next one)
+            else if(currentPath.get(i).getEdgeTo(currentPath.get(i+1)).getDirection() != currentPath.get(i-1).getEdgeTo(currentPath.get(i)).getDirection())
+            {
+                currentPathTurns.add(currentPath.get(i));
+            }
+        }
+        //should usually be 0 because this method will usually only be run
+        // when a path has just been created from the user
+        currentPathTurnsPos = currentPathTurns.indexOf(getClosestNode(Map.user.getX(), Map.user.getY(), false));
     }
 
     //used Floyd Warshall algorithm to compute the distance between all pairs of nodes
@@ -183,44 +211,26 @@ public class Directions {
                 }
             }
         }
-
-        /*print the distance matrix
-        Log.d("distance matrix",""+distanceMatrix);
-        for(int i = 0; i < distanceMatrix.length; i++)
-        {
-            Log.d("row",""+i);
-            for(int j = 0; j < distanceMatrix[i].length; j++)
-            {
-                Log.d("n",""+j+": "+distanceMatrix[i][j]);
-            }
-        }
-
-        //print the next matrix
-        Log.d("next matrix",""+nextMatrix);
-        for(int i = 0; i < nextMatrix.length; i++)
-        {
-            Log.d("row",""+i);
-            for(int j = 0; j < nextMatrix[i].length; j++)
-            {
-                Log.d("n",""+j+": "+Map.nodes.indexOf(nextMatrix[i][j]));
-            }
-        }
-         */
     }
 
     /**
      * Gets an arrayList of nodes that is the shortest path from one node to another
-     * @param origin
-     *  the first/original node
-     * @param destination
-     *  the final/destination node
+     * @param user
+     *  the user to create a path from
+     * @param item
+     *  the item to create a path to
      * @return
      *  an ArrayList of nodes that is the shortest path from the origin to the destination
      */
-    public static ArrayList<Node> getPath(Node origin, Node destination)
+    public static void setCurrentPath(User user, Item item)
     {
+        Map.resetPathNodes();
+        nextItem = item;
+        Node origin = getClosestNode(user.getX(), user.getY(), false);
+        Node destination = getClosestNode(item.getXPosition(), item.getYPosition(), true);
+
         //initialise path
-        ArrayList<Node> path = new ArrayList<>();
+        currentPath = new ArrayList<>();
 
         //get indexes of nodes in the main list of nodes
         int originIndex = Map.nodes.indexOf(origin);
@@ -230,22 +240,21 @@ public class Directions {
         if(nextMatrix[originIndex][destinationIndex] == null)
         {
             Log.e("path not found", "no path found between"+originIndex+", "+destinationIndex);
-            return path;
         }
         Node currentNode = origin;
-        path.add(currentNode);
+        currentPath.add(currentNode);
         currentNode.setPathNode(true);
         //while not at the destination
         while(!currentNode.equals(destination))
         {
             currentNode = nextMatrix[Map.nodes.indexOf(currentNode)][destinationIndex];
-            path.add(currentNode);
+            currentPath.add(currentNode);
             currentNode.setPathNode(true);
-            currentNode.getEdgeTo(path.get(path.size()-2)).setPathEdge(true);
-            path.get(path.size()-2).getEdgeTo(currentNode).setPathEdge(true);
+            currentNode.getEdgeTo(currentPath.get(currentPath.size()-2)).setPathEdge(true);
+            currentPath.get(currentPath.size()-2).getEdgeTo(currentNode).setPathEdge(true);
         }
 
-        return path;
+        setCurrentPathTurns();
     }
 
     /**
@@ -257,9 +266,8 @@ public class Directions {
      * @return
      *  The item that is closest
      */
-    public Item getClosestItem(User user, ArrayList<Item> items)
+    public static Item getClosestItem(User user, ArrayList<Item> items)
     {
-        //
         double minDistance = Double.MAX_VALUE;
         Item closestItem = null;
         for(Item item: items)
@@ -308,5 +316,33 @@ public class Directions {
         }
 
         return closestNode;
+    }
+
+    public static void nextDirection()
+    {
+        //if this isn't the last node
+        currentPathTurnsPos += 1;
+        if(currentPathTurnsPos < currentPathTurns.size()-1)
+        {
+
+            Map.user.setX(currentPathTurns.get(currentPathTurnsPos).getXPosition());
+            Map.user.setY(currentPathTurns.get(currentPathTurnsPos).getYPosition());
+            //get the direction the user will now be facing
+            int posInFullPath = currentPath.indexOf(currentPathTurns.get(currentPathTurnsPos));
+            Map.user.setFacing(currentPath.get(posInFullPath).getEdgeTo(currentPath.get(posInFullPath+1)).getDirection());
+
+            Directions.setCurrentPath(Map.user, nextItem);
+        }
+        //if it is
+        else
+        {
+            Map.user.setX(currentPathTurns.get(currentPathTurns.size()-1).getXPosition());
+            Map.user.setY(currentPathTurns.get(currentPathTurns.size()-1).getYPosition());
+            //get the direction the user will now be facing
+            if(nextItem.getXPosition() < Map.user.getX()) { Map.user.setFacing(3); }
+            else if(nextItem.getXPosition() > Map.user.getX()) { Map.user.setFacing(1); }
+            else { Log.e("Direction error", "User needs next direction from last node"); }
+        }
+
     }
 }

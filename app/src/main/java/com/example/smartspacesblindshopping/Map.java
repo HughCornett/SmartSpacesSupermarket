@@ -7,11 +7,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
-public class Map
+public class Map extends MapActivity
 {
     //the real life width and height of the room in meters
-    public static final double ROOM_WIDTH = 8;
-    public static final double ROOM_HEIGHT = 5;
+    public static final double ROOM_WIDTH = 5.6;
+    public static final double ROOM_HEIGHT = 3;
 
     public static final int SECTIONS_PER_SHELF = 3;
 
@@ -22,24 +22,25 @@ public class Map
     public static ArrayList<Node> nodes;
     public static ArrayList<Edge> edges;
 
-    public static User user = new User(1,4, 0);
+    public static User user = new User(0,1, 2);
+    public static ArrayList<Item> items = new ArrayList<>();
     public static Item item;
 
     public static void init()
     {
         aisles = new ArrayList<>();
         //aisle 0 (leftmost)
-        aisles.add(new RectF(0, 0, 1.67f, 5));
+        aisles.add(new RectF(0, 0, 1.9f, 3));
         //aisle 1 (middle)
-        aisles.add(new RectF(2.95f, 0, 5, 5));
+        aisles.add(new RectF(2.7f, 0, 3.8f, 3));
         //aisle 2 (rightmost)
-        aisles.add(new RectF(6.32f, 0, 8, 5));
+        aisles.add(new RectF(4.6f, 0, 5.6f, 3));
 
         rows = new ArrayList<>();
         //row 0 (top)
-        rows.add(new RectF(0,3.5f, 8,4.5f));
+        rows.add(new RectF(0,2f, 5.6f,3f));
         //row 1 (bottom)
-        rows.add(new RectF(0, 0, 8, 0.9f));
+        rows.add(new RectF(0, 0f, 5.6f, 0.8f));
 
         //here top and bottom of rows seem swapped, this is because of various reasons like
         //the screen being sideways. so the bottom of a row is higher of the screen than the top
@@ -60,7 +61,7 @@ public class Map
         shelfRect = new RectF((aisles.get(1).right + (aisles.get(2).left - aisles.get(1).right)/2), rows.get(0).top, aisles.get(2).left, rows.get(1).bottom);
         shelves.add(new Shelf(3, 2, false, SECTIONS_PER_SHELF, 2, shelfRect));
 
-        item = new Item("", "Coffee 150g", 0, 1, 2);
+        item = new Item("", "Coffee 150g", 3, 1, 0);
 
         //initialise direction nodes
         //assumes all shelves are level and the same length
@@ -128,33 +129,59 @@ public class Map
             }
         }
         //add the exit node
-        double nodeXPos = aisles.get(aisles.size()-1).left + ((aisles.get(aisles.size()-1).right - aisles.get(aisles.size()-1).left)/2);
-        double nodeYPos = rows.get(0).bottom - shelves.get(0).getSectionWidth()/2;
+        double nodeXPos = 0;
+        double nodeYPos = rows.get(1).bottom - ((rows.get(1).bottom-rows.get(1).top)/2);
         newNode = new Node(nodeXPos, nodeYPos, true);
         nodes.add(newNode);
         //add the neighbour
-        edges.add(newNode.addEdge(nodes.get(nodes.size()-6)));
-        edges.add(nodes.get(nodes.size()-6).addEdge(newNode));
+        edges.add(newNode.addEdge(nodes.get(4)));
+        edges.add(nodes.get(4).addEdge(newNode));
+    }
 
-        /* prints the neighbours of the give node
-        int node = 10;
-        Log.d("Node",""+node);
-        for(int i = 0; i < nodes.get(node).getEdges().size(); i++)
-        {
-            Log.d("Edge", "to "+nodes.indexOf(nodes.get(node).getEdges().get(i).getTo())+" w/ weight "+nodes.get(node).getEdges().get(i).getWeight());
-        }
-         */
+    public static double getItemXCoord(Item item)
+    {
+        Shelf shelf = Map.shelves.get(item.getShelf());
+        return shelf.getRect().left + ((shelf.getRect().right - shelf.getRect().left)/2);
+    }
+    public static double getItemYCoord(Item item)
+    {
+        Shelf shelf = Map.shelves.get(item.getShelf());
+
+        return shelf.getRect().top + (item.getSection() * shelf.getSectionWidth());
     }
 
     public static void addBlockage(Node first, Node second)
     {
         first.removeEdge(second);
         second.removeEdge(first);
+
+        Directions.computeMatrices();
+        Directions.setCurrentPath(Map.user, Directions.nextItem);
     }
     public static void addBlockage(int first, int second)
     {
         nodes.get(first).removeEdge(nodes.get(second));
         nodes.get(second).removeEdge(nodes.get(first));
+
+        Directions.computeMatrices();
+        Directions.setCurrentPath(Map.user, Directions.nextItem);
+    }
+    public static void resetPathNodes()
+    {
+        for(Node node: nodes)
+        {
+            node.setPathNode(false);
+        }
+        for(Edge edge: edges)
+        {
+            edge.setPathEdge(false);
+        }
+    }
+
+    public static void nextItem()
+    {
+        items.remove(Directions.nextItem);
+        Directions.setCurrentPath(user, Directions.getClosestItem(user, items));
     }
 
 }

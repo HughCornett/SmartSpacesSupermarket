@@ -21,7 +21,7 @@ public class DrawView extends View
 {
     // CONSTANT VARIABLES
     public static final int AISLE_ROW_COLOR = Color.BLACK;
-    public static final int AISLE_ROW_ALPHA = 0;
+    public static final int AISLE_ROW_ALPHA = 150;
 
     public static final int USER_COLOR = Color.BLUE;
     public static final int USER_RADIUS = 50;
@@ -29,11 +29,8 @@ public class DrawView extends View
     public static final int ITEM_COLOR = Color.GREEN;
     public static final int ITEM_RADIUS = 25;
 
-    public static final int RECT_COLOR = Color.RED;
-    public static final int RECT_ALPHA = 50;
-
-    final int image_width = 513;
-    final int image_hight = 470;
+    final int image_width = 560;
+    final int image_hight = 300;
     public static double PIXELS_PER_METER;
 
     // OTHER VARIABLES
@@ -81,7 +78,6 @@ public class DrawView extends View
 
     /**
      * redraws the view
-     * for when the boxes are changed and must be drawn again
      */
     public void updateView()
     {
@@ -91,7 +87,7 @@ public class DrawView extends View
     @Override
     public void onDraw(Canvas canvas) {
         //draw the map background
-        imageBounds = canvas.getClipBounds();
+        //imageBounds = canvas.getClipBounds();
 
         //calculate the bounds of the background image
 
@@ -104,11 +100,11 @@ public class DrawView extends View
         PIXELS_PER_METER = displaySize.x/Map.ROOM_HEIGHT;
 
         //define the color, width and transparency
-        paint.setColor(RECT_COLOR);
-        paint.setAlpha(RECT_ALPHA);
+        paint.setColor(AISLE_ROW_COLOR);
+        paint.setAlpha(AISLE_ROW_ALPHA);
 
         //draw all the aisles
-        /*for(int i = 0; i < Map.aisles.size(); i++)
+        for(int i = 0; i < Map.aisles.size(); i++)
         {
             Point aisleTopLeft = getScreenCoords(Map.aisles.get(i).left, Map.aisles.get(i).top);
             Point aisleBottomRight = getScreenCoords(Map.aisles.get(i).right, Map.aisles.get(i).bottom);
@@ -127,7 +123,39 @@ public class DrawView extends View
             canvas.drawRect(rowOnScreen, paint);
         }
 
-        clearBoxes();
+
+        paint.setColor(Color.RED);
+        for(int i = 0; i < Map.shelves.size(); i++)
+        {
+            Point rowTopLeft = getScreenCoords(Map.shelves.get(i).getRect().left, Map.shelves.get(i).getRect().top);
+            Point rowBottomRight = getScreenCoords(Map.shelves.get(i).getRect().right, Map.shelves.get(i).getRect().bottom);
+
+            Rect rowOnScreen = new Rect(rowTopLeft.x, rowTopLeft.y, rowBottomRight.x, rowBottomRight.y);
+            canvas.drawRect(rowOnScreen, paint);
+        }
+
+        paint.setStrokeWidth(10);
+        for(int i = 0; i < Map.edges.size(); i++)
+        {
+            if(Map.edges.get(i).getPathEdge()) { paint.setColor(Color.GREEN); }
+            else { paint.setColor(Color.RED); }
+            Point from = getScreenCoords(Map.edges.get(i).getFrom().getXPosition(), Map.edges.get(i).getFrom().getYPosition());
+            Point to = getScreenCoords(Map.edges.get(i).getTo().getXPosition(), Map.edges.get(i).getTo().getYPosition());
+
+            canvas.drawLine(from.x, from.y, to.x, to.y, paint);
+        }
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            if(Map.nodes.get(i).getPathNode()) { paint.setColor(Color.GREEN); }
+            else { paint.setColor(Color.RED); }
+            Node node = Map.nodes.get(i);
+            Point screenPos = getScreenCoords(node.getXPosition(), node.getYPosition());
+
+
+            canvas.drawCircle(screenPos.x, screenPos.y, USER_RADIUS, paint);
+        }
+
+
 
         //redfine the color and transparency
         paint.setColor(USER_COLOR);
@@ -142,17 +170,9 @@ public class DrawView extends View
         paint.setColor(ITEM_COLOR);
         if(Map.item != null)
         {
-            itemScreenPosition = getScreenCoords(Map.item.getPosition().x, Map.item.getPosition().y);
+            itemScreenPosition = getScreenCoords(Map.item.getXPosition(), Map.item.getYPosition());
             canvas.drawCircle(itemScreenPosition.x, itemScreenPosition.y, ITEM_RADIUS, paint);
-        }*/
-
-        for(int i = 0;i<drawnBoxes.size() && i<3;++i)
-        {
-            canvas.drawRect(drawnBoxes.get(i), paint);
         }
-
-
-        clearBoxes();
     }
 
     private static Point getScreenCoords(double worldX, double worldY)

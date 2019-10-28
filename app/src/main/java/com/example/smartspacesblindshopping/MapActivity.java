@@ -59,6 +59,7 @@ public class MapActivity extends MyActivity {
 
 
         Directions.computeMatrices();
+        Directions.setCurrentPath(Map.user, Map.item);
 
         started = true;
         handler.postDelayed(runnable, 1000);
@@ -86,14 +87,18 @@ public class MapActivity extends MyActivity {
                 }
             }
 
-            ArrayList<Node> path = Directions.getPath(Directions.getClosestNode(Map.user.getX(), Map.user.getY(), false),
-                    Directions.getClosestNode(Map.item.getXPosition(), Map.item.getYPosition(), true));
+
+            ArrayList<Node> path = Directions.currentPath;
             if(path.size()>1)
             {
                 Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
-                Log.d("direction", ""+Directions.pathToString(path));
-                //TTSHandler.speak(Directions.pathToString(path));
+                Log.d("direction", ""+Directions.pathToString());
+                TTSHandler.speak(Directions.pathToString());
             }
+            Directions.nextDirection();
+            Map.addBlockage(17, 18);
+
+
 
             if(started)
             {
@@ -116,5 +121,24 @@ public class MapActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
+    }
+
+    public void userScansTag(String tag)
+    {
+        Item item = firebase.getItemByNFCTag(tag);
+        Map.user.setX(Directions.getClosestNode(item.getXPosition(), item.getYPosition(), true).getXPosition());
+        Map.user.setY(Directions.getClosestNode(item.getXPosition(), item.getYPosition(), true).getYPosition());
+        if(item.getXPosition() < Map.user.getX())
+        {
+            Map.user.setFacing(3);
+        }
+        else if(item.getXPosition() > Map.user.getX())
+        {
+            Map.user.setFacing(1);
+        }
+        else
+        {
+            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+        }
     }
 }
