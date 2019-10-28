@@ -247,14 +247,6 @@ public class FirebaseAdapter {
 
     }
 
-    public Item getItemByFullName(String fullname){
-        for(Item i: products){
-            if((i.getBrandName() + i.getProductName()).equals(fullname)){
-                return i;
-            }
-        }
-        return null;
-    }
 
     private interface FirestoreCallback{
         void onCallback(ArrayList<Item> list);
@@ -276,9 +268,10 @@ public class FirebaseAdapter {
                                     products.add(i);
                                 }
                                 firestoreCallback.onCallback(products);
+                                Log.d("DB Load all products", "task successful");
                             }
                         }else{
-                            Log.d("DB Loadallproducts", "task unsuccesfull");
+                            Log.d("DB Load all products", "task unsuccesfull");
                         }
                     }
                 });
@@ -419,8 +412,11 @@ public class FirebaseAdapter {
     }
 
     public Item fullNameToItem(String fullname){
+        Log.d("fullnametoitem", "looking for item " + fullname);
         for (Item i: products) {
-            if((i.getBrandName() + i.getProductName()).equals(fullname)){
+            //Log.d("fullnametoitem", "i is item " + i.getBrandName() + i.get);
+            if((i.getBrandName() + " " + i.getProductName()).equals(fullname)){
+                Log.d("match found", "match found");
                 return i;
             }
         }

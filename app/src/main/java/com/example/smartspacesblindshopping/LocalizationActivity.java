@@ -76,7 +76,6 @@ public class LocalizationActivity extends MyActivity implements BeaconConsumer, 
         int newX = BOTTOM_BORDER + Math.round(translateMetersToPixels(worldCoordinates.getX()));
         int newY = LEFT_BORDER + Math.round(translateMetersToPixels(worldCoordinates.getY()));
         return new CoordinatePair(newX, newY);
-
     }
 
     /**
