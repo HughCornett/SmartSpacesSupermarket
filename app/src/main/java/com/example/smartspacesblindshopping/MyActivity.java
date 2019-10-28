@@ -75,8 +75,6 @@ public class MyActivity extends Activity {
         if (dbItems.size() == 9) {
             store = new Store(dbItems);
         }
-
-
     }
 
     @Override
@@ -84,15 +82,6 @@ public class MyActivity extends Activity {
         super.onResume();
     }
 
-
-
-    static public ArrayList<Item> getDbItems() {
-        return dbItems;
-    }
-
-    protected void setDbItems(ArrayList<Item> list) {
-        dbItems = list;
-    }
 
     @Override
     protected void onDestroy() {
@@ -200,6 +189,15 @@ public class MyActivity extends Activity {
 
     protected void chooseOption(int index) {
 
+    }
+
+
+    static public ArrayList<Item> getDbItems() {
+        return dbItems;
+    }
+
+    protected void setDbItems(ArrayList<Item> list) {
+        dbItems = list;
     }
 
 

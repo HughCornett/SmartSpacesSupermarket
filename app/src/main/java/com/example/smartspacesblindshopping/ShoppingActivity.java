@@ -19,6 +19,8 @@ public class ShoppingActivity extends MyActivity {
     ArrayList<String> shoppingList = new ArrayList<>();
     TextView currentItemText;
     Item currentItem;
+    NfcTag currentNfcTag;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,7 +112,7 @@ public class ShoppingActivity extends MyActivity {
                                     //or here?
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
                                     Item itemOnlist = firebase.getItemByFullName(currentItemText.getText().toString());
-
+                                    currentNfcTag = new NfcTag(scannedItem);
                                     if (scannedItem != null && itemOnlist != null) {
                                         if (ItemOnShoppingList(scannedItem)) {
                                             if (!shoppingList.isEmpty()) {
@@ -178,7 +180,7 @@ public class ShoppingActivity extends MyActivity {
                     else if (j.getLevel() == 1 && sectionDifference > 0)
                         TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
 
-                    //directly above
+                        //directly above
                     else if (j.getLevel() == 0 && sectionDifference == 0)
                         TTSHandler.speak(j.getProductName() + " is directly above " + i.getProductName());
                         //above and to the right
@@ -195,7 +197,7 @@ public class ShoppingActivity extends MyActivity {
 
         //different aisle
         else {
-            TTSHandler.speak(i.getProductName() + " is on a different shelf to  " + j.getProductName());
+            //re-route user from here?
         }
     }
 
