@@ -247,11 +247,13 @@ public class FirebaseAdapter {
 
     }
 
-    /**
-     * Loads all products upon app start up, saves them to products array
-     */
-    public void loadAllProducts() {
-
+    public Item getItemByFullName(String fullname){
+        for(Item i: products){
+            if((i.getBrandName() + i.getProductName()).equals(fullname)){
+                return i;
+            }
+        }
+        return null;
     }
 
     private interface FirestoreCallback{

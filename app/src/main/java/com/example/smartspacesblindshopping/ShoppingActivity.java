@@ -108,17 +108,20 @@ public class ShoppingActivity extends MyActivity {
 
                                 default:
                                     //or here?
-                                    Item i = firebase.getItemByNFCTag(sbprint);
-                                    if (matchItem(i)) {
-                                        if (!shoppingList.isEmpty()) {
-                                            currentItemText.setText(shoppingList.get(0));
-                                            TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-                                        } else {
-                                            TTSHandler.speak("Your shopping list is empty");
+                                    Item scannedItem = firebase.getItemByNFCTag(sbprint);
+                                    Item itemOnlist = firebase.getItemByFullName(currentItemText.getText().toString());
+
+                                    if (scannedItem != null && itemOnlist != null) {
+                                        if (ItemOnShoppingList(scannedItem)) {
+                                            if (!shoppingList.isEmpty()) {
+                                                currentItemText.setText(shoppingList.get(0));
+                                                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
+                                            } else {
+                                                itemShelfProximityFeedback(scannedItem, itemOnlist);
+                                            }
                                         }
                                     }
                                     break;
-
                             }
                             Log.d("debug", "" + menu[index]);
                         }
@@ -142,7 +145,67 @@ public class ShoppingActivity extends MyActivity {
         });
     }
 
-    public boolean matchItem(Item i) {
+    /**
+     * Provides audio feedback for the location of an item on the shopping list (item J)
+     * compared to the scanned item (Item I)
+     *
+     * @param i scanned item,
+     * @param j item on shopping list
+     */
+    public void itemShelfProximityFeedback(Item i, Item j) {
+        //SAME AISLE
+        if (i.getAisle() == j.getAisle()) {
+            if (i.getShelf() == j.getShelf()) {
+                //SAME LEVEL
+                int sectionDifference = i.getSection() - j.getSection();
+
+                String spots = "spots";
+                if (sectionDifference == 1) spots = "spot";
+
+                if (i.getLevel() == j.getLevel()) {
+                    if (sectionDifference <= 0)
+                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the right of " + i.getProductName());
+                    if (sectionDifference >= 1)
+                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the left of " + i.getProductName());
+                } else {
+                    //directly below
+                    if (j.getLevel() == 1 && sectionDifference == 0)
+                        TTSHandler.speak(j.getProductName() + " is directly below " + i.getProductName());
+                        //below and to the left
+                    else if (j.getLevel() == 1 && sectionDifference < 0)
+                        TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference)) + spots + " to the right");
+                        //below and to the right
+                    else if (j.getLevel() == 1 && sectionDifference > 0)
+                        TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
+
+                    //directly above
+                    else if (j.getLevel() == 0 && sectionDifference == 0)
+                        TTSHandler.speak(j.getProductName() + " is directly above " + i.getProductName());
+                        //above and to the right
+                    else if (j.getLevel() == 0 && sectionDifference < 0)
+                        TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference)) + spots + " to the right");
+                        //above and to the left
+                    else if (j.getLevel() == 0 && sectionDifference > 0)
+                        TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + "  to the left");
+                }
+            } else {
+                TTSHandler.speak("the item is on another shelf");
+            }
+        }
+
+        //different aisle
+        else {
+            TTSHandler.speak(i.getProductName() + " is on a different shelf to  " + j.getProductName());
+        }
+    }
+
+    /**
+     * returns true if the parameter item is on the user's shopping list
+     *
+     * @param i scanned item,
+     * @return true if on list, false if not
+     */
+    public boolean ItemOnShoppingList(Item i) {
         if (i != null) {
             if ((i.getBrandName() + " " + i.getProductName()).equals(currentItemText.getText())) {
                 TTSHandler.speak("That item is on your list");
