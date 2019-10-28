@@ -1,6 +1,7 @@
 package com.example.smartspacesblindshopping;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ public class MyActivity extends Activity {
     public static final String TOAST = "TOAST";
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_READ = 4;
+    public static final int MESSAGE_CONNECTEED = 5;
 
     public static String MAC = "3C:71:BF:59:2D:52";
     private final String MAC1 = "6C:00:6B:30:EE:1A";
@@ -35,6 +37,8 @@ public class MyActivity extends Activity {
     public final String PATH = "paths.csv";
 
     public final String CHOOSE_LIST = "choose list";
+    public final String CHOOSE_BTDEVICE_MAC = "choose btdevice mac";
+    public final String CHOOSE_BTDEVICE_NAME = "choose btdevice name";
 
 
     protected BluetoothService bluetoothService;
@@ -59,8 +63,6 @@ public class MyActivity extends Activity {
         TTSHandler = new TextToSpeechHandler(getApplicationContext());
 
         intent = new Intent(this, BluetoothService.class);
-        intent.putExtra(BluetoothService.BT_NAME, NAME);
-        intent.putExtra(BluetoothService.BT_ADDRESS, MAC);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if (dbItems.isEmpty()) {
@@ -166,6 +168,7 @@ public class MyActivity extends Activity {
                         return true;
                     case MyActivity.MESSAGE_STATE_CHANGE:
                         Log.d("debug", "state:" + message.arg1);
+
                         return true;
                     case MyActivity.MESSAGE_TOAST:
                         Log.d("debug", "message_toast");

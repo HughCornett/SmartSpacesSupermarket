@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +37,55 @@ public class ConnectingActivity extends MyActivity {
     private ListView listView;
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<>();
     private BluetoothAdapter mBluetoothAdapter;
+    private CustomAdapter mAdapter;
 
 
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final int state 		= intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                final int prevState	= intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
+                    showToast("Paired");
+                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
+                    showToast("Unpaired");
+                }
+
+                mAdapter.notifyDataSetChanged();
+            }
+            else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+
+                if (state == BluetoothAdapter.STATE_ON) {
+                    showToast("Enabled");
+                    mBluetoothAdapter.startDiscovery();
+
+                }
+            }
+            else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                for(BluetoothDevice b: mDeviceList)
+                {
+                    if(b.getAddress().equals(device.getAddress()))
+                    {
+                        return;
+                    }
+
+
+                }
+                mDeviceList.add(device);
+
+                showToast("Found device " + device.getName());
+
+                mAdapter.notifyDataSetChanged();
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,28 +112,61 @@ public class ConnectingActivity extends MyActivity {
 
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> mBondedDevices = mBluetoothAdapter.getBondedDevices();
         //Log.d("debug",""+mBondedDevices.size());
+        mBluetoothAdapter.startDiscovery();
 
-        mDeviceList.addAll(mBondedDevices);
         Log.d("debug",""+mDeviceList.size());
         listView = (ListView) findViewById(R.id.bluetoothList);
-        CustomAdapter adapter = new CustomAdapter(getApplicationContext(), mDeviceList);
-        listView.setAdapter(adapter);
+        mAdapter = new CustomAdapter(getApplicationContext(), mDeviceList, new CustomAdapter.OnPairButtonClickListener() {
+            @Override
+            public void onPairButtonClick(int position) {
+                BluetoothDevice device = mDeviceList.get(position);
 
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                    connect(position);
+                } else {
+
+                    pairDevice(device);
+                    connect(position);
+                }
+
+            }
+        });
+        listView.setAdapter(mAdapter);
+
+        listView.setClickable(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MAC = mDeviceList.get(i).getAddress();
-                NAME = mDeviceList.get(i).getName();
+
+
             }
         });
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+        registerReceiver(mReceiver, intentFilter);
     }
+
 
     @Override
     protected void onDestroy() {
 
+        unregisterReceiver(mReceiver);
+        mBluetoothAdapter.cancelDiscovery();
         super.onDestroy();
+    }
+
+    private void connect(int i)
+    {
+        Intent intent = new Intent();
+        intent.putExtra(CHOOSE_BTDEVICE_MAC, mDeviceList.get(i).getAddress());
+        intent.putExtra(CHOOSE_BTDEVICE_NAME, mDeviceList.get(i).getName());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void pairDevice(BluetoothDevice device) {
@@ -115,61 +196,13 @@ public class ConnectingActivity extends MyActivity {
     }
 
 
-    static class ViewHolder
+
+    private void showToast(String message)
     {
-        TextView device;
-        TextView mac;
-    };
-
-    public class CustomAdapter extends BaseAdapter
-    {
-
-        ArrayList<BluetoothDevice> objects;
-        private LayoutInflater inflater;
-
-        CustomAdapter(Context context, ArrayList<BluetoothDevice> objects)
-        {
-            inflater = LayoutInflater.from(context);
-            this.objects = objects;
-        }
-
-        @Override
-        public int getCount() {
-            return objects.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return objects.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            ViewHolder holder = null;
-            if(view ==null)
-            {
-                holder = new ViewHolder();
-
-                view = inflater.inflate(R.layout.bluetooth_list, null);
-
-                holder.device = (TextView) view.findViewById(R.id.bluetoothDevice);
-                holder.mac = (TextView) view.findViewById(R.id.MAC);
-
-                view.setTag(holder);
-            }
-            else
-                holder = (ViewHolder) view.getTag();
-
-            holder.device.setText(objects.get(i).getName());
-            holder.mac.setText(objects.get(i).getAddress());
-
-            return view;
-        }
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
+
+
+
 
 }

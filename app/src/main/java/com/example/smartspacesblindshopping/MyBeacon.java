@@ -79,7 +79,7 @@ public class MyBeacon {
     {
 
         //Log.d("calcdist", ""+measuredPower+ " " + getRssiAverage());
-        distance = Math.pow(10.0, ((getMeasuredPower()-getRssiMin())/(10*N)));
+        distance = Math.pow(10.0, ((getMeasuredPower()-getRssiAverage())/(10*N)));
 
 
     }
