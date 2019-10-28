@@ -42,6 +42,7 @@ public class BluetoothService extends Service {
     private static Handler mHandler = null;
     public static int mState = STATE_NONE;
     public static String deviceName;
+    public static String macAddress;
     public Vector<Byte> packdata = new Vector<Byte>(2048);
     @Override
     public void onCreate() {
@@ -74,7 +75,7 @@ public class BluetoothService extends Service {
         if (mBluetoothAdapter != null) {
 
             deviceName = intent.getStringExtra(BT_NAME);
-            String macAddress = intent.getStringExtra(BT_ADDRESS);
+            macAddress = intent.getStringExtra(BT_ADDRESS);
             if (macAddress != null && macAddress.length() > 0) {
                 connectToDevice(macAddress);
             } else {
@@ -196,12 +197,7 @@ public class BluetoothService extends Service {
         mConnectedThread = new ConnectedThread(mmSocket);
         mConnectedThread.start();
 
-        // Message msg =
-        // mHandler.obtainMessage(AbstractActivity.MESSAGE_DEVICE_NAME);
-        // Bundle bundle = new Bundle();
-        // bundle.putString(AbstractActivity.DEVICE_NAME, "p25");
-        // msg.setData(bundle);
-        // mHandler.sendMessage(msg);
+
         setState(STATE_CONNECTED);
 
     }
@@ -283,6 +279,8 @@ public class BluetoothService extends Service {
 
         @Override
         public void run() {
+            Log.d("BluetoothService", "Service started");
+
             byte[] buffer = new byte[256];
             int bytes;
             while (true) {

@@ -188,7 +188,6 @@ public class ListActivity extends MyActivity {
         ArrayList<Item> items = firebase.getItemsByBrand(brandName);
         StrBuilder builder = new StrBuilder();
         builder.append("Did you want ");
-
         for (Item i : items) {
             int str = i.getProductName().indexOf(' ');
             String firstWord = i.getProductName().substring(0, str);

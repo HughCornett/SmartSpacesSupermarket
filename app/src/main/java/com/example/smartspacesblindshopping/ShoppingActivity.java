@@ -6,6 +6,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,12 +23,16 @@ public class ShoppingActivity extends MyActivity {
     ArrayList<String> shoppingList = new ArrayList<>();
     TextView currentItemText;
     Item currentItem;
+    NfcTag currentNfcTag;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping);
-        currentItemText = (TextView) findViewById(R.id.currentItem);
+        currentItemText = new TextView(getApplicationContext());
+
+
     }
 
     @Override
@@ -47,6 +55,11 @@ public class ShoppingActivity extends MyActivity {
                 shoppingList.addAll(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST)));
                 currentItemText.setText(shoppingList.get(0));
                 currentItem = firebase.fullNameToItem(currentItemText.getText().toString());
+                ListView listView = (ListView) findViewById(R.id.shoppingList);
+
+                ArrayAdapter arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, shoppingList);
+
+                listView.setAdapter(arrayAdapter);
             }
         }
     }
@@ -109,17 +122,22 @@ public class ShoppingActivity extends MyActivity {
                                 default:
                                     //or here?
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
-                                    Item itemOnlist = firebase.getItemByFullName(currentItemText.getText().toString());
+                                    Item itemOnlist =  firebase.fullNameToItem(currentItemText.getText().toString());
+                                    currentNfcTag = new NfcTag(scannedItem);
 
-                                    if (scannedItem != null && itemOnlist != null) {
-                                        if (ItemOnShoppingList(scannedItem)) {
-                                            if (!shoppingList.isEmpty()) {
-                                                currentItemText.setText(shoppingList.get(0));
-                                                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-                                            } else {
-                                                itemShelfProximityFeedback(scannedItem, itemOnlist);
-                                            }
+                                    if (ItemOnShoppingList(scannedItem)) {
+                                        if (!shoppingList.isEmpty()) {
+                                            currentItemText.setText(shoppingList.get(0));
+                                            TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
                                         }
+                                    }
+                                    else {
+                                        if(scannedItem!=null && itemOnlist != null){
+                                            itemShelfProximityFeedback(scannedItem, itemOnlist);
+                                        }else{
+                                            Log.d("null found", "an item is null");
+                                        }
+
                                     }
                                     break;
                             }
@@ -144,6 +162,7 @@ public class ShoppingActivity extends MyActivity {
             }
         });
     }
+
 
     /**
      * Provides audio feedback for the location of an item on the shopping list (item J)
@@ -178,7 +197,7 @@ public class ShoppingActivity extends MyActivity {
                     else if (j.getLevel() == 1 && sectionDifference > 0)
                         TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
 
-                    //directly above
+                        //directly above
                     else if (j.getLevel() == 0 && sectionDifference == 0)
                         TTSHandler.speak(j.getProductName() + " is directly above " + i.getProductName());
                         //above and to the right
@@ -195,7 +214,7 @@ public class ShoppingActivity extends MyActivity {
 
         //different aisle
         else {
-            TTSHandler.speak(i.getProductName() + " is on a different shelf to  " + j.getProductName());
+            //re-route user from here?
         }
     }
 
@@ -212,7 +231,7 @@ public class ShoppingActivity extends MyActivity {
                 shoppingList.remove(currentItemText.getText());
                 return true;
             } else {
-                TTSHandler.speak("That item is not correct - the next item on your shopping list is " + currentItemText.getText());
+                //TTSHandler.speak("That item is not correct - the next item on your shopping list is " + currentItemText.getText());
                 return false;
             }
         }
