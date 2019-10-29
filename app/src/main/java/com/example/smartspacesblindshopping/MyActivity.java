@@ -202,5 +202,27 @@ public class MyActivity extends Activity {
         dbItems = list;
     }
 
+    public ArrayList<String> itemsToStrings(ArrayList<Item> items)
+    {
+        ArrayList<String> strings = new ArrayList<>();
+        for(Item i: items)
+        {
+            strings.add(i.getProductName());
+        }
+        return strings;
+    }
+
+    public ArrayList<Item> stringsToItems(ArrayList<String> strings)
+    {
+        ArrayList<Item> items = new ArrayList<>();
+
+        for(String s: strings)
+        {
+            items.add(firebase.fullNameToItem(s));
+        }
+        return items;
+    }
+
+
 
 }

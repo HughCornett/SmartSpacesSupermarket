@@ -25,9 +25,9 @@ import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class DisplayListActivity extends MyActivity {
 
-    ArrayAdapter<String> arrayAdapter;
 
-    ArrayList<String> itemList = new ArrayList<>();
+    CustomItemAdapter customItemAdapter;
+    ArrayList<Item> itemList = new ArrayList<>();
 
     RelativeLayout mRelativeLayout;
     PopupWindow mPopupWindow;
@@ -48,11 +48,11 @@ public class DisplayListActivity extends MyActivity {
         listView = (ListView) findViewById(R.id.DisplayList);
 
         mContext = getApplicationContext();
-        itemList.addAll(ReadWriteCSV.readCSV(this, path));
+        itemList.addAll(stringsToItems(ReadWriteCSV.readCSV(this, path)));
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, itemList );
+        customItemAdapter = new CustomItemAdapter(this,itemList );
 
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(customItemAdapter);
 
         createPopUpOnClick();
 
@@ -90,7 +90,7 @@ public class DisplayListActivity extends MyActivity {
             {
                 itemList.remove(item);
                 switchMenu();
-                arrayAdapter.notifyDataSetChanged();
+                customItemAdapter.notifyDataSetChanged();
                 state = 0;
 
             }
@@ -106,7 +106,7 @@ public class DisplayListActivity extends MyActivity {
     {
         ArrayList<String> menu = new ArrayList<>();
 
-        menu.addAll(itemList);
+        menu.addAll(itemsToStrings(itemList));
 
         menu.add("go back");
 
@@ -163,7 +163,7 @@ public class DisplayListActivity extends MyActivity {
                             deleteList();
                             DisplayListActivity.this.finish();
                         }
-                        arrayAdapter.notifyDataSetChanged();
+                        customItemAdapter.notifyDataSetChanged();
                     }
                 });
 

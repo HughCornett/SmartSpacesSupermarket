@@ -21,11 +21,11 @@ import java.util.Objects;
 
 public class ShoppingActivity extends MyActivity {
 
-    ArrayList<String> shoppingList = new ArrayList<>();
+    ArrayList<Item> shoppingList = new ArrayList<>();
     TextView currentItemText;
     Item currentItem;
     NfcTag currentNfcTag;
-    ArrayAdapter arrayAdapter;
+    CustomItemAdapter customItemAdapter;
     ListView listView;
 
 
@@ -37,9 +37,9 @@ public class ShoppingActivity extends MyActivity {
 
         listView = (ListView) findViewById(R.id.shoppingList);
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, shoppingList);
+        customItemAdapter = new CustomItemAdapter(this, shoppingList);
 
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(customItemAdapter);
 
 
     }
@@ -66,18 +66,18 @@ public class ShoppingActivity extends MyActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK && data != null) {
-                shoppingList.addAll(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST)));
-                currentItemText.setText(shoppingList.get(0));
-                currentItem = firebase.fullNameToItem(currentItemText.getText().toString());
-                arrayAdapter.notifyDataSetChanged();
+                shoppingList.addAll(stringsToItems(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST))));
+                currentItemText.setText(shoppingList.get(0).getProductName());
+                currentItem = shoppingList.get(0);
+                customItemAdapter.notifyDataSetChanged();
 
             }
         }
         else if(requestCode == 20)
         {
             if (resultCode == RESULT_OK && data != null) {
-                shoppingList.addAll(Objects.requireNonNull(data.getStringArrayListExtra(APPEND_TO_LIST)));
-                arrayAdapter.notifyDataSetChanged();
+                shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
+                customItemAdapter.notifyDataSetChanged();
                 //TODO
                 //sort the list
             }
@@ -150,7 +150,7 @@ public class ShoppingActivity extends MyActivity {
 
                                     if (ItemOnShoppingList(scannedItem)) {
                                         if (!shoppingList.isEmpty()) {
-                                            currentItemText.setText(shoppingList.get(0));
+                                            currentItemText.setText(shoppingList.get(0).getProductName());
                                             TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
                                         }
                                     }

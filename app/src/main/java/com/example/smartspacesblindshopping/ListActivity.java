@@ -46,9 +46,9 @@ import java.util.Locale;
 public class ListActivity extends MyActivity {
 
     int state = 0;
-    ArrayAdapter<String> arrayAdapter;
+    CustomItemAdapter customItemAdapter;
 
-    ArrayList<String> itemList = new ArrayList<>();
+    ArrayList<Item> itemList = new ArrayList<>();
     ArrayList<String> chosenItemStrings = new ArrayList<>();
 
     PopupWindow mPopupWindow;
@@ -61,9 +61,9 @@ public class ListActivity extends MyActivity {
 
         listView = (ListView) findViewById(R.id.ListView);
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, itemList);
+        customItemAdapter = new CustomItemAdapter(this, itemList);
 
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(customItemAdapter);
 
 
         Intent intent = new Intent();
@@ -107,7 +107,7 @@ public class ListActivity extends MyActivity {
 
         ReadWriteCSV.writeToCSV(this, data, PATH);
 
-        ReadWriteCSV.writeToCSV(this, itemList, fileName);
+        ReadWriteCSV.writeToCSV(this, itemsToStrings(itemList), fileName);
 
         Toast.makeText(this, "List written", Toast.LENGTH_SHORT).show();
 
@@ -122,7 +122,7 @@ public class ListActivity extends MyActivity {
                 if (resultCode == RESULT_OK && data != null) {
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     matchResults(result);
-                    arrayAdapter.notifyDataSetChanged();
+                    customItemAdapter.notifyDataSetChanged();
                 }
 
             default:
@@ -159,7 +159,7 @@ public class ListActivity extends MyActivity {
             }
         }
         if (exactMatch) {
-            itemList.add(match);
+            itemList.add(firebase.fullNameToItem(match));
 
         } else if (categoryMatch) {
             promptForCategory(tempCat);
@@ -284,10 +284,10 @@ public class ListActivity extends MyActivity {
     }
 
     private void popUpOnClick(int i) {
-        ListActivity.this.itemList.add(chosenItemStrings.get(i));
+        ListActivity.this.itemList.add(firebase.fullNameToItem(chosenItemStrings.get(i)));
         state = 0;
         switchCallback(new String[]{"add item to the list", "save the list", "go back"});
-        arrayAdapter.notifyDataSetChanged();
+        customItemAdapter.notifyDataSetChanged();
         mPopupWindow.dismiss();
 
     }
