@@ -66,6 +66,11 @@ public class ListActivity extends MyActivity {
         listView.setAdapter(arrayAdapter);
 
 
+        Intent intent = new Intent();
+
+        intent.putExtra(APPEND_TO_LIST, itemList);
+        setResult(RESULT_OK, intent);
+
     }
 
 
@@ -91,9 +96,10 @@ public class ListActivity extends MyActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void saveFile(View view) {
-        LocalDateTime now = LocalDateTime.now();
+        ArrayList<String> tmp = ReadWriteCSV.readCSV(getApplicationContext(), PATH);
 
-        String fileName = now.toString() + ".csv";
+
+        String fileName = "list" + tmp.size() + ".csv";
 
         ArrayList<String> data = new ArrayList<>();
 
@@ -124,7 +130,7 @@ public class ListActivity extends MyActivity {
         }
     }
 
-    protected void matchResults(ArrayList<String> result) {
+    public void matchResults(ArrayList<String> result) {
         boolean brandMatch = false;
         boolean categoryMatch = false;
         boolean exactMatch = false;
@@ -285,4 +291,6 @@ public class ListActivity extends MyActivity {
         mPopupWindow.dismiss();
 
     }
+
+
 }

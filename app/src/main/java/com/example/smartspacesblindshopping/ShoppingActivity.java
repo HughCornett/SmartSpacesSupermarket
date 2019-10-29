@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ShoppingActivity extends MyActivity {
 
@@ -24,6 +25,8 @@ public class ShoppingActivity extends MyActivity {
     TextView currentItemText;
     Item currentItem;
     NfcTag currentNfcTag;
+    ArrayAdapter arrayAdapter;
+    ListView listView;
 
 
     @Override
@@ -31,6 +34,12 @@ public class ShoppingActivity extends MyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping);
         currentItemText = new TextView(getApplicationContext());
+
+        listView = (ListView) findViewById(R.id.shoppingList);
+
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, shoppingList);
+
+        listView.setAdapter(arrayAdapter);
 
 
     }
@@ -47,6 +56,11 @@ public class ShoppingActivity extends MyActivity {
         startActivityForResult(intent, 10);
     }
 
+    public void addItem(View view) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivityForResult(intent, 20);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -55,11 +69,17 @@ public class ShoppingActivity extends MyActivity {
                 shoppingList.addAll(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST)));
                 currentItemText.setText(shoppingList.get(0));
                 currentItem = firebase.fullNameToItem(currentItemText.getText().toString());
-                ListView listView = (ListView) findViewById(R.id.shoppingList);
+                arrayAdapter.notifyDataSetChanged();
 
-                ArrayAdapter arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, shoppingList);
-
-                listView.setAdapter(arrayAdapter);
+            }
+        }
+        else if(requestCode == 20)
+        {
+            if (resultCode == RESULT_OK && data != null) {
+                shoppingList.addAll(Objects.requireNonNull(data.getStringArrayListExtra(APPEND_TO_LIST)));
+                arrayAdapter.notifyDataSetChanged();
+                //TODO
+                //sort the list
             }
         }
     }
@@ -72,6 +92,9 @@ public class ShoppingActivity extends MyActivity {
             case 0:
                 ShoppingActivity.this.readLists(findViewById(R.id.nextItem));
                 break;
+            case 1:
+                ShoppingActivity.this.addItem(findViewById(R.id.addItem));
+            case 2: finish();
             default:
                 break;
         }
@@ -237,4 +260,7 @@ public class ShoppingActivity extends MyActivity {
         }
         return false;
     }
+
+
+
 }
