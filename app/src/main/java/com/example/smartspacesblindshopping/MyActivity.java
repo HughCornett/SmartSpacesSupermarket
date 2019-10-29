@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MyActivity extends Activity {
 
@@ -186,6 +187,17 @@ public class MyActivity extends Activity {
                 }
             }
         });
+    }
+
+    public ArrayList<Item> nameToItemArray(ArrayList<String> names){
+        ArrayList<Item> items = new ArrayList<>();
+        for(String n : names){
+           Log.d("nameToItemArray", "converting " + n.toString() + " to an item");
+           Item i = firebase.fullNameToItem(n);
+           if(i!=null) Log.d("nameToItemArray", "conversion completed");
+           items.add(i);
+        }
+        return items;
     }
 
 
