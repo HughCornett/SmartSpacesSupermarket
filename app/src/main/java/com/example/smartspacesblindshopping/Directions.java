@@ -97,9 +97,7 @@ public class Directions {
         }
         else
         {
-            //gets the distance to the item rounded to 1 decimal place
-            double distance = (double) Math.round(Math.abs(Map.user.getY() - Map.item.getYPosition()) * 10) / 10;
-            destination = distance+" meters. ";
+            destination = "Walk to the next intersection";
             //if the item is left of its node
             if(Map.item.getXPosition() < currentPath.get(currentPath.size()-1).getXPosition())
             {
