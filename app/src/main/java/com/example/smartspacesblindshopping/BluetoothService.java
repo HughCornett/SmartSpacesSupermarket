@@ -286,7 +286,7 @@ public class BluetoothService extends Service {
             while (true) {
                 try {
                     bytes = mmInStream.read(buffer);
-                    mHandler.obtainMessage(AbstractActivity.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                    mHandler.obtainMessage(MyActivity.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                     buffer = new byte[256];
                 } catch (Exception e) {
                     e.printStackTrace();
