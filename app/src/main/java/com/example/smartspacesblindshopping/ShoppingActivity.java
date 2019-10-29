@@ -54,6 +54,7 @@ public class ShoppingActivity extends MyActivity {
     public void readLists(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
         startActivityForResult(intent, 10);
+
     }
 
     public void addItem(View view) {
@@ -99,6 +100,8 @@ public class ShoppingActivity extends MyActivity {
                 break;
         }
     }
+
+
 
 
     @Override
@@ -240,6 +243,8 @@ public class ShoppingActivity extends MyActivity {
             //re-route user from here?
         }
     }
+
+
 
     /**
      * returns true if the parameter item is on the user's shopping list
