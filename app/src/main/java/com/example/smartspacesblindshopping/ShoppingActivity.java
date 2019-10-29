@@ -74,6 +74,7 @@ public class ShoppingActivity extends MyActivity {
 
                 currentItem = Directions.getClosestItem(Map.user, shoppingList);
                 Directions.setCurrentPath(Map.user, currentItem);
+                TTSHandler.speak(Directions.pathToString());
 
                 customItemAdapter.notifyDataSetChanged();
 
@@ -179,6 +180,7 @@ public class ShoppingActivity extends MyActivity {
                                         }
                                     }
                                     Directions.setCurrentPath(Map.user, currentItem);
+                                    TTSHandler.speak(Directions.pathToString());
                                     break;
                             }
                             Log.d("debug", "" + menu[index]);
@@ -279,6 +281,9 @@ public class ShoppingActivity extends MyActivity {
         }
         return false;
     }
+
+    //TODO
+    //Directions.getNextDirection() when user presses the button on their glove
 
 
 
