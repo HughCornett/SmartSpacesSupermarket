@@ -47,7 +47,7 @@ public class ShoppingActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "Go back"});
+        switchCallback(new String[]{"Choose a list", "add items to the list", "Go back"});
 
     }
 
