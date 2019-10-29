@@ -21,6 +21,7 @@ public class Map extends MapActivity
 
     public static ArrayList<Node> nodes;
     public static ArrayList<Edge> edges;
+    public static Node exit;
 
     public static User user = new User(0,1.5, 1);
     public static ArrayList<Item> items = new ArrayList<>();
@@ -136,6 +137,7 @@ public class Map extends MapActivity
         //add the neighbour
         edges.add(newNode.addEdge(nodes.get(2)));
         edges.add(nodes.get(2).addEdge(newNode));
+        exit = newNode;
     }
 
     public static double getItemXCoord(Item item)

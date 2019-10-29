@@ -28,8 +28,6 @@ public class Directions {
     public static String pathToString()
     {
         String turn = "[Error]";
-
-        Log.e("Direction error", ""+currentPath.size());
         //the direction the user must face to walk to the next node
         int turnToDirection = -1;
         if (currentPath.size() > 1) {
@@ -365,5 +363,6 @@ public class Directions {
             else if(Map.getItemXCoord(nextItem) > Map.user.getX()) { Map.user.setFacing(1); }
             else { Log.e("Direction error", "User needs next direction from last node"); }
         }
+
     }
 }
