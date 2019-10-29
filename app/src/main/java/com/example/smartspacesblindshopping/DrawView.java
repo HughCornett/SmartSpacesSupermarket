@@ -170,7 +170,7 @@ public class DrawView extends View
         paint.setColor(ITEM_COLOR);
         if(Map.item != null)
         {
-            itemScreenPosition = getScreenCoords(Map.item.getXPosition(), Map.item.getYPosition());
+            itemScreenPosition = getScreenCoords(Map.getItemXCoord(Map.item), Map.getItemYCoord(Map.item));
             canvas.drawCircle(itemScreenPosition.x, itemScreenPosition.y, ITEM_RADIUS, paint);
         }
     }

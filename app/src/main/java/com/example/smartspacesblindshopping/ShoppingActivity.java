@@ -69,7 +69,7 @@ public class ShoppingActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "add items to the list", "Go back"});
+        switchCallback(new String[]{"Choose a list", "add items to the list","next instructions", "previous instruction", "Go back"});
 
     }
 
@@ -92,17 +92,45 @@ public class ShoppingActivity extends MyActivity {
         startActivityForResult(intent, 20);
     }
 
+    public void nextInstruction(View view){
+
+        Directions.nextDirection();
+        TTSHandler.speak(Directions.pathToString());
+    }
+
+    public void nextItem(View view){
+
+        if(currentItem ==null)  return;
+
+        Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getXPosition());
+        Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getYPosition());
+        if(Map.getItemXCoord(currentItem) < Map.user.getX()) { Map.user.setFacing(3); }
+        else if(Map.getItemXCoord(currentItem) > Map.user.getX()) { Map.user.setFacing(1); }
+        else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
+        shoppingList.remove(currentItem);
+        currentItem = Directions.getClosestItem(Map.user, shoppingList);
+        Directions.setCurrentPath(Map.user,currentItem);
+        TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
+        TTSHandler.speak(Directions.pathToString());
+        customItemAdapter.notifyDataSetChanged();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK && data != null) {
+                shoppingList.clear();
                 shoppingList.addAll(stringsToItems(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST))));
 
                 currentItem = Directions.getClosestItem(Map.user, shoppingList);
                 Directions.setCurrentPath(Map.user, currentItem);
-                TTSHandler.speak(Directions.pathToString());
 
+                ArrayList<Node> path = Directions.currentPath;
+
+                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
+                Log.d("direction", ""+Directions.pathToString());
+                TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
 
             }
@@ -111,11 +139,22 @@ public class ShoppingActivity extends MyActivity {
         {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
+                currentItem = Directions.getClosestItem(Map.user, shoppingList);
+                Directions.setCurrentPath(Map.user, currentItem);
+
+                ArrayList<Node> path = Directions.currentPath;
+
+                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
+                Log.d("direction", ""+Directions.pathToString());
+                TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
-                //TODO
-                //sort the list
+
             }
         }
+    }
+
+    public void previousDirection(View view){
+        TTSHandler.speak(Directions.pathToString());
     }
 
     @Override
@@ -141,7 +180,6 @@ public class ShoppingActivity extends MyActivity {
     public void switchCallback(final String[] menu) {
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
-            boolean first = true;
 
             @Override
             public boolean handleMessage(@NonNull Message message) {
@@ -183,10 +221,10 @@ public class ShoppingActivity extends MyActivity {
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
 
                                     //set user position and facing direction
-                                    Map.user.setX(scannedItem.getXPosition());
-                                    Map.user.setY(scannedItem.getYPosition());
-                                    if(scannedItem.getXPosition() < Map.user.getX()) { Map.user.setFacing(3); }
-                                    else if(scannedItem.getXPosition() > Map.user.getX()) { Map.user.setFacing(1); }
+                                    Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
+                                    Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
+                                    if(Map.getItemXCoord(scannedItem) < Map.user.getX()) { Map.user.setFacing(3); }
+                                    else if(Map.getItemXCoord(scannedItem) > Map.user.getX()) { Map.user.setFacing(1); }
                                     else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
 
                                     //Item itemOnlist =  firebase.fullNameToItem(currentItemText.getText().toString());
@@ -196,10 +234,13 @@ public class ShoppingActivity extends MyActivity {
                                         if (!shoppingList.isEmpty()) {
 
                                             shoppingList.remove(scannedItem);
+
                                             currentItem = Directions.getClosestItem(Map.user, shoppingList);
 
                                             TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
                                         }
+
+
                                     }
                                     else {
                                         if(scannedItem!=null && currentItem != null){

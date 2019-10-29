@@ -8,15 +8,14 @@
 
 
     <Button
-        android:id="@+id/nextItem"
+        android:id="@+id/chooseList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
         android:onClick="readLists"
         android:text="choose a list"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/addItem"
         app:layout_constraintHorizontal_chainStyle="spread"
 
         />
@@ -29,6 +28,31 @@
         android:text="add items"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/chooseList"
+        app:layout_constraintStart_toStartOf="parent"
+
+        />
+    <Button
+        android:id="@+id/nextInstruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:onClick="nextInstruction"
+        android:text="next instruction"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/chooseList"
+
+        />
+
+    <Button
+        android:id="@+id/nextItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:onClick="nextItem"
+        android:text="next item"
+        app:layout_constraintBottom_toTopOf="@id/nextInstruction"
+        app:layout_constraintStart_toEndOf="@+id/chooseList"
 
         />
 
@@ -47,4 +71,13 @@
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/previousButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="previousDirection"
+        android:text="previous instruction"
+        app:layout_constraintBottom_toTopOf="@+id/chooseList"
+        tools:layout_editor_absoluteX="27dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

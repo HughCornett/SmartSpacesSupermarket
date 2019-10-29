@@ -115,7 +115,7 @@ public class Item {
     public int getAisle() {
         return this.aisle;
     }
-    public double getXPosition()
+    /*public double getXPosition()
     {
         return this.xPosition;
     }
@@ -123,6 +123,8 @@ public class Item {
     {
         return this.yPosition;
     }
+
+     */
 
     public String getId() {
         return id;

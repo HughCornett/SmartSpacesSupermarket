@@ -22,7 +22,7 @@ public class Map extends MapActivity
     public static ArrayList<Node> nodes;
     public static ArrayList<Edge> edges;
 
-    public static User user = new User(0,1, 2);
+    public static User user = new User(0,1.5, 1);
     public static ArrayList<Item> items = new ArrayList<>();
     public static Item item;
 
@@ -130,16 +130,17 @@ public class Map extends MapActivity
         }
         //add the exit node
         double nodeXPos = 0;
-        double nodeYPos = rows.get(1).bottom - ((rows.get(1).bottom-rows.get(1).top)/2);
+        double nodeYPos = 1.5;
         newNode = new Node(nodeXPos, nodeYPos, true);
         nodes.add(newNode);
         //add the neighbour
-        edges.add(newNode.addEdge(nodes.get(4)));
-        edges.add(nodes.get(4).addEdge(newNode));
+        edges.add(newNode.addEdge(nodes.get(2)));
+        edges.add(nodes.get(2).addEdge(newNode));
     }
 
     public static double getItemXCoord(Item item)
     {
+        if(item ==null)  Log.e("Map error", "item null");
         Shelf shelf = Map.shelves.get(item.getShelf());
         return shelf.getRect().left + ((shelf.getRect().right - shelf.getRect().left)/2);
     }

@@ -76,17 +76,6 @@ public class MapActivity extends MyActivity {
         {
             drawView.updateView();
 
-            //see if the user is at a node
-            //Log.d("user pos", ""+(float) Map.user.getX()+", "+(float) Map.user.getY());
-            for(int i = 0; i < Map.nodes.size(); i++)
-            {
-                if(Map.nodes.get(i).getRect().contains((float) Map.user.getX(), (float) Map.user.getY()))
-                {
-                    Directions.lastNode = Map.nodes.get(i);
-                    break;
-                }
-            }
-
 
             ArrayList<Node> path = Directions.currentPath;
             if(path.size()>1)
@@ -126,13 +115,13 @@ public class MapActivity extends MyActivity {
     public void userScansTag(String tag)
     {
         Item item = firebase.getItemByNFCTag(tag);
-        Map.user.setX(Directions.getClosestNode(item.getXPosition(), item.getYPosition(), true).getXPosition());
-        Map.user.setY(Directions.getClosestNode(item.getXPosition(), item.getYPosition(), true).getYPosition());
-        if(item.getXPosition() < Map.user.getX())
+        Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(Map.item), Map.getItemYCoord(Map.item), true).getXPosition());
+        Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(Map.item), Map.getItemYCoord(Map.item), true).getYPosition());
+        if(Map.getItemXCoord(Map.item) < Map.user.getX())
         {
             Map.user.setFacing(3);
         }
-        else if(item.getXPosition() > Map.user.getX())
+        else if(Map.getItemXCoord(Map.item) > Map.user.getX())
         {
             Map.user.setFacing(1);
         }
