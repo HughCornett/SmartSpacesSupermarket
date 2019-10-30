@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Item {
+
+
     private String id;
     private String productName;
     private DocumentReference productBrand;
@@ -24,6 +26,10 @@ public class Item {
     private int level;
     private double xPosition;
     private double yPosition;
+    private boolean fakeItem;
+
+
+
 
 
     public int getLevel() {
@@ -40,6 +46,7 @@ public class Item {
 
     //Custom constructor to serialise DB data into objects - Josh
     public Item(String Name, DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row, int section, int level) {
+        Log.d("item constructor", "running normal item constructor");
         this.productName = Name;
         this.productBrand = Brand;
         this.productCategory = Category;
@@ -48,8 +55,24 @@ public class Item {
         this.shelf = shelf;
         this.row = row;
         this.section = section;
-        this.brandName = "";
-        this.categoryName = "";
+        this.brandName = " ";
+        this.categoryName = " ";
+        this.level = level;
+    }
+
+    //Custom constructor to serialise DB data into objects - Josh
+    public Item(String nfcTag, int aisle, int shelf, int section, int level) {
+        Log.d("item constructor", "running null item constructor");
+        this.productName = "null";
+        this.productBrand = null;
+        this.productCategory = null;
+        this.nfcTag = nfcTag;
+        this.aisle = aisle;
+        this.shelf = shelf;
+        this.row = 0;
+        this.section = section;
+        this.brandName = " ";
+        this.categoryName = " ";
         this.level = level;
     }
 
@@ -171,6 +194,14 @@ public class Item {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+
+    public boolean isFakeItem() {
+        return fakeItem;
+    }
+
+    public void setFakeItem(boolean fakeItem) {
+        this.fakeItem = fakeItem;
+    }
 }
 
 //Smaller Classes for firebase serialisation
@@ -222,8 +253,8 @@ class Store {
         //Log.d("Creating store", "Creating new store");
         //Log.d("items to add", "store items size is "+ items.size());
         int aisle = 0;
-        for (int i = 1; i <= 3; i++) {
 
+        for (int i = 0; i <= 3; i++) {
             ArrayList<Item> shelfItems = new ArrayList<Item>();
             for (Item item : items) {
                 aisle = item.getAisle();
