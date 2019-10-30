@@ -3,6 +3,8 @@ package com.example.smartspacesblindshopping;
 import android.graphics.Point;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.lang.reflect.Array;
@@ -53,15 +55,15 @@ public class Item {
         this.shelf = shelf;
         this.row = row;
         this.section = section;
-        this.brandName = " ";
-        this.categoryName = " ";
+        //this.brandName = " ";
+        //this.categoryName = " ";
         this.level = level;
     }
 
     //Custom constructor to serialise DB data into objects - Josh
     public Item(String nfcTag, int aisle, int shelf, int section, int level) {
         Log.d("item constructor", "running null item constructor");
-        this.productName = "null";
+        this.productName = "blank";
         this.productBrand = null;
         this.productCategory = null;
         this.nfcTag = nfcTag;
@@ -81,6 +83,10 @@ public class Item {
         this.shelf = shelf;
         this.level = level;
         this.section = section;
+    }
+
+    public String getFullName(){
+        return this.getBrandName() + " " + getProductName();
     }
 
 
@@ -124,6 +130,12 @@ public class Item {
         return this.aisle;
     }
 
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getProductName() + " " + this.getCategoryName() + " " + this.getBrandName() + " " + this.getSection() + " " + this.getLevel() + " " + this.getAisle() + " " + this.getShelf();
+    }
 
     public String getId() {
         return id;

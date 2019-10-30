@@ -213,11 +213,16 @@ public class ShoppingActivity extends MyActivity {
                                     //set user position and facing direction
                                     Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                     Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX())
+                                    {
                                         Map.user.setFacing(3);
-                                    } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                    }
+                                    else if (Map.getItemXCoord(scannedItem) > Map.user.getX())
+                                    {
                                         Map.user.setFacing(1);
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
                                     }
 
@@ -248,7 +253,6 @@ public class ShoppingActivity extends MyActivity {
                                     } else if (scannedItem != null && currentItem != null) {
                                         itemShelfProximityFeedback(scannedItem, currentItem);
                                         //Shopping list is empty
-
                                     } else {
                                         //Else scanned item is not on the shopping list
                                         itemShelfProximityFeedback(scannedItem, currentItem);
@@ -283,11 +287,13 @@ public class ShoppingActivity extends MyActivity {
      * Provides audio feedback for the location of an item on the shopping list (item J)
      * compared to the scanned item (Item I)
      *
-     * @param i scanned item,
-     * @param j item on shopping list
+     * @param i scanned item (CAN BE A BLANK ITEM)
+     * @param j item on shopping list (CANNOT BE A BLANK ITEM)
      */
     public void itemShelfProximityFeedback(Item i, Item j) {
         //SAME AISLE
+
+
 
         if (i.getAisle() == j.getAisle()) {
             if (i.getShelf() == j.getShelf()) {
@@ -299,29 +305,29 @@ public class ShoppingActivity extends MyActivity {
 
                 if (i.getLevel() == j.getLevel()) {
                     if (sectionDifference <= 0)
-                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the right of " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the right");
                     if (sectionDifference >= 1)
-                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the left of " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the left ");
                 } else {
                     //directly below
                     if (j.getLevel() == 1 && sectionDifference == 0)
-                        TTSHandler.speak(j.getProductName() + " is directly below " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is directly below");
                         //below and to the left
                     else if (j.getLevel() == 1 && sectionDifference < 0)
-                        TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference)) + spots + " to the right");
+                        TTSHandler.speak(j.getProductName() + " is below and " + (Math.abs(sectionDifference)) + spots + " to the right");
                         //below and to the right
                     else if (j.getLevel() == 1 && sectionDifference > 0)
-                        TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
+                        TTSHandler.speak(j.getProductName() + " is below and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
 
                         //directly above
                     else if (j.getLevel() == 0 && sectionDifference == 0)
-                        TTSHandler.speak(j.getProductName() + " is directly above " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is directly above");
                         //above and to the right
                     else if (j.getLevel() == 0 && sectionDifference < 0)
-                        TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference)) + spots + " to the right");
+                        TTSHandler.speak(j.getProductName() + " is above and " + (Math.abs(sectionDifference)) + spots + " to the right");
                         //above and to the left
                     else if (j.getLevel() == 0 && sectionDifference > 0)
-                        TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + "  to the left");
+                        TTSHandler.speak(j.getProductName() + " is above and " + (Math.abs(sectionDifference) + 1) + spots + "  to the left");
                 }
             } else {
                 TTSHandler.speak("the item you are looking for is on another shelf");
@@ -353,6 +359,7 @@ public class ShoppingActivity extends MyActivity {
 
     //TODO
     //Directions.getNextDirection() when user presses the button on their glove
+
 
 
 }
