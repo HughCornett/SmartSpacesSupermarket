@@ -17,6 +17,7 @@ public class Directions {
     public static ArrayList<Node> currentPath;
     public static ArrayList<Node> currentPathTurns;
     public static int currentPathTurnsPos;
+    public static boolean exiting = false;
     public static Item currentItem;
 
     //uses Floyd Warshall algorithm to compute the distance between all pairs of nodes
@@ -84,6 +85,14 @@ public class Directions {
      */
     public static void setCurrentPathNode(User user, Node destination)
     {
+        if(destination.getExit())
+        {
+            exiting = true;
+        }
+        else
+        {
+            exiting = false;
+        }
         Map.resetPathNodes();
 
         Node origin = getClosestNode(user.getX(), user.getY(), false);
@@ -167,17 +176,23 @@ public class Directions {
         //if already at last node
         else
         {
-            //get the direction the user must face
-            turnToDirection = Map.userFaceItem(Map.user, currentItem);
+            if(exiting)
+            {
+                //face the exit, which is always direction 3 of the user when at the last node
+                turnToDirection = 3;
+            }
+            else
+            {
+                //get the direction the user must face
+                turnToDirection = Map.userFaceItem(Map.user, currentItem);
+            }
+
         }
-
-
         //if the user is facing the right way
         if(turnToDirection == Map.user.getFacing())
         {
             turn = "Walk forward ";
         }
-
         //if the user is facing left of the direction they should be
         else if(turnToDirection == (Map.user.getFacing() + 1) % 4)
         {
