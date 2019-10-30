@@ -94,13 +94,8 @@ public class ShoppingActivity extends MyActivity {
 
         Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getXPosition());
         Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getYPosition());
-        if (Map.getItemXCoord(currentItem) < Map.user.getX()) {
-            Map.user.setFacing(3);
-        } else if (Map.getItemXCoord(currentItem) > Map.user.getX()) {
-            Map.user.setFacing(1);
-        } else {
-            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-        }
+        Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
+
         shoppingList.remove(currentItem);
         currentItem = Directions.getClosestItem(Map.user, shoppingList);
         Directions.setCurrentPath(Map.user, currentItem);
@@ -213,26 +208,7 @@ public class ShoppingActivity extends MyActivity {
                                     //set user position and facing direction
                                     Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                     Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX())
-                                    {
-                                        Map.user.setFacing(3);
-                                    }
-                                    else if (Map.getItemXCoord(scannedItem) > Map.user.getX())
-                                    {
-                                        Map.user.setFacing(1);
-                                    }
-                                    else
-                                    {
-                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                    }
-
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                        Map.user.setFacing(3);
-                                    } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
-                                        Map.user.setFacing(1);
-                                    } else {
-                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                    }
+                                    Map.user.setFacing(Map.userFaceItem(Map.user, scannedItem));
 
                                     if (ItemOnShoppingList(scannedItem)) {
                                         if (!shoppingList.isEmpty()) {
@@ -248,7 +224,7 @@ public class ShoppingActivity extends MyActivity {
                                             TTSHandler.speak(Directions.pathToString());
                                         } else {
                                             TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-                                            //Directions.setCurrentPath(Map.user, );
+                                            Directions.setCurrentPathNode(Map.user, Map.exit);
                                         }
                                     } else if (scannedItem != null && currentItem != null) {
                                         itemShelfProximityFeedback(scannedItem, currentItem);

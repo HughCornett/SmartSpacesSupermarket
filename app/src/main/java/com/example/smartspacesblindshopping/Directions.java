@@ -77,17 +77,16 @@ public class Directions {
      * Gets an arrayList of nodes that is the shortest path from one node to another
      * @param user
      *  the user to create a path from
-     * @param item
-     *  the item to create a path to
+     * @param destination
+     *  the node to create a path to
      * @return
      *  an ArrayList of nodes that is the shortest path from the origin to the destination
      */
-    public static void setCurrentPath(User user, Item item)
+    public static void setCurrentPathNode(User user, Node destination)
     {
         Map.resetPathNodes();
-        currentItem = item;
+
         Node origin = getClosestNode(user.getX(), user.getY(), false);
-        Node destination = getClosestNode(Map.getItemXCoord(item), Map.getItemYCoord(item), true);
 
         //initialise path
         currentPath = new ArrayList<>();
@@ -115,6 +114,13 @@ public class Directions {
         }
 
         setCurrentPathTurns();
+    }
+
+    public static void setCurrentPath(User user, Item item)
+    {
+        currentItem = item;
+        Node node = getClosestNode(Map.getItemXCoord(item), Map.getItemYCoord(item), true);
+        setCurrentPathNode(user, node);
     }
 
     public static void setCurrentPathTurns()
