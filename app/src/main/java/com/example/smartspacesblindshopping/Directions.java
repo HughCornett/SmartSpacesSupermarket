@@ -24,6 +24,59 @@ public class Directions {
     public static int currentPathTurnsPos;
     public static Item nextItem;
 
+    //used Floyd Warshall algorithm to compute the distance between all pairs of nodes
+    //this is used to find optimal order to get items as well as get paths to items
+    public static void computeMatrices()
+    {
+        //initialise the distanceMatrix to max double values
+        //(i.e. assuming very large distances initially)
+        distanceMatrix = new double[Map.nodes.size()][Map.nodes.size()];
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            for(int j = 0; j < Map.nodes.size(); j++)
+            {
+                distanceMatrix[i][j] = Double.MAX_VALUE;
+            }
+        }
+        //initialise nextMatrix to null
+        //(i.e. assuming no path between nodes initially)
+        nextMatrix = new Node[Map.nodes.size()][Map.nodes.size()];
+
+        //get distances between neighbours and change next accordingly
+        for(int i = 0; i < Map.edges.size(); i++)
+        {
+            int nodeFrom = Map.nodes.indexOf(Map.edges.get(i).getFrom());
+            int nodeTo = Map.nodes.indexOf(Map.edges.get(i).getTo());
+            distanceMatrix[nodeFrom][nodeTo] = Map.edges.get(i).getWeight();
+            nextMatrix[nodeFrom][nodeTo] = Map.edges.get(i).getTo();
+        }
+
+        //get distances from each node to itself and set the next node to itself
+        for(int i = 0; i < Map.nodes.size(); i++)
+        {
+            distanceMatrix[i][i] = 0;
+            nextMatrix[i][i] = Map.nodes.get(i);
+        }
+
+        //k = intermediate node, i = origin node, j = destination node
+        //for each combination of origins and destination through each k
+        for(int k = 0; k < Map.nodes.size(); k++)
+        {
+            for(int i = 0; i < Map.nodes.size(); i++)
+            {
+                for(int j = 0; j < Map.nodes.size(); j++)
+                {
+                    //if this pair of nodes (i, j) can have a shorter distance by going through k,
+                    //set the distance from (i, j) to that distance
+                    if(distanceMatrix[i][j] > distanceMatrix[i][k] + distanceMatrix[k][j])
+                    {
+                        distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
+                        nextMatrix[i][j] = nextMatrix[i][k];
+                    }
+                }
+            }
+        }
+    }
 
     public static String pathToString()
     {
@@ -156,83 +209,6 @@ public class Directions {
         return turn+" | "+destination+" | "+nextTurn;
     }
 
-    public static void setCurrentPathTurns()
-    {
-        currentPathTurns = new ArrayList<>();
-        for(int i = 0; i < currentPath.size(); i++)
-        {
-            //if this is the first or last node of the currentPath, it must be in the list
-            if(i == 0 || i == currentPath.size()-1)
-            {
-                currentPathTurns.add(currentPath.get(i));
-            }
-            //if this is a node where there is a turn
-            //(so if the direction from the previous node to this one is different to
-            //the direction from this node to the next one)
-            else if(currentPath.get(i).getEdgeTo(currentPath.get(i+1)).getDirection() != currentPath.get(i-1).getEdgeTo(currentPath.get(i)).getDirection())
-            {
-                currentPathTurns.add(currentPath.get(i));
-            }
-        }
-        //should usually be 0 because this method will usually only be run
-        // when a path has just been created from the user
-        currentPathTurnsPos = currentPathTurns.indexOf(getClosestNode(Map.user.getX(), Map.user.getY(), false));
-    }
-
-    //used Floyd Warshall algorithm to compute the distance between all pairs of nodes
-    //this is used to find optimal order to get items as well as get paths to items
-    public static void computeMatrices()
-    {
-        //initialise the distanceMatrix to max double values
-        //(i.e. assuming very large distances initially)
-        distanceMatrix = new double[Map.nodes.size()][Map.nodes.size()];
-        for(int i = 0; i < Map.nodes.size(); i++)
-        {
-            for(int j = 0; j < Map.nodes.size(); j++)
-            {
-                distanceMatrix[i][j] = Double.MAX_VALUE;
-            }
-        }
-        //initialise nextMatrix to null
-        //(i.e. assuming no path between nodes initially)
-        nextMatrix = new Node[Map.nodes.size()][Map.nodes.size()];
-
-        //get distances between neighbours and change next accordingly
-        for(int i = 0; i < Map.edges.size(); i++)
-        {
-            int nodeFrom = Map.nodes.indexOf(Map.edges.get(i).getFrom());
-            int nodeTo = Map.nodes.indexOf(Map.edges.get(i).getTo());
-            distanceMatrix[nodeFrom][nodeTo] = Map.edges.get(i).getWeight();
-            nextMatrix[nodeFrom][nodeTo] = Map.edges.get(i).getTo();
-        }
-
-        //get distances from each node to itself and set the next node to itself
-        for(int i = 0; i < Map.nodes.size(); i++)
-        {
-            distanceMatrix[i][i] = 0;
-            nextMatrix[i][i] = Map.nodes.get(i);
-        }
-
-        //k = intermediate node, i = origin node, j = destination node
-        //for each combination of origins and destination through each k
-        for(int k = 0; k < Map.nodes.size(); k++)
-        {
-            for(int i = 0; i < Map.nodes.size(); i++)
-            {
-                for(int j = 0; j < Map.nodes.size(); j++)
-                {
-                    //if this pair of nodes (i, j) can have a shorter distance by going through k,
-                    //set the distance from (i, j) to that distance
-                    if(distanceMatrix[i][j] > distanceMatrix[i][k] + distanceMatrix[k][j])
-                    {
-                        distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
-                        nextMatrix[i][j] = nextMatrix[i][k];
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Gets an arrayList of nodes that is the shortest path from one node to another
      * @param user
@@ -275,6 +251,29 @@ public class Directions {
         }
 
         setCurrentPathTurns();
+    }
+
+    public static void setCurrentPathTurns()
+    {
+        currentPathTurns = new ArrayList<>();
+        for(int i = 0; i < currentPath.size(); i++)
+        {
+            //if this is the first or last node of the currentPath, it must be in the list
+            if(i == 0 || i == currentPath.size()-1)
+            {
+                currentPathTurns.add(currentPath.get(i));
+            }
+            //if this is a node where there is a turn
+            //(so if the direction from the previous node to this one is different to
+            //the direction from this node to the next one)
+            else if(currentPath.get(i).getEdgeTo(currentPath.get(i+1)).getDirection() != currentPath.get(i-1).getEdgeTo(currentPath.get(i)).getDirection())
+            {
+                currentPathTurns.add(currentPath.get(i));
+            }
+        }
+        //should usually be 0 because this method will usually only be run
+        // when a path has just been created from the user
+        currentPathTurnsPos = currentPathTurns.indexOf(getClosestNode(Map.user.getX(), Map.user.getY(), false));
     }
 
     /**

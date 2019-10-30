@@ -26,8 +26,6 @@ public class Item {
     private int shelf;
     private int section;
     private int level;
-    private double xPosition;
-    private double yPosition;
     private boolean fakeItem;
 
 
@@ -85,13 +83,6 @@ public class Item {
         this.shelf = shelf;
         this.level = level;
         this.section = section;
-
-        //the x position is the middle of the shelf's rectangle
-        Shelf thisShelf = Map.shelves.get(shelf);
-        this.xPosition = (thisShelf.getRect().left + ((thisShelf.getRect().right - thisShelf.getRect().left)/2));
-        //the y position is the position of the section on the shelf
-        double sectionWidth = (thisShelf.getRect().bottom - thisShelf.getRect().top) / thisShelf.getNumberOfSections();
-        this.yPosition = thisShelf.getRect().top + (section+0.5)*sectionWidth;
     }
 
 
@@ -130,26 +121,11 @@ public class Item {
         this.section = section;
     }
 
-    public void setXPosition(double xPosition) {
-        this.xPosition = xPosition;
-    }
-    public void setYPosition(double yPosition) {
-        this.yPosition = yPosition;
-    }
 
     public int getAisle() {
         return this.aisle;
     }
-    /*public double getXPosition()
-    {
-        return this.xPosition;
-    }
-    public double getYPosition()
-    {
-        return this.yPosition;
-    }
 
-     */
 
     @NonNull
     @Override

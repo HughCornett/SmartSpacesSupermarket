@@ -126,7 +126,6 @@ public class ShoppingActivity extends MyActivity {
                 Log.d("direction", "" + Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
-
             }
         } else if (requestCode == 20) {
             if (resultCode == RESULT_OK && data != null) {
@@ -140,7 +139,6 @@ public class ShoppingActivity extends MyActivity {
                 Log.d("direction", "" + Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
-
             }
         }
     }
