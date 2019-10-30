@@ -226,7 +226,7 @@ public class Directions {
 
 
         String destination = "[Error]";
-        String nextTurn = "[Error] ";
+        String nextTurn = "";
         if(currentPath.size() > nodesUntilNextTurn + 1)
         {
             int nextDirection = currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection();
@@ -295,13 +295,20 @@ public class Directions {
             //in the demo supermarket, there is only one in each aisle.
             //in a real supermarket, there would be more
             int distance  = 1;
-            if(distance == 1)
+            if(!exiting)
             {
-                destination = " to the next intersection, ";
+                if (distance == 1)
+                {
+                    destination = " to the next intersection, ";
+                }
+                else
+                {
+                    destination = distance + " intersections, ";
+                }
             }
             else
             {
-                destination = distance+" intersections, ";
+                destination = " to the exit. ";
             }
             if(currentPath.size()>1) {
                 //if the item is left of its node
@@ -436,7 +443,14 @@ public class Directions {
             int posInFullPath = currentPath.indexOf(currentPathTurns.get(currentPathTurnsPos));
             Map.user.setFacing(currentPath.get(posInFullPath).getEdgeTo(currentPath.get(posInFullPath+1)).getDirection());
 
-            Directions.setCurrentPath(Map.user, currentItem);
+            if(!exiting)
+            {
+                Directions.setCurrentPath(Map.user, currentItem);
+            }
+            else
+            {
+                Directions.setCurrentPathNode(Map.user, Map.exit);
+            }
         }
         //if it is
         else
@@ -444,7 +458,14 @@ public class Directions {
             Map.user.setX(currentPathTurns.get(currentPathTurns.size()-1).getXPosition());
             Map.user.setY(currentPathTurns.get(currentPathTurns.size()-1).getYPosition());
             //get the direction the user will now be facing
-            Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
+            if(!exiting)
+            {
+                Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
+            }
+            else
+            {
+                Map.user.setFacing(3);
+            }
         }
     }
 }
