@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,6 +35,9 @@ public class DisplayListActivity extends MyActivity {
     ListView listView;
     Context mContext;
     String path;
+    String mode;
+
+    Button button;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -43,11 +47,37 @@ public class DisplayListActivity extends MyActivity {
 
         Intent intent = getIntent();
         path = intent.getStringExtra(ReadActivity.EXTRA_MESSAGE);
-
+        mode = intent.getStringExtra(MANAGE_OR_SHOP);
         mRelativeLayout = (RelativeLayout) findViewById(R.id.displaylayout);
         listView = (ListView) findViewById(R.id.DisplayList);
+        button = (Button) findViewById(R.id.displayActivityButton);
+
+        if(mode .equals("shop")) {
+            button.setText(R.string.choosethis);
+        }
+        else if(mode.equals("manage"))
+        {
+            button.setText(R.string.deletethis);
+        }
+
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mode .equals("shop")) {
+                    chooseList();
+                }
+                else if(mode.equals("manage"))
+                {
+                    deleteList();
+                    finish();
+                }
+
+            }
+        });
 
         mContext = getApplicationContext();
+
         itemList.addAll(stringsToItems(ReadWriteCSV.readCSV(this, path)));
 
         customItemAdapter = new CustomItemAdapter(this,itemList );
@@ -55,6 +85,7 @@ public class DisplayListActivity extends MyActivity {
         listView.setAdapter(customItemAdapter);
 
         createPopUpOnClick();
+
 
 
     }
@@ -121,7 +152,7 @@ public class DisplayListActivity extends MyActivity {
         deleteFile(path);
         ArrayList<String> fileList = ReadWriteCSV.readCSV(getApplicationContext(),PATH);
         ReadWriteCSV.flush(getApplicationContext(),PATH);
-        fileList.remove(fileList.indexOf(path));
+        fileList.remove(path);
         ReadWriteCSV.writeToCSV(getApplicationContext(),fileList,PATH);
 
     }
@@ -156,6 +187,10 @@ public class DisplayListActivity extends MyActivity {
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        ArrayList<String> fileList = ReadWriteCSV.readCSV(getApplicationContext(),path);
+                        ReadWriteCSV.flush(getApplicationContext(),path);
+                        fileList.remove(itemList.get(index));
+                        ReadWriteCSV.writeToCSV(getApplicationContext(),fileList,path);
                         itemList.remove(index);
                         mPopupWindow.dismiss();
                         if(itemList.isEmpty())
@@ -174,7 +209,7 @@ public class DisplayListActivity extends MyActivity {
 
     }
 
-    public void chooseList(View  view)
+    private void chooseList()
     {
             Intent resultIntent = new Intent();
             resultIntent.putExtra(CHOOSE_LIST, path);

@@ -73,6 +73,7 @@ public class ShoppingActivity extends MyActivity {
 
     public void readLists(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
+        intent.putExtra(MANAGE_OR_SHOP, "shop");
         startActivityForResult(intent, 10);
 
     }

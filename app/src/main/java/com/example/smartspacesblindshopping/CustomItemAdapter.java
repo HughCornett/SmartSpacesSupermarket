@@ -58,7 +58,7 @@ public class CustomItemAdapter extends BaseAdapter
         else
             holder = (CustomItemAdapter.ViewHolder) view.getTag();
 
-        holder.itemName.setText(objects.get(i).getProductName());
+        holder.itemName.setText(objects.get(i).getFullName());
 
 
         return view;

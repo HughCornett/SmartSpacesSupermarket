@@ -53,13 +53,9 @@ public class MapActivity extends MyActivity {
         PIXELS_PER_METER = displaySize.x / Map.ROOM_HEIGHT;
 
         drawView.updateView();
-        Map.init();
 
         //Map.addBlockage(7, 12);
 
-
-        Directions.computeMatrices();
-        Directions.setCurrentPath(Map.user, Map.item);
 
         started = true;
         handler.postDelayed(runnable, 1000);
@@ -84,8 +80,7 @@ public class MapActivity extends MyActivity {
                 Log.d("direction", ""+Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
             }
-            Directions.nextDirection();
-            Map.addBlockage(17, 18);
+
 
 
 

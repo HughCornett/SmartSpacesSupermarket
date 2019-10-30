@@ -7,6 +7,7 @@ import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,7 +26,10 @@ public class ReadActivity extends MyActivity
 
     ArrayList<String> fileList = new ArrayList<>();
 
+    ArrayList<String> displayList = new ArrayList<>();
     ListView listView;
+
+    String mode;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -33,32 +37,57 @@ public class ReadActivity extends MyActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.read_activity);
 
+        mode = getIntent().getStringExtra(MANAGE_OR_SHOP);
         listView = (ListView) findViewById(R.id.FileList);
 
         readPaths();
 
         Collections.reverse(fileList);
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, fileList );
+        for(int i = 0; i<fileList.size();++i)
+        {
+            displayList.add("list " + (i+1));
+        }
+
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, displayList );
 
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                goToList(i);
+                if(mode .equals("shop")) {
+                    goToChoosingLists(i);
+                }
+                else if(mode.equals("manage"))
+                {
+                    goToManagingLists(i);
+                }
             }
         });
     }
 
-    private void goToList(int i)
+    private void goToChoosingLists(int i)
     {
-        String path = (String) listView.getItemAtPosition(i);
-        Intent intent = new Intent(ReadActivity.this, DisplayListActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, path);
+        Intent intent = chooseList(i);
         startActivityForResult(intent, 10);
     }
-    public void deleteFiles(View view)
+
+    private void goToManagingLists(int i)
+    {
+        Intent intent = chooseList(i);
+        startActivity(intent);
+    }
+
+    private Intent chooseList(int i)
+    {
+        String path = fileList.get(i);
+        Intent intent = new Intent(ReadActivity.this, DisplayListActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, path);
+        intent.putExtra(MANAGE_OR_SHOP, mode);
+        return intent;
+    }
+    public void deleteFiles()
     {
         for(String s: fileList)
         {
@@ -95,13 +124,15 @@ public class ReadActivity extends MyActivity
 
         if(index<fileList.size())
         {
-            goToList(index);
+            if(mode .equals("shop")) {
+                goToChoosingLists(index);
+            }
+            else if(mode.equals("manage"))
+            {
+                goToManagingLists(index);
+            }
         }
-        else if(index==fileList.size())
-        {
-            ReadActivity.this.deleteFiles(findViewById(R.id.DeleteButton));
 
-        }
         else ReadActivity.this.finish();
 
     }
@@ -111,8 +142,8 @@ public class ReadActivity extends MyActivity
     {
         ArrayList<String> menu = new ArrayList<>();
 
+
         menu.addAll(fileList);
-        menu.add("delete lists");
         menu.add("go back");
 
         String[] array = new String[fileList.size()+2];
