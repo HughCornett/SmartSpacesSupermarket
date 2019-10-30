@@ -15,18 +15,16 @@
         />
 
 
-    <ImageButton
+    <ImageView
         android:id="@+id/addToList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_launcher_foreground"
+        android:layout_width="@android:dimen/thumbnail_height"
+        android:layout_height="@android:dimen/thumbnail_height"
         android:layout_alignParentBottom="true"
 
+        android:layout_centerHorizontal="true"
         android:onClick="addToList"
+        android:src="@drawable/ic_mic"
         />
-
-
 
 
 </RelativeLayout>

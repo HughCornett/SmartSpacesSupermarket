@@ -31,7 +31,10 @@ public class FirebaseAdapter {
     private CollectionReference productsRef = db.collection("Products");
     private CollectionReference brandsRef = db.collection("Brands");
     private CollectionReference categoriesRef = db.collection("Categories");
-    private CollectionReference fingerprintsRef = db.collection("Fingerprints");
+    private CollectionReference nfcTagRef = db.collection("nfcTags");
+
+    private DocumentReference nullBrand = brandsRef.document("G6TXR05GNWOL6BKz9aNy");
+    private DocumentReference nullCat = categoriesRef.document("Cz7jTEnhrj4Rr9YngzTo");
 
     private HashMap<String, Item> productsMap;
     private HashMap<String, Category> categoryMap;
@@ -247,7 +250,6 @@ public class FirebaseAdapter {
 
     }
 
-
     private interface FirestoreCallback{
         void onCallback(ArrayList<Item> list);
 
@@ -255,6 +257,40 @@ public class FirebaseAdapter {
 
     private void getData(final FirestoreCallback firestoreCallback){
         products.clear();
+
+
+        //Loads fake nfc tags as items
+        nfcTagRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult() != null) {
+                                Item i = null;
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                     i = new Item(new String("blank"), nullBrand,
+                                            nullCat, document.get("nfcTag").toString(), Integer.parseInt(document.get("aisle").toString()),
+                                             Integer.parseInt(document.get("shelf").toString()), 0,
+                                             Integer.parseInt(document.get("section").toString()), Integer.parseInt(document.get("level").toString()));
+                                    i.setBrandName(getBrandNameByRef(nullBrand));
+                                    i.setCategoryName(getCategoryNameByRef(nullCat));
+                                    i.setFakeItem(true);
+                                    Log.d(i.getProductName(), i.toString());
+                                    products.add(i);
+                                }
+
+                                firestoreCallback.onCallback(products);
+
+
+                                Log.d("DB Load all products", "task successful");
+                            }
+                        }else{
+                            Log.d("DB Load all products", "task unsuccesfull");
+                        }
+                    }
+                });
+
+        //loads real items
         productsRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -265,7 +301,9 @@ public class FirebaseAdapter {
                                 for (Item i : data) {
                                     i.setBrandName(getBrandNameByRef(i.getProductBrand()));
                                     i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
+                                    i.setFakeItem(false);
                                     products.add(i);
+                                    Log.d(i.getProductName(), i.toString() );
                                 }
                                 firestoreCallback.onCallback(products);
                                 Log.d("DB Load all products", "task successful");
@@ -329,15 +367,6 @@ public class FirebaseAdapter {
                         Log.d("Load Category failed", "Failed to load Category");
                     }
                 });
-    }
-
-    public Item getByLevelandSection(int level, int section){
-        for (Item i : products) {
-            if(i.getLevel() == level && i.getSection() == section){
-                return i;
-            }
-        }
-        return null;
     }
 
     /**
@@ -411,20 +440,19 @@ public class FirebaseAdapter {
         return null;
     }
 
+
+    /**
+     * Returns an item by the given full item name as a string
+     *
+     * @param fullname fullname to match
+     * @return The item or null if item does not exist in the database
+     */
     public Item fullNameToItem(String fullname){
-        Log.d("fullnametoitem", "looking for item " + fullname);
         for (Item i: products) {
-            //Log.d("fullnametoitem", "i is item " + i.getBrandName() + i.get);
             if((i.getBrandName() + " " + i.getProductName()).equals(fullname)){
-                Log.d("match found", "match found");
                 return i;
             }
         }
         return null;
-    }
-
-    public boolean addFingerprint(){
-
-        return true;
     }
 }

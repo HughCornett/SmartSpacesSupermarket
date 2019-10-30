@@ -3,6 +3,8 @@ package com.example.smartspacesblindshopping;
 import android.graphics.Point;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.firestore.DocumentReference;
 
 import java.lang.reflect.Array;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Item {
+
+
     private String id;
     private String productName;
     private DocumentReference productBrand;
@@ -22,8 +26,10 @@ public class Item {
     private int shelf;
     private int section;
     private int level;
-    private double xPosition;
-    private double yPosition;
+    private boolean fakeItem;
+
+
+
 
 
     public int getLevel() {
@@ -40,6 +46,7 @@ public class Item {
 
     //Custom constructor to serialise DB data into objects - Josh
     public Item(String Name, DocumentReference Brand, DocumentReference Category, String nfcTag, int aisle, int shelf, int row, int section, int level) {
+        Log.d("item constructor", "running normal item constructor");
         this.productName = Name;
         this.productBrand = Brand;
         this.productCategory = Category;
@@ -48,8 +55,24 @@ public class Item {
         this.shelf = shelf;
         this.row = row;
         this.section = section;
-        this.brandName = "";
-        this.categoryName = "";
+        //this.brandName = " ";
+        //this.categoryName = " ";
+        this.level = level;
+    }
+
+    //Custom constructor to serialise DB data into objects - Josh
+    public Item(String nfcTag, int aisle, int shelf, int section, int level) {
+        Log.d("item constructor", "running null item constructor");
+        this.productName = "blank";
+        this.productBrand = null;
+        this.productCategory = null;
+        this.nfcTag = nfcTag;
+        this.aisle = aisle;
+        this.shelf = shelf;
+        this.row = 0;
+        this.section = section;
+        this.brandName = " ";
+        this.categoryName = " ";
         this.level = level;
     }
 
@@ -60,13 +83,10 @@ public class Item {
         this.shelf = shelf;
         this.level = level;
         this.section = section;
+    }
 
-        //the x position is the middle of the shelf's rectangle
-        Shelf thisShelf = Map.shelves.get(shelf);
-        this.xPosition = (thisShelf.getRect().left + ((thisShelf.getRect().right - thisShelf.getRect().left)/2));
-        //the y position is the position of the section on the shelf
-        double sectionWidth = (thisShelf.getRect().bottom - thisShelf.getRect().top) / thisShelf.getNumberOfSections();
-        this.yPosition = thisShelf.getRect().top + (section+0.5)*sectionWidth;
+    public String getFullName(){
+        return this.getBrandName() + " " + getProductName();
     }
 
 
@@ -105,26 +125,17 @@ public class Item {
         this.section = section;
     }
 
-    public void setXPosition(double xPosition) {
-        this.xPosition = xPosition;
-    }
-    public void setYPosition(double yPosition) {
-        this.yPosition = yPosition;
-    }
 
     public int getAisle() {
         return this.aisle;
     }
-    /*public double getXPosition()
-    {
-        return this.xPosition;
-    }
-    public double getYPosition()
-    {
-        return this.yPosition;
-    }
 
-     */
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getProductName() + " " + this.getCategoryName() + " " + this.getBrandName() + " " + this.getSection() + " " + this.getLevel() + " " + this.getAisle() + " " + this.getShelf();
+    }
 
     public String getId() {
         return id;
@@ -172,6 +183,14 @@ public class Item {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public boolean isFakeItem() {
+        return fakeItem;
+    }
+
+    public void setFakeItem(boolean fakeItem) {
+        this.fakeItem = fakeItem;
     }
 }
 
@@ -224,8 +243,8 @@ class Store {
         //Log.d("Creating store", "Creating new store");
         //Log.d("items to add", "store items size is "+ items.size());
         int aisle = 0;
-        for (int i = 1; i <= 3; i++) {
 
+        for (int i = 0; i <= 3; i++) {
             ArrayList<Item> shelfItems = new ArrayList<Item>();
             for (Item item : items) {
                 aisle = item.getAisle();

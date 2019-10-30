@@ -72,7 +72,6 @@ public class ListActivity extends MyActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -120,8 +119,14 @@ public class ListActivity extends MyActivity {
         String match = "";
         Log.d("result", result.get(0));
         for (Item i : MainActivity.getDbItems()) {
-            if(i != null){
+            Log.d("matchResults", "i is " + i.getProductName());
+            if (i.getProductName() == null || i.getBrandName() == null || i.getCategoryName() == null) {
+                Log.d("name", "" +i.getProductName());
+                Log.d("brand", "" +i.getBrandName());
+                Log.d("category", ""+ i.getCategoryName());
+            }
 
+            if (i != null && !i.isFakeItem()) {
                 if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
                     exactMatch = true;
                     match = i.getBrandName() + " " + i.getProductName();
@@ -134,8 +139,6 @@ public class ListActivity extends MyActivity {
                     categoryMatch = true;
                     tempCat = i.getCategoryName();
                 }
-            }else{
-                TTSHandler.speak("item is null");
             }
         }
         if (exactMatch) {
@@ -151,7 +154,7 @@ public class ListActivity extends MyActivity {
             promptForBrand(tempBrand);
 
         } else {
-            TTSHandler.speak("I'm sorry i did not find any matches for that item");
+            TTSHandler.speak("I'm sorry i did not find any matches for " + result.get(0));
         }
     }
 
@@ -159,12 +162,13 @@ public class ListActivity extends MyActivity {
         ArrayList<Item> items = firebase.getItemsByCategory(categoryName);
         StrBuilder builder = new StrBuilder();
         builder.append("Did you want ");
+
         for (Item i : items) {
             int str = i.getProductName().indexOf(' ');
             String firstWord = i.getProductName().substring(0, str);
-            if(i.getBrandName().equals(firstWord)){
+            if (i.getBrandName().equals(firstWord)) {
                 builder.append(i.getProductName() + " or ");
-            }else{
+            } else {
                 builder.append(i.getBrandName() + "'s" + i.getProductName() + " or ");
             }
         }
@@ -180,10 +184,13 @@ public class ListActivity extends MyActivity {
         for (Item i : items) {
             int str = i.getProductName().indexOf(' ');
             String firstWord = i.getProductName().substring(0, str);
-            if(i.getBrandName().equals(firstWord)){
+
+
+            if (i.getBrandName().equals(firstWord)) {
                 builder.append(i.getProductName() + " or ");
-            }else{
+            } else {
                 builder.append(i.getBrandName() + "'s" + i.getProductName() + " or ");
+
             }
         }
 

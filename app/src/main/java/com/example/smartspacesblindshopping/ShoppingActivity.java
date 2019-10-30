@@ -35,7 +35,7 @@ import java.util.Objects;
 public class ShoppingActivity extends MyActivity {
 
     public static final String MIME_TEXT_PLAIN = "text/plain";
-    private static final String TAG ="" ;
+    private static final String TAG = "";
 
     ArrayList<Item> shoppingList = new ArrayList<>();
     TextView currentItemText;
@@ -43,7 +43,6 @@ public class ShoppingActivity extends MyActivity {
     NfcTag currentNfcTag;
     CustomItemAdapter customItemAdapter;
     ListView listView;
-
 
 
     @Override
@@ -62,33 +61,19 @@ public class ShoppingActivity extends MyActivity {
         Directions.computeMatrices();
 
 
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "add items to the list","next instructions", "previous instruction", "Go back"});
+        switchCallback(new String[]{"Choose a list", "add items to the list", "next instructions", "previous instruction", "Go back"});
 
     }
 
-
-
-
-
-
-
-
-    public void map(View view)
-    {
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
-
-    }
 
     public void readLists(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
+        intent.putExtra(MANAGE_OR_SHOP, "shop");
         startActivityForResult(intent, 10);
 
     }
@@ -98,24 +83,28 @@ public class ShoppingActivity extends MyActivity {
         startActivityForResult(intent, 20);
     }
 
-    public void nextInstruction(View view){
+    public void nextInstruction(View view) {
 
         Directions.nextDirection();
         TTSHandler.speak(Directions.pathToString());
     }
 
-    public void nextItem(View view){
+    public void nextItem(View view) {
 
-        if(currentItem ==null)  return;
+        if (currentItem == null) return;
 
         Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getXPosition());
         Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getYPosition());
-        if(Map.getItemXCoord(currentItem) < Map.user.getX()) { Map.user.setFacing(3); }
-        else if(Map.getItemXCoord(currentItem) > Map.user.getX()) { Map.user.setFacing(1); }
-        else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
+        if (Map.getItemXCoord(currentItem) < Map.user.getX()) {
+            Map.user.setFacing(3);
+        } else if (Map.getItemXCoord(currentItem) > Map.user.getX()) {
+            Map.user.setFacing(1);
+        } else {
+            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+        }
         shoppingList.remove(currentItem);
         currentItem = Directions.getClosestItem(Map.user, shoppingList);
-        Directions.setCurrentPath(Map.user,currentItem);
+        Directions.setCurrentPath(Map.user, currentItem);
         TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
         TTSHandler.speak(Directions.pathToString());
         customItemAdapter.notifyDataSetChanged();
@@ -134,15 +123,12 @@ public class ShoppingActivity extends MyActivity {
 
                 ArrayList<Node> path = Directions.currentPath;
 
-                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
-                Log.d("direction", ""+Directions.pathToString());
+                Log.d("path", "Path from " + path.get(0) + " to " + path.get(path.size() - 1) + ": " + path);
+                Log.d("direction", "" + Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
-
             }
-        }
-        else if(requestCode == 20)
-        {
+        } else if (requestCode == 20) {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
                 currentItem = Directions.getClosestItem(Map.user, shoppingList);
@@ -150,16 +136,15 @@ public class ShoppingActivity extends MyActivity {
 
                 ArrayList<Node> path = Directions.currentPath;
 
-                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
-                Log.d("direction", ""+Directions.pathToString());
+                Log.d("path", "Path from " + path.get(0) + " to " + path.get(path.size() - 1) + ": " + path);
+                Log.d("direction", "" + Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
-
             }
         }
     }
 
-    public void previousDirection(View view){
+    public void previousDirection(View view) {
         TTSHandler.speak(Directions.pathToString());
     }
 
@@ -173,13 +158,12 @@ public class ShoppingActivity extends MyActivity {
                 break;
             case 1:
                 ShoppingActivity.this.addItem(findViewById(R.id.addItem));
-            case 2: finish();
+            case 2:
+                finish();
             default:
                 break;
         }
     }
-
-
 
 
     @Override
@@ -225,16 +209,26 @@ public class ShoppingActivity extends MyActivity {
                                 default:
                                     //or here?
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
+                                    currentNfcTag = new NfcTag(scannedItem);
 
                                     //set user position and facing direction
                                     Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                     Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    if(Map.getItemXCoord(scannedItem) < Map.user.getX()) { Map.user.setFacing(3); }
-                                    else if(Map.getItemXCoord(scannedItem) > Map.user.getX()) { Map.user.setFacing(1); }
-                                    else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
+                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                        Map.user.setFacing(3);
+                                    } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                        Map.user.setFacing(1);
+                                    } else {
+                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                    }
 
-                                    //Item itemOnlist =  firebase.fullNameToItem(currentItemText.getText().toString());
-                                    currentNfcTag = new NfcTag(scannedItem);
+                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                        Map.user.setFacing(3);
+                                    } else if (Map.getItemXCoord(scannedItem)  > Map.user.getX()) {
+                                        Map.user.setFacing(1);
+                                    } else {
+                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                    }
 
                                     if (ItemOnShoppingList(scannedItem)) {
                                         if (!shoppingList.isEmpty()) {
@@ -244,17 +238,22 @@ public class ShoppingActivity extends MyActivity {
                                             currentItem = Directions.getClosestItem(Map.user, shoppingList);
 
                                             TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-                                        }
 
+                                            Directions.setCurrentPath(Map.user, currentItem);
+
+                                            TTSHandler.speak(Directions.pathToString());
+                                        } else {
+                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
+                                            //Directions.setCurrentPath(Map.user, );
+                                        }
+                                    } else if (scannedItem != null && currentItem != null) {
+                                        itemShelfProximityFeedback(scannedItem, currentItem);
+                                        //Shopping list is empty
+                                    } else {
+                                        //Else scanned item is not on the shopping list
+                                        itemShelfProximityFeedback(scannedItem, currentItem);
 
                                     }
-                                    else {
-                                        if(scannedItem!=null && currentItem != null){
-                                            itemShelfProximityFeedback(scannedItem, currentItem);
-                                        }
-                                    }
-                                    Directions.setCurrentPath(Map.user, currentItem);
-                                    TTSHandler.speak(Directions.pathToString());
                                     break;
                             }
                             Log.d("debug", "" + menu[index]);
@@ -284,11 +283,14 @@ public class ShoppingActivity extends MyActivity {
      * Provides audio feedback for the location of an item on the shopping list (item J)
      * compared to the scanned item (Item I)
      *
-     * @param i scanned item,
-     * @param j item on shopping list
+     * @param i scanned item (CAN BE A BLANK ITEM)
+     * @param j item on shopping list (CANNOT BE A BLANK ITEM)
      */
     public void itemShelfProximityFeedback(Item i, Item j) {
         //SAME AISLE
+
+
+
         if (i.getAisle() == j.getAisle()) {
             if (i.getShelf() == j.getShelf()) {
                 //SAME LEVEL
@@ -299,41 +301,36 @@ public class ShoppingActivity extends MyActivity {
 
                 if (i.getLevel() == j.getLevel()) {
                     if (sectionDifference <= 0)
-                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the right of " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the right");
                     if (sectionDifference >= 1)
-                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the left of " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is " + (Math.abs(sectionDifference) + 1) + spots + " to the left ");
                 } else {
                     //directly below
                     if (j.getLevel() == 1 && sectionDifference == 0)
-                        TTSHandler.speak(j.getProductName() + " is directly below " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is directly below");
                         //below and to the left
                     else if (j.getLevel() == 1 && sectionDifference < 0)
-                        TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference)) + spots + " to the right");
+                        TTSHandler.speak(j.getProductName() + " is below and " + (Math.abs(sectionDifference)) + spots + " to the right");
                         //below and to the right
                     else if (j.getLevel() == 1 && sectionDifference > 0)
-                        TTSHandler.speak(j.getProductName() + " is below " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
+                        TTSHandler.speak(j.getProductName() + " is below and " + (Math.abs(sectionDifference) + 1) + spots + " to the left");
 
                         //directly above
                     else if (j.getLevel() == 0 && sectionDifference == 0)
-                        TTSHandler.speak(j.getProductName() + " is directly above " + i.getProductName());
+                        TTSHandler.speak(j.getProductName() + " is directly above");
                         //above and to the right
                     else if (j.getLevel() == 0 && sectionDifference < 0)
-                        TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference)) + spots + " to the right");
+                        TTSHandler.speak(j.getProductName() + " is above and " + (Math.abs(sectionDifference)) + spots + " to the right");
                         //above and to the left
                     else if (j.getLevel() == 0 && sectionDifference > 0)
-                        TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + "  to the left");
+                        TTSHandler.speak(j.getProductName() + " is above and " + (Math.abs(sectionDifference) + 1) + spots + "  to the left");
                 }
             } else {
-                TTSHandler.speak("the item is on another shelf");
+                TTSHandler.speak("the item you are looking for is on another shelf");
+                TTSHandler.speak(Directions.pathToString());
             }
         }
-
-        //different aisle
-        else {
-            //re-route user from here?
-        }
     }
-
 
 
     /**
@@ -358,14 +355,6 @@ public class ShoppingActivity extends MyActivity {
 
     //TODO
     //Directions.getNextDirection() when user presses the button on their glove
-
-
-
-
-
-
-
-
 
 
 }
