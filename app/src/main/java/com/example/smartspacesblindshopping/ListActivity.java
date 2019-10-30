@@ -141,13 +141,12 @@ public class ListActivity extends MyActivity {
         for (Item i : MainActivity.getDbItems()) {
             Log.d("matchResults", "i is " + i.getProductName());
             if (i.getProductName() == null || i.getBrandName() == null || i.getCategoryName() == null) {
-                Log.d("name", i.getProductName());
-                Log.d("brand", i.getBrandName());
-                Log.d("category", i.getCategoryName());
+                Log.d("name", "" +i.getProductName());
+                Log.d("brand", "" +i.getBrandName());
+                Log.d("category", ""+ i.getCategoryName());
             }
 
             if (i != null && !i.isFakeItem()) {
-
                 if (result.get(0).toUpperCase().matches(i.getProductName().toUpperCase())) {
                     exactMatch = true;
                     match = i.getBrandName() + " " + i.getProductName();
@@ -160,8 +159,6 @@ public class ListActivity extends MyActivity {
                     categoryMatch = true;
                     tempCat = i.getCategoryName();
                 }
-            } else {
-                TTSHandler.speak("item is null");
             }
         }
         if (exactMatch) {

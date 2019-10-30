@@ -268,17 +268,18 @@ public class FirebaseAdapter {
                             if (task.getResult() != null) {
                                 Item i = null;
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                     i = new Item(new String("null"), nullBrand,
+                                     i = new Item(new String("blank"), nullBrand,
                                             nullCat, document.get("nfcTag").toString(), Integer.parseInt(document.get("aisle").toString()),
                                              Integer.parseInt(document.get("shelf").toString()), 0,
                                              Integer.parseInt(document.get("section").toString()), Integer.parseInt(document.get("level").toString()));
-                                    i.setBrandName(getBrandNameByRef(i.getProductBrand()));
-                                    i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
+                                    i.setBrandName(getBrandNameByRef(nullBrand));
+                                    i.setCategoryName(getCategoryNameByRef(nullCat));
                                     i.setFakeItem(true);
+                                    Log.d(i.getProductName(), i.toString());
                                     products.add(i);
                                 }
 
-                                //firestoreCallback.onCallback(products);
+                                firestoreCallback.onCallback(products);
 
 
                                 Log.d("DB Load all products", "task successful");
@@ -302,6 +303,7 @@ public class FirebaseAdapter {
                                     i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
                                     i.setFakeItem(false);
                                     products.add(i);
+                                    Log.d(i.getProductName(), i.toString() );
                                 }
                                 firestoreCallback.onCallback(products);
                                 Log.d("DB Load all products", "task successful");

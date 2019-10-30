@@ -35,7 +35,7 @@ import java.util.Objects;
 public class ShoppingActivity extends MyActivity {
 
     public static final String MIME_TEXT_PLAIN = "text/plain";
-    private static final String TAG ="" ;
+    private static final String TAG = "";
 
     ArrayList<Item> shoppingList = new ArrayList<>();
     TextView currentItemText;
@@ -43,7 +43,6 @@ public class ShoppingActivity extends MyActivity {
     NfcTag currentNfcTag;
     CustomItemAdapter customItemAdapter;
     ListView listView;
-
 
 
     @Override
@@ -62,23 +61,14 @@ public class ShoppingActivity extends MyActivity {
         Directions.computeMatrices();
 
 
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "add items to the list","next instructions", "previous instruction", "Go back"});
+        switchCallback(new String[]{"Choose a list", "add items to the list", "next instructions", "previous instruction", "Go back"});
 
     }
-
-
-
-
-
-
-
 
 
     public void readLists(View view) {
@@ -92,24 +82,28 @@ public class ShoppingActivity extends MyActivity {
         startActivityForResult(intent, 20);
     }
 
-    public void nextInstruction(View view){
+    public void nextInstruction(View view) {
 
         Directions.nextDirection();
         TTSHandler.speak(Directions.pathToString());
     }
 
-    public void nextItem(View view){
+    public void nextItem(View view) {
 
-        if(currentItem ==null)  return;
+        if (currentItem == null) return;
 
         Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getXPosition());
         Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getYPosition());
-        if(Map.getItemXCoord(currentItem) < Map.user.getX()) { Map.user.setFacing(3); }
-        else if(Map.getItemXCoord(currentItem) > Map.user.getX()) { Map.user.setFacing(1); }
-        else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
+        if (Map.getItemXCoord(currentItem) < Map.user.getX()) {
+            Map.user.setFacing(3);
+        } else if (Map.getItemXCoord(currentItem) > Map.user.getX()) {
+            Map.user.setFacing(1);
+        } else {
+            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+        }
         shoppingList.remove(currentItem);
         currentItem = Directions.getClosestItem(Map.user, shoppingList);
-        Directions.setCurrentPath(Map.user,currentItem);
+        Directions.setCurrentPath(Map.user, currentItem);
         TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
         TTSHandler.speak(Directions.pathToString());
         customItemAdapter.notifyDataSetChanged();
@@ -128,8 +122,8 @@ public class ShoppingActivity extends MyActivity {
 
                 ArrayList<Node> path = Directions.currentPath;
 
-                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
-                Log.d("direction", ""+Directions.pathToString());
+                Log.d("path", "Path from " + path.get(0) + " to " + path.get(path.size() - 1) + ": " + path);
+                Log.d("direction", "" + Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
 
@@ -142,8 +136,8 @@ public class ShoppingActivity extends MyActivity {
 
                 ArrayList<Node> path = Directions.currentPath;
 
-                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
-                Log.d("direction", ""+Directions.pathToString());
+                Log.d("path", "Path from " + path.get(0) + " to " + path.get(path.size() - 1) + ": " + path);
+                Log.d("direction", "" + Directions.pathToString());
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
 
@@ -151,7 +145,7 @@ public class ShoppingActivity extends MyActivity {
         }
     }
 
-    public void previousDirection(View view){
+    public void previousDirection(View view) {
         TTSHandler.speak(Directions.pathToString());
     }
 
@@ -221,13 +215,17 @@ public class ShoppingActivity extends MyActivity {
                                     //set user position and facing direction
                                     Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                     Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    if(Map.getItemXCoord(scannedItem) < Map.user.getX()) { Map.user.setFacing(3); }
-                                    else if(Map.getItemXCoord(scannedItem) > Map.user.getX()) { Map.user.setFacing(1); }
-                                    else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
-
-                                    if (scannedItem.getXPosition() < Map.user.getX()) {
+                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
                                         Map.user.setFacing(3);
-                                    } else if (scannedItem.getXPosition() > Map.user.getX()) {
+                                    } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                        Map.user.setFacing(1);
+                                    } else {
+                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                    }
+
+                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                        Map.user.setFacing(3);
+                                    } else if (Map.getItemXCoord(scannedItem)  > Map.user.getX()) {
                                         Map.user.setFacing(1);
                                     } else {
                                         Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
@@ -245,18 +243,13 @@ public class ShoppingActivity extends MyActivity {
                                             Directions.setCurrentPath(Map.user, currentItem);
 
                                             TTSHandler.speak(Directions.pathToString());
-                                        }
-
-
-                                    }
-                                    else {
-                                        if(scannedItem!=null && currentItem != null){
-                                            itemShelfProximityFeedback(scannedItem, currentItem);
-                                        //Shopping list is empty
-                                        else{
+                                        } else {
                                             TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-                                           //Directions.setCurrentPath(Map.user, );
+                                            //Directions.setCurrentPath(Map.user, );
                                         }
+                                    } else if (scannedItem != null && currentItem != null) {
+                                        itemShelfProximityFeedback(scannedItem, currentItem);
+                                        //Shopping list is empty
                                     } else {
                                         //Else scanned item is not on the shopping list
                                         itemShelfProximityFeedback(scannedItem, currentItem);
@@ -361,7 +354,6 @@ public class ShoppingActivity extends MyActivity {
 
     //TODO
     //Directions.getNextDirection() when user presses the button on their glove
-
 
 
 }
