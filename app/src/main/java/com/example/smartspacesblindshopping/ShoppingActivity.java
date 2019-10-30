@@ -210,51 +210,38 @@ public class ShoppingActivity extends MyActivity {
                                         //set user position and facing direction
                                         Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                         Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                            Map.user.setFacing(3);
-                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
-                                            Map.user.setFacing(1);
-                                        } else {
-                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                        Map.user.setFacing(Map.userFaceItem(Map.user, scannedItem));
+
+                                        if (shoppingList.size()>1) {
+                                            if (ItemOnShoppingList(scannedItem)) {
+
+                                                shoppingList.remove(scannedItem);
+
+                                                currentItem = Directions.getClosestItem(Map.user, shoppingList);
+
+                                                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
+
+                                                Directions.setCurrentPath(Map.user, currentItem);
+
+                                                TTSHandler.speak(Directions.pathToString());
+
+                                                customItemAdapter.notifyDataSetChanged();
+                                            }
+                                            else if (currentItem != null) {
+                                                itemShelfProximityFeedback(scannedItem, currentItem);
+
+                                            }
                                         }
+                                        else {
+                                            shoppingList.clear();
 
-                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                            Map.user.setFacing(3);
-                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
-                                            Map.user.setFacing(1);
-                                        } else {
-                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                        }
-                                    currentNfcTag = new NfcTag(scannedItem);
+                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
 
-                                    //set user position and facing direction
-                                    Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
-                                    Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    Map.user.setFacing(Map.userFaceItem(Map.user, scannedItem));
-
-                                    if (ItemOnShoppingList(scannedItem)) {
-                                        if (!shoppingList.isEmpty()) {
-
-                                            shoppingList.remove(scannedItem);
-
-                                            currentItem = Directions.getClosestItem(Map.user, shoppingList);
-
-                                            TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-
-                                            Directions.setCurrentPath(Map.user, currentItem);
+                                            Directions.setCurrentPathNode(Map.user, Map.exit);
 
                                             TTSHandler.speak(Directions.pathToString());
-                                        } else {
-                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-                                            Directions.setCurrentPathNode(Map.user, Map.exit);
-                                        }
-                                    } else if (scannedItem != null && currentItem != null) {
-                                        itemShelfProximityFeedback(scannedItem, currentItem);
-                                        //Shopping list is empty
-                                    } else {
-                                        //Else scanned item is not on the shopping list
-                                        itemShelfProximityFeedback(scannedItem, currentItem);
 
+                                            customItemAdapter.notifyDataSetChanged();
                                         }
                                     }
                                     break;
