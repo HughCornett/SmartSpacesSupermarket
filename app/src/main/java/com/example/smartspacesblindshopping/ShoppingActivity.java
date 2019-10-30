@@ -110,6 +110,8 @@ public class ShoppingActivity extends MyActivity {
         customItemAdapter.notifyDataSetChanged();
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -208,51 +210,53 @@ public class ShoppingActivity extends MyActivity {
 
                                 default:
                                     //or here?
+
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
-                                    currentNfcTag = new NfcTag(scannedItem);
-
-                                    //set user position and facing direction
-                                    Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
-                                    Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                        Map.user.setFacing(3);
-                                    } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
-                                        Map.user.setFacing(1);
-                                    } else {
-                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                    }
-
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                        Map.user.setFacing(3);
-                                    } else if (Map.getItemXCoord(scannedItem)  > Map.user.getX()) {
-                                        Map.user.setFacing(1);
-                                    } else {
-                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                    }
-
-                                    if (ItemOnShoppingList(scannedItem)) {
-                                        if (!shoppingList.isEmpty()) {
-
-                                            shoppingList.remove(scannedItem);
-
-                                            currentItem = Directions.getClosestItem(Map.user, shoppingList);
-
-                                            TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-
-                                            Directions.setCurrentPath(Map.user, currentItem);
-
-                                            TTSHandler.speak(Directions.pathToString());
+                                    //currentNfcTag = new NfcTag(scannedItem);
+                                    if(scannedItem!=null) {
+                                        //set user position and facing direction
+                                        Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
+                                        Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
+                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                            Map.user.setFacing(3);
+                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                            Map.user.setFacing(1);
                                         } else {
-                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-                                            //Directions.setCurrentPath(Map.user, );
+                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
                                         }
-                                    } else if (scannedItem != null && currentItem != null) {
-                                        itemShelfProximityFeedback(scannedItem, currentItem);
-                                        //Shopping list is empty
-                                    } else {
-                                        //Else scanned item is not on the shopping list
-                                        itemShelfProximityFeedback(scannedItem, currentItem);
 
+                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                            Map.user.setFacing(3);
+                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                            Map.user.setFacing(1);
+                                        } else {
+                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                        }
+
+                                        if (ItemOnShoppingList(scannedItem)) {
+                                            if (!shoppingList.isEmpty()) {
+
+                                                shoppingList.remove(scannedItem);
+                                                
+                                                currentItem = Directions.getClosestItem(Map.user, shoppingList);
+
+                                                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
+
+                                                Directions.setCurrentPath(Map.user, currentItem);
+
+                                                TTSHandler.speak(Directions.pathToString());
+                                            } else {
+                                                TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
+                                                //Directions.setCurrentPath(Map.user, );
+                                            }
+                                        } else if (scannedItem != null && currentItem != null) {
+                                            itemShelfProximityFeedback(scannedItem, currentItem);
+                                            //Shopping list is empty
+                                        } else {
+                                            //Else scanned item is not on the shopping list
+                                            itemShelfProximityFeedback(scannedItem, currentItem);
+
+                                        }
                                     }
                                     break;
                             }
@@ -351,6 +355,12 @@ public class ShoppingActivity extends MyActivity {
             }
         }
         return false;
+    }
+
+    public void map(View view)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
     }
 
     //TODO

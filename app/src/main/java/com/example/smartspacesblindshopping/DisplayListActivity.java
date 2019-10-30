@@ -161,6 +161,8 @@ public class DisplayListActivity extends MyActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                listView.setClickable(false);
+
                 LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
                 View customView = inflater.inflate(R.layout.popup_delete,null);
@@ -181,6 +183,8 @@ public class DisplayListActivity extends MyActivity {
                     @Override
                     public void onClick(View view) {
                         mPopupWindow.dismiss();
+                        listView.setClickable(true);
+                        customItemAdapter.notifyDataSetChanged();
                     }
                 });
                 Button deleteButton = (Button) customView.findViewById(R.id.deleteItem);
@@ -193,6 +197,7 @@ public class DisplayListActivity extends MyActivity {
                         ReadWriteCSV.writeToCSV(getApplicationContext(),fileList,path);
                         itemList.remove(index);
                         mPopupWindow.dismiss();
+                        listView.setClickable(true);
                         if(itemList.isEmpty())
                         {
                             deleteList();
