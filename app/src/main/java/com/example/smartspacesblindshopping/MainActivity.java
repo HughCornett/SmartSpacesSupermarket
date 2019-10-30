@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
@@ -29,29 +30,21 @@ public class MainActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
-        switchCallback(new String[]{"create a new list", "read shopping lists","Go to the Map", "Do your shopping"});
+        switchCallback(new String[]{"create a new list", "Do your shopping"});
 
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void goToList(View view) {
 
-        Intent intent = new Intent(this, ListActivity.class);
+
+
+    public void manageLists(View view)
+    {
+        Intent intent = new Intent(this, ManageListsActivity.class);
         startActivity(intent);
     }
 
 
-    public void readList(View view) {
-        Intent intent = new Intent(this, ReadActivity.class);
-        startActivity(intent);
-
-    }
-
-    public void goToMap(View view) {
-        Intent intent = new Intent(this, MapActivity.class);
-        startActivity(intent);
-    }
 
     public void doShopping(View view)
     {
@@ -59,11 +52,6 @@ public class MainActivity extends MyActivity {
         startActivity(intent);
     }
 
-    public void localize(View view)
-    {
-        Intent intent =  new Intent (this, LocalizationActivity.class);
-        startActivity(intent);
-    }
 
     public void connect(View view)
     {
@@ -84,15 +72,10 @@ public class MainActivity extends MyActivity {
 
         switch (index) {
             case 0:
-                MainActivity.this.goToList(findViewById(R.id.createButton));
+                MainActivity.this.manageLists(findViewById(R.id.createButton));
                 break;
+
             case 1:
-                MainActivity.this.readList(findViewById(R.id.readButton));
-                break;
-            case 2:
-                MainActivity.this.goToMap(findViewById(R.id.mapButton));
-                break;
-            case 3:
                 MainActivity.this.doShopping(findViewById(R.id.shoppingButton));
                 break;
             default:

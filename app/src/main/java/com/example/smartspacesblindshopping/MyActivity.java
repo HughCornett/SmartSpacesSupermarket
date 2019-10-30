@@ -42,7 +42,7 @@ public class MyActivity extends Activity {
     public final String CHOOSE_BTDEVICE_MAC = "choose btdevice mac";
     public final String CHOOSE_BTDEVICE_NAME = "choose btdevice name";
     public final String APPEND_TO_LIST = "append to list";
-
+    public final String MANAGE_OR_SHOP= "manage or shop";
 
 
     protected BluetoothService bluetoothService;

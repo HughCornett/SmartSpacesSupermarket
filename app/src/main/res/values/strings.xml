@@ -6,4 +6,6 @@
     <string name="delete">delete</string>
     <string name="cancel">cancel</string>
     <string name="deletetext">delete?</string>
+    <string name="choosethis">choose this</string>
+    <string name="deletethis">delete this</string>
 </resources>

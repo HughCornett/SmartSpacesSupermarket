@@ -80,6 +80,12 @@ public class ShoppingActivity extends MyActivity {
 
 
 
+    public void map(View view)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+
+    }
 
     public void readLists(View view) {
         Intent intent = new Intent(this, ReadActivity.class);

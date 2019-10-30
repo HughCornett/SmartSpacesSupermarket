@@ -66,10 +66,8 @@ public class ListActivity extends MyActivity {
         listView.setAdapter(customItemAdapter);
 
 
-        Intent intent = new Intent();
 
-        intent.putExtra(APPEND_TO_LIST, itemsToStrings(itemList));
-        setResult(RESULT_OK, intent);
+
 
     }
 
@@ -94,24 +92,6 @@ public class ListActivity extends MyActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void saveFile(View view) {
-        ArrayList<String> tmp = ReadWriteCSV.readCSV(getApplicationContext(), PATH);
-
-
-        String fileName = "list" + tmp.size() + ".csv";
-
-        ArrayList<String> data = new ArrayList<>();
-
-        data.add(fileName);
-
-        ReadWriteCSV.writeToCSV(this, data, PATH);
-
-        ReadWriteCSV.writeToCSV(this, itemsToStrings(itemList), fileName);
-
-        Toast.makeText(this, "List written", Toast.LENGTH_SHORT).show();
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -160,6 +140,9 @@ public class ListActivity extends MyActivity {
         }
         if (exactMatch) {
             itemList.add(firebase.fullNameToItem(match));
+            Intent intent = new Intent();
+            intent.putExtra(APPEND_TO_LIST, itemsToStrings(itemList));
+            setResult(RESULT_OK, intent);
 
         } else if (categoryMatch) {
             promptForCategory(tempCat);
@@ -221,9 +204,6 @@ public class ListActivity extends MyActivity {
                     ListActivity.this.addToList(findViewById(R.id.addToList));
                     break;
                 case 1:
-                    ListActivity.this.saveFile(findViewById(R.id.Save));
-                    break;
-                case 2:
                     ListActivity.this.finish();
                     break;
 
@@ -288,6 +268,9 @@ public class ListActivity extends MyActivity {
         state = 0;
         switchCallback(new String[]{"add item to the list", "save the list", "go back"});
         customItemAdapter.notifyDataSetChanged();
+        Intent intent = new Intent();
+        intent.putExtra(APPEND_TO_LIST, itemsToStrings(itemList));
+        setResult(RESULT_OK, intent);
         mPopupWindow.dismiss();
 
     }

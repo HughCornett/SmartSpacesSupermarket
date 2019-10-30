@@ -80,4 +80,15 @@
         android:text="previous instruction"
         app:layout_constraintBottom_toTopOf="@+id/chooseList"
         tools:layout_editor_absoluteX="27dp" />
+
+    <Button
+        android:id="@+id/goToMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="map"
+        android:text="map"
+        app:layout_constraintBottom_toTopOf="@+id/previousButton"
+        tools:layout_editor_absoluteX="27dp" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
