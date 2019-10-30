@@ -1,9 +1,19 @@
 package com.example.smartspacesblindshopping;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.Ndef;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,10 +26,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class ShoppingActivity extends MyActivity {
+
+    public static final String MIME_TEXT_PLAIN = "text/plain";
+    private static final String TAG ="" ;
 
     ArrayList<Item> shoppingList = new ArrayList<>();
     TextView currentItemText;
@@ -27,6 +43,7 @@ public class ShoppingActivity extends MyActivity {
     NfcTag currentNfcTag;
     CustomItemAdapter customItemAdapter;
     ListView listView;
+
 
 
     @Override
@@ -44,14 +61,25 @@ public class ShoppingActivity extends MyActivity {
         Map.init();
         Directions.computeMatrices();
 
+
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "Go back"});
+        switchCallback(new String[]{"Choose a list", "add items to the list","next instructions", "previous instruction", "Go back"});
 
     }
+
+
+
+
+
+
+
+
 
     public void readLists(View view) {
         Intent intent = new Intent(this, ReadActivity.class);
@@ -64,29 +92,67 @@ public class ShoppingActivity extends MyActivity {
         startActivityForResult(intent, 20);
     }
 
+    public void nextInstruction(View view){
+
+        Directions.nextDirection();
+        TTSHandler.speak(Directions.pathToString());
+    }
+
+    public void nextItem(View view){
+
+        if(currentItem ==null)  return;
+
+        Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getXPosition());
+        Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getYPosition());
+        if(Map.getItemXCoord(currentItem) < Map.user.getX()) { Map.user.setFacing(3); }
+        else if(Map.getItemXCoord(currentItem) > Map.user.getX()) { Map.user.setFacing(1); }
+        else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
+        shoppingList.remove(currentItem);
+        currentItem = Directions.getClosestItem(Map.user, shoppingList);
+        Directions.setCurrentPath(Map.user,currentItem);
+        TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
+        TTSHandler.speak(Directions.pathToString());
+        customItemAdapter.notifyDataSetChanged();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK && data != null) {
+                shoppingList.clear();
                 shoppingList.addAll(stringsToItems(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST))));
-                currentItemText.setText(shoppingList.get(0).getProductName());
 
                 currentItem = Directions.getClosestItem(Map.user, shoppingList);
                 Directions.setCurrentPath(Map.user, currentItem);
-                TTSHandler.speak(Directions.pathToString());
 
+                ArrayList<Node> path = Directions.currentPath;
+
+                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
+                Log.d("direction", ""+Directions.pathToString());
+                TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
 
             }
         } else if (requestCode == 20) {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
+                currentItem = Directions.getClosestItem(Map.user, shoppingList);
+                Directions.setCurrentPath(Map.user, currentItem);
+
+                ArrayList<Node> path = Directions.currentPath;
+
+                Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
+                Log.d("direction", ""+Directions.pathToString());
+                TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
-                //TODO
-                //sort the list
+
             }
         }
+    }
+
+    public void previousDirection(View view){
+        TTSHandler.speak(Directions.pathToString());
     }
 
     @Override
@@ -111,7 +177,6 @@ public class ShoppingActivity extends MyActivity {
     public void switchCallback(final String[] menu) {
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
-            boolean first = true;
 
             @Override
             public boolean handleMessage(@NonNull Message message) {
@@ -154,8 +219,11 @@ public class ShoppingActivity extends MyActivity {
                                     currentNfcTag = new NfcTag(scannedItem);
 
                                     //set user position and facing direction
-                                    Map.user.setX(scannedItem.getXPosition());
-                                    Map.user.setY(scannedItem.getYPosition());
+                                    Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
+                                    Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
+                                    if(Map.getItemXCoord(scannedItem) < Map.user.getX()) { Map.user.setFacing(3); }
+                                    else if(Map.getItemXCoord(scannedItem) > Map.user.getX()) { Map.user.setFacing(1); }
+                                    else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
 
                                     if (scannedItem.getXPosition() < Map.user.getX()) {
                                         Map.user.setFacing(3);
@@ -178,6 +246,12 @@ public class ShoppingActivity extends MyActivity {
 
                                             TTSHandler.speak(Directions.pathToString());
                                         }
+
+
+                                    }
+                                    else {
+                                        if(scannedItem!=null && currentItem != null){
+                                            itemShelfProximityFeedback(scannedItem, currentItem);
                                         //Shopping list is empty
                                         else{
                                             TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
@@ -273,9 +347,9 @@ public class ShoppingActivity extends MyActivity {
      */
     public boolean ItemOnShoppingList(Item i) {
         if (i != null) {
-            if ((i.getBrandName() + " " + i.getProductName()).equals(currentItemText.getText())) {
+            if ((i.getProductName()).equals(currentItem.getProductName())) {
                 TTSHandler.speak("That item is on your list");
-                shoppingList.remove(currentItemText.getText());
+
                 return true;
             } else {
                 //TTSHandler.speak("That item is not correct - the next item on your shopping list is " + currentItemText.getText());
@@ -287,6 +361,7 @@ public class ShoppingActivity extends MyActivity {
 
     //TODO
     //Directions.getNextDirection() when user presses the button on their glove
+
 
 
 }

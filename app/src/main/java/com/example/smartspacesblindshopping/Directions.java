@@ -29,7 +29,26 @@ public class Directions {
     {
         String turn = "[Error]";
         //the direction the user must face to walk to the next node
-        int turnToDirection = currentPath.get(0).getEdgeTo(currentPath.get(1)).getDirection();
+        int turnToDirection = -1;
+        if (currentPath.size() > 1) {
+            turnToDirection = currentPath.get(0).getEdgeTo(currentPath.get(1)).getDirection();
+        }
+        else
+        {
+            if(Map.getItemXCoord(nextItem) < Map.user.getX())
+            {
+                turnToDirection = 3;
+            }
+            else if(Map.getItemXCoord(nextItem) > Map.user.getX())
+            {
+                turnToDirection = 1;
+            }
+            else
+            {
+                Log.e("Direction error", "user.x = item.x for path size 1");
+            }
+        }
+
 
         //if the user is facing the right way
         if(turnToDirection == Map.user.getFacing()) { turn = "Walk forward "; }
@@ -98,39 +117,40 @@ public class Directions {
         else
         {
             //gets the distance to the item rounded to 1 decimal place
-            double distance = (double) Math.round(Math.abs(Map.user.getY() - Map.item.getYPosition()) * 10) / 10;
+            double distance = (double) Math.round(Math.abs(Map.user.getY() - Map.getItemYCoord(nextItem)) * 10) / 10;
             destination = distance+" meters. ";
-            //if the item is left of its node
-            if(Map.item.getXPosition() < currentPath.get(currentPath.size()-1).getXPosition())
-            {
-                //if the user will be facing up
-                if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 0)
-                {
-                    nextTurn = "Your item is on the left";
+            if(currentPath.size()>1) {
+                //if the item is left of its node
+                if (Map.getItemXCoord(nextItem) < currentPath.get(currentPath.size() - 1).getXPosition()) {
+
+                    //if the user will be facing up
+                    if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0) {
+                        nextTurn = "Your item is on the left";
+                    }
+                    //if the user will be facing down
+                    else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2) {
+                        nextTurn = "Your item is on the right";
+                    }
+                    //if the user will be facing left or right (this should never happen)
+                    else {
+                        Log.e("Turn error", "Item is neither left or right of the final node");
+                    }
                 }
-                //if the user will be facing down
-                else if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 2)
-                {
-                    nextTurn = "Your item is on the right";
+                //if the item is right of its node
+                else {
+                    //if the user will be facing up
+                    if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0) {
+                        nextTurn = "Your item is on the left";
+                    }
+                    //if the user will be facing down
+                    else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2) {
+                        nextTurn = "Your item is on the right";
+                    }
+                    //if the user will be facing left or right (this should never happen)
+                    else {
+                        Log.e("Turn error", "Item is neither left or right of the final node");
+                    }
                 }
-                //if the user will be facing left or right (this should never happen)
-                else { Log.e("Turn error", "Item is neither left or right of the final node"); }
-            }
-            //if the item is right of its node
-            else
-            {
-                //if the user will be facing up
-                if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 0)
-                {
-                    nextTurn = "Your item is on the left";
-                }
-                //if the user will be facing down
-                else if(currentPath.get(currentPath.size()-2).getEdgeTo(currentPath.get(currentPath.size()-1)).getDirection() == 2)
-                {
-                    nextTurn = "Your item is on the right";
-                }
-                //if the user will be facing left or right (this should never happen)
-                else { Log.e("Turn error", "Item is neither left or right of the final node"); }
             }
         }
         return turn+" | "+destination+" | "+nextTurn;
@@ -227,7 +247,7 @@ public class Directions {
         Map.resetPathNodes();
         nextItem = item;
         Node origin = getClosestNode(user.getX(), user.getY(), false);
-        Node destination = getClosestNode(item.getXPosition(), item.getYPosition(), true);
+        Node destination = getClosestNode(Map.getItemXCoord(item), Map.getItemYCoord(item), true);
 
         //initialise path
         currentPath = new ArrayList<>();
@@ -272,7 +292,7 @@ public class Directions {
         Item closestItem = null;
         for(Item item: items)
         {
-            Node itemNode = getClosestNode(item.getXPosition(), item.getYPosition(), true);
+            Node itemNode = getClosestNode(Map.getItemXCoord(item), Map.getItemYCoord(item), true);
             Node userNode = getClosestNode(user.getX(), user.getY(), false);
             double thisDistance = distanceMatrix[Map.nodes.indexOf(userNode)][Map.nodes.indexOf(itemNode)];
             if(thisDistance < minDistance)
@@ -339,8 +359,8 @@ public class Directions {
             Map.user.setX(currentPathTurns.get(currentPathTurns.size()-1).getXPosition());
             Map.user.setY(currentPathTurns.get(currentPathTurns.size()-1).getYPosition());
             //get the direction the user will now be facing
-            if(nextItem.getXPosition() < Map.user.getX()) { Map.user.setFacing(3); }
-            else if(nextItem.getXPosition() > Map.user.getX()) { Map.user.setFacing(1); }
+            if(Map.getItemXCoord(nextItem) < Map.user.getX()) { Map.user.setFacing(3); }
+            else if(Map.getItemXCoord(nextItem) > Map.user.getX()) { Map.user.setFacing(1); }
             else { Log.e("Direction error", "User needs next direction from last node"); }
         }
 

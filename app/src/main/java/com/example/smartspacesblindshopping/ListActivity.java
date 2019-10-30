@@ -68,7 +68,7 @@ public class ListActivity extends MyActivity {
 
         Intent intent = new Intent();
 
-        intent.putExtra(APPEND_TO_LIST, itemList);
+        intent.putExtra(APPEND_TO_LIST, itemsToStrings(itemList));
         setResult(RESULT_OK, intent);
 
     }
