@@ -159,7 +159,7 @@ public class Map extends MapActivity
         second.removeEdge(first);
 
         Directions.computeMatrices();
-        Directions.setCurrentPath(Map.user, Directions.nextItem);
+        Directions.setCurrentPath(Map.user, Directions.currentItem);
     }
     public static void addBlockage(int first, int second)
     {
@@ -167,7 +167,7 @@ public class Map extends MapActivity
         nodes.get(second).removeEdge(nodes.get(first));
 
         Directions.computeMatrices();
-        Directions.setCurrentPath(Map.user, Directions.nextItem);
+        Directions.setCurrentPath(Map.user, Directions.currentItem);
     }
     public static void resetPathNodes()
     {
@@ -181,10 +181,29 @@ public class Map extends MapActivity
         }
     }
 
-    public static void nextItem()
+    /**
+     * sets the user to be facing the specified item
+     * (assumes item is on a shelf and user in an aisle, will not make user face down or upw)
+     * @param user
+     *  the user
+     * @param item
+     *  the item
+     */
+    public static int userFaceItem(User user, Item item)
     {
-        items.remove(Directions.nextItem);
-        Directions.setCurrentPath(user, Directions.getClosestItem(user, items));
+        if(Map.getItemXCoord(item) < user.getX())
+        {
+            return 3;
+        }
+        else if(Map.getItemXCoord(item) > user.getX())
+        {
+            return 1;
+        }
+        else
+        {
+            Log.e("Direction error", "User needs next direction from last node");
+            return -1;
+        }
     }
 
 }

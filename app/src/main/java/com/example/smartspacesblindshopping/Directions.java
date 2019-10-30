@@ -8,23 +8,18 @@ import java.util.ArrayList;
 
 public class Directions {
 
-    public static final int MARGIN_DISTANCE = 2;
-
     //array of distances from every node to every other node
     public static double[][] distanceMatrix;
     //array of nodes that should be taken to get from one to another
     //(e.g  nextMatrix[0][2] contains the neighbour of node 0 that should be taken to get to node 2
     public static Node[][] nextMatrix;
 
-    //the last node the user was at
-    public static Node lastNode = null;
-
     public static ArrayList<Node> currentPath;
     public static ArrayList<Node> currentPathTurns;
     public static int currentPathTurnsPos;
-    public static Item nextItem;
+    public static Item currentItem;
 
-    //used Floyd Warshall algorithm to compute the distance between all pairs of nodes
+    //uses Floyd Warshall algorithm to compute the distance between all pairs of nodes
     //this is used to find optimal order to get items as well as get paths to items
     public static void computeMatrices()
     {
@@ -78,137 +73,6 @@ public class Directions {
         }
     }
 
-    public static String pathToString()
-    {
-        String turn = "[Error]";
-        //the direction the user must face to walk to the next node
-        int turnToDirection = -1;
-        if (currentPath.size() > 1) {
-            turnToDirection = currentPath.get(0).getEdgeTo(currentPath.get(1)).getDirection();
-        }
-        else
-        {
-            if(Map.getItemXCoord(nextItem) < Map.user.getX())
-            {
-                turnToDirection = 3;
-            }
-            else if(Map.getItemXCoord(nextItem) > Map.user.getX())
-            {
-                turnToDirection = 1;
-            }
-            else
-            {
-                Log.e("Direction error", "user.x = item.x for path size 1");
-            }
-        }
-
-
-        //if the user is facing the right way
-        if(turnToDirection == Map.user.getFacing()) { turn = "Walk forward "; }
-
-        //if the user is facing left of the direction they should be
-        else if(turnToDirection == (Map.user.getFacing() + 1) % 4) { turn = "Turn right and walk "; }
-
-        //if the user is facing the opposite way they should be
-        else if(turnToDirection == (Map.user.getFacing() + 2) % 4) { turn = "Turn around and walk "; }
-
-        //if the user is facing right of the way they should be
-        else if(turnToDirection == (Map.user.getFacing() + 3) % 4) { turn = "Turn left and walk "; }
-
-        //else something went wrong
-        else { Log.e("Turn error", "Logic to determine turn direction failed (Directions.pathToString())"); }
-
-        int nodesUntilNextTurn = 0;
-        while(currentPath.size() > nodesUntilNextTurn + 1 &&
-                currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection() == turnToDirection)
-        {
-            nodesUntilNextTurn++;
-        }
-        String destination = "[Error]";
-        String nextTurn = "[Error] ";
-        if(currentPath.size() > nodesUntilNextTurn + 1)
-        {
-            int nextDirection = currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection();
-
-            //figure out which way to turn once at destination
-            //if the user will be facing left of the direction they should be
-            if(nextDirection == (turnToDirection + 1) % 4) { nextTurn = "then turn right"; }
-
-            //if the user will be facing right of the way they should be
-            else if(nextDirection == (turnToDirection + 3) % 4) { nextTurn = "then turn left"; }
-
-            else { Log.e("Turn error", "User needs to turn around or not turn at next turn"); }
-
-            //if the next direction is horizontal (therefore if it is a row)
-            int turnIn = 0;
-            if(nextDirection  == 1 || nextDirection == 3)
-            {
-                for(int i = 1; i < nodesUntilNextTurn; i++)
-                {
-                    if(currentPath.get(i).getRow() != -1)
-                    {
-                        turnIn++;
-                    }
-                }
-                if(turnIn == 0) { destination = "to the next row, "; }
-                else { destination = (turnIn+1)+" rows, "; }
-            }
-            //if it is vertical (therefore if it is an aisle)
-            else
-            {
-                for(int i = 1; i < nodesUntilNextTurn; i++)
-                {
-                    if(currentPath.get(i).getAisle() != -1)
-                    {
-                        turnIn++;
-                    }
-                }
-                if(turnIn == 0) { destination = "to the next aisle, "; }
-                else { destination = (turnIn+1)+" aisles, "; }
-            }
-        }
-        else
-        {
-            //gets the distance to the item rounded to 1 decimal place
-            double distance = (double) Math.round(Math.abs(Map.user.getY() - Map.getItemYCoord(nextItem)) * 10) / 10;
-            destination = distance+" meters. ";
-            if(currentPath.size()>1) {
-                //if the item is left of its node
-                if (Map.getItemXCoord(nextItem) < currentPath.get(currentPath.size() - 1).getXPosition()) {
-
-                    //if the user will be facing up
-                    if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0) {
-                        nextTurn = "Your item is on the left";
-                    }
-                    //if the user will be facing down
-                    else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2) {
-                        nextTurn = "Your item is on the right";
-                    }
-                    //if the user will be facing left or right (this should never happen)
-                    else {
-                        Log.e("Turn error", "Item is neither left or right of the final node");
-                    }
-                }
-                //if the item is right of its node
-                else {
-                    //if the user will be facing up
-                    if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0) {
-                        nextTurn = "Your item is on the left";
-                    }
-                    //if the user will be facing down
-                    else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2) {
-                        nextTurn = "Your item is on the right";
-                    }
-                    //if the user will be facing left or right (this should never happen)
-                    else {
-                        Log.e("Turn error", "Item is neither left or right of the final node");
-                    }
-                }
-            }
-        }
-        return turn+" | "+destination+" | "+nextTurn;
-    }
-
     /**
      * Gets an arrayList of nodes that is the shortest path from one node to another
      * @param user
@@ -221,7 +85,7 @@ public class Directions {
     public static void setCurrentPath(User user, Item item)
     {
         Map.resetPathNodes();
-        nextItem = item;
+        currentItem = item;
         Node origin = getClosestNode(user.getX(), user.getY(), false);
         Node destination = getClosestNode(Map.getItemXCoord(item), Map.getItemYCoord(item), true);
 
@@ -277,6 +141,192 @@ public class Directions {
     }
 
     /**
+     * converts the current path to a string of instructions on what to do next
+     * to get to the destination
+     *
+     * @return instructions on what to do next on the path
+     */
+    public static String pathToString()
+    {
+        String turn = "[Error]";
+
+        //get direction the user must face to walk to the next node
+
+        int turnToDirection;
+        //if there is more than one node in the path (so if not already at destination)
+        if (currentPath.size() > 1) {
+            //turn to the next node
+            turnToDirection = currentPath.get(0).getEdgeTo(currentPath.get(1)).getDirection();
+        }
+        //if already at last node
+        else
+        {
+            //get the direction the user must face
+            turnToDirection = Map.userFaceItem(Map.user, currentItem);
+        }
+
+
+        //if the user is facing the right way
+        if(turnToDirection == Map.user.getFacing())
+        {
+            turn = "Walk forward ";
+        }
+
+        //if the user is facing left of the direction they should be
+        else if(turnToDirection == (Map.user.getFacing() + 1) % 4)
+        {
+            turn = "Turn right and walk ";
+        }
+
+        //if the user is facing the opposite way they should be
+        else if(turnToDirection == (Map.user.getFacing() + 2) % 4)
+        {
+            turn = "Turn around and walk ";
+        }
+
+        //if the user is facing right of the way they should be
+        else if(turnToDirection == (Map.user.getFacing() + 3) % 4)
+        {
+            turn = "Turn left and walk ";
+        }
+
+        //else something went wrong
+        else
+        {
+            Log.e("Turn error", "Logic to determine turn direction failed (Directions.pathToString())");
+        }
+
+        int nodesUntilNextTurn = 0;
+        while(currentPath.size() > nodesUntilNextTurn + 1 &&
+                currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection() == turnToDirection)
+        {
+            nodesUntilNextTurn++;
+        }
+
+
+        String destination = "[Error]";
+        String nextTurn = "[Error] ";
+        if(currentPath.size() > nodesUntilNextTurn + 1)
+        {
+            int nextDirection = currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection();
+
+            //figure out which way to turn once at destination
+            //if the user will be facing left of the direction they should be
+            if(nextDirection == (turnToDirection + 1) % 4)
+            {
+                nextTurn = "then turn right";
+            }
+
+            //if the user will be facing right of the way they should be
+            else if(nextDirection == (turnToDirection + 3) % 4)
+            {
+                nextTurn = "then turn left";
+            }
+
+            else
+            {
+                Log.e("Turn error", "User needs to turn around or not turn at next turn");
+            }
+
+            //if the next direction is horizontal (therefore if it is a row)
+            int turnIn = 0;
+            if(nextDirection  == 1 || nextDirection == 3)
+            {
+                for(int i = 1; i < nodesUntilNextTurn; i++)
+                {
+                    if(currentPath.get(i).getRow() != -1)
+                    {
+                        turnIn++;
+                    }
+                }
+                if(turnIn == 0)
+                {
+                    destination = "to the next row, ";
+                }
+                else
+                {
+                    destination = (turnIn+1)+" rows, ";
+                }
+            }
+            //if it is vertical (therefore if it is an aisle)
+            else
+            {
+                for(int i = 1; i < nodesUntilNextTurn; i++)
+                {
+                    if(currentPath.get(i).getAisle() != -1)
+                    {
+                        turnIn++;
+                    }
+                }
+                if(turnIn == 0)
+                {
+                    destination = "to the next aisle, ";
+                }
+                else
+                {
+                    destination = (turnIn+1)+" aisles, ";
+                }
+            }
+        }
+        else
+        {
+            //distance is number of mid-aisle floor markers to walk.
+            //in the demo supermarket, there is only one in each aisle.
+            //in a real supermarket, there would be more
+            int distance  = 1;
+            if(distance == 1)
+            {
+                destination = " to the next intersection, ";
+            }
+            else
+            {
+                destination = distance+" intersections, ";
+            }
+            if(currentPath.size()>1) {
+                //if the item is left of its node
+                if (Map.getItemXCoord(currentItem) < currentPath.get(currentPath.size() - 1).getXPosition()) {
+
+                    //if the user will be facing up
+                    if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0)
+                    {
+                        nextTurn = "Your item is on the left";
+                    }
+                    //if the user will be facing down
+                    else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2)
+                    {
+                        nextTurn = "Your item is on the right";
+                    }
+                    //if the user will be facing left or right (this should never happen)
+                    else
+                    {
+                        Log.e("Turn error", "Item is neither left or right of the final node");
+                    }
+                }
+                //if the item is right of its node
+                else
+                {
+                    //if the user will be facing up
+                    if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0)
+                    {
+                        nextTurn = "Your item is on the left";
+                    }
+                    //if the user will be facing down
+                    else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2)
+                    {
+                        nextTurn = "Your item is on the right";
+                    }
+                    //if the user will be facing left or right (this should never happen)
+                    else
+                    {
+                        Log.e("Turn error", "Item is neither left or right of the final node");
+                    }
+                }
+            }
+        }
+        return turn+" | "+destination+" | "+nextTurn;
+    }
+
+    /**
      * Gets the closest item to the user
      * @param user
      *  The user of interest
@@ -303,6 +353,15 @@ public class Directions {
         return closestItem;
     }
 
+    /**
+     * gets the linear distance between two positions
+     *
+     * @param x0 x-coord of first position
+     * @param y0 y-coord of first position
+     * @param x1 x-coord of second position
+     * @param y1 y-coord of second position
+     * @return linear distance between the two positions
+     */
     private static double distance(double x0, double y0, double x1, double y1)
     {
         return Math.sqrt(Math.pow(x1-x0,2)+Math.pow(y1-y0,2));
@@ -337,6 +396,12 @@ public class Directions {
         return closestNode;
     }
 
+    /**
+     * -Gets the next direction on the path to the next item.
+     * -Is called when the user has followed the last instruction and is ready for the next.
+     * -Changes the users location to the place they are now at (assuming they followed the instructions)
+     * and calculates the path from this new spot to the destination
+     */
     public static void nextDirection()
     {
         //if this isn't the last node
@@ -350,7 +415,7 @@ public class Directions {
             int posInFullPath = currentPath.indexOf(currentPathTurns.get(currentPathTurnsPos));
             Map.user.setFacing(currentPath.get(posInFullPath).getEdgeTo(currentPath.get(posInFullPath+1)).getDirection());
 
-            Directions.setCurrentPath(Map.user, nextItem);
+            Directions.setCurrentPath(Map.user, currentItem);
         }
         //if it is
         else
@@ -358,10 +423,7 @@ public class Directions {
             Map.user.setX(currentPathTurns.get(currentPathTurns.size()-1).getXPosition());
             Map.user.setY(currentPathTurns.get(currentPathTurns.size()-1).getYPosition());
             //get the direction the user will now be facing
-            if(Map.getItemXCoord(nextItem) < Map.user.getX()) { Map.user.setFacing(3); }
-            else if(Map.getItemXCoord(nextItem) > Map.user.getX()) { Map.user.setFacing(1); }
-            else { Log.e("Direction error", "User needs next direction from last node"); }
+            Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
         }
-
     }
 }
