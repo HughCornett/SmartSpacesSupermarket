@@ -243,14 +243,11 @@ public class ShoppingActivity extends MyActivity {
 
                                             TTSHandler.speak(Directions.pathToString());
                                         } else {
+                                            //shopping list is empty
                                             TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
                                             //Directions.setCurrentPath(Map.user, );
                                         }
-                                    } else if (scannedItem != null && currentItem != null) {
-                                        itemShelfProximityFeedback(scannedItem, currentItem);
-                                        //Shopping list is empty
-                                    } else {
-                                        //Else scanned item is not on the shopping list
+                                    }else if (scannedItem != null && currentItem != null) {
                                         itemShelfProximityFeedback(scannedItem, currentItem);
 
                                     }
@@ -288,8 +285,6 @@ public class ShoppingActivity extends MyActivity {
      */
     public void itemShelfProximityFeedback(Item i, Item j) {
         //SAME AISLE
-
-
 
         if (i.getAisle() == j.getAisle()) {
             if (i.getShelf() == j.getShelf()) {
