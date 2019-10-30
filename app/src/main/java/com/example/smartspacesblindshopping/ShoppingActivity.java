@@ -203,7 +203,28 @@ public class ShoppingActivity extends MyActivity {
 
                                 default:
                                     //or here?
+
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
+                                    //currentNfcTag = new NfcTag(scannedItem);
+                                    if(scannedItem!=null) {
+                                        //set user position and facing direction
+                                        Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
+                                        Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
+                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                            Map.user.setFacing(3);
+                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                            Map.user.setFacing(1);
+                                        } else {
+                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                        }
+
+                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                            Map.user.setFacing(3);
+                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                            Map.user.setFacing(1);
+                                        } else {
+                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                        }
                                     currentNfcTag = new NfcTag(scannedItem);
 
                                     //set user position and facing direction
@@ -234,6 +255,7 @@ public class ShoppingActivity extends MyActivity {
                                         //Else scanned item is not on the shopping list
                                         itemShelfProximityFeedback(scannedItem, currentItem);
 
+                                        }
                                     }
                                     break;
                             }
@@ -332,6 +354,12 @@ public class ShoppingActivity extends MyActivity {
             }
         }
         return false;
+    }
+
+    public void map(View view)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
     }
 
     //TODO
