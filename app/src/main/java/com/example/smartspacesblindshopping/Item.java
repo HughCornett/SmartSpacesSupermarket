@@ -85,6 +85,10 @@ public class Item {
         this.section = section;
     }
 
+    public String getFullName(){
+        return this.getBrandName() + " " + getProductName();
+    }
+
 
     //GETTERS & SETTERS
 
