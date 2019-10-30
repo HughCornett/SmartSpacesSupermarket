@@ -133,9 +133,7 @@ public class ShoppingActivity extends MyActivity {
                 TTSHandler.speak(Directions.pathToString());
                 customItemAdapter.notifyDataSetChanged();
             }
-        }
-        else if(requestCode == 20)
-        {
+        } else if (requestCode == 20) {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
                 currentItem = Directions.getClosestItem(Map.user, shoppingList);
@@ -165,13 +163,12 @@ public class ShoppingActivity extends MyActivity {
                 break;
             case 1:
                 ShoppingActivity.this.addItem(findViewById(R.id.addItem));
-            case 2: finish();
+            case 2:
+                finish();
             default:
                 break;
         }
     }
-
-
 
 
     @Override
@@ -217,6 +214,7 @@ public class ShoppingActivity extends MyActivity {
                                 default:
                                     //or here?
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
+                                    currentNfcTag = new NfcTag(scannedItem);
 
                                     //set user position and facing direction
                                     Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
@@ -225,8 +223,13 @@ public class ShoppingActivity extends MyActivity {
                                     else if(Map.getItemXCoord(scannedItem) > Map.user.getX()) { Map.user.setFacing(1); }
                                     else { Log.e("Direction error", "nearest node's xpos = scanned item's xpos"); }
 
-                                    //Item itemOnlist =  firebase.fullNameToItem(currentItemText.getText().toString());
-                                    currentNfcTag = new NfcTag(scannedItem);
+                                    if (scannedItem.getXPosition() < Map.user.getX()) {
+                                        Map.user.setFacing(3);
+                                    } else if (scannedItem.getXPosition() > Map.user.getX()) {
+                                        Map.user.setFacing(1);
+                                    } else {
+                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                    }
 
                                     if (ItemOnShoppingList(scannedItem)) {
                                         if (!shoppingList.isEmpty()) {
@@ -236,6 +239,10 @@ public class ShoppingActivity extends MyActivity {
                                             currentItem = Directions.getClosestItem(Map.user, shoppingList);
 
                                             TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
+
+                                            Directions.setCurrentPath(Map.user, currentItem);
+
+                                            TTSHandler.speak(Directions.pathToString());
                                         }
 
 
@@ -243,10 +250,16 @@ public class ShoppingActivity extends MyActivity {
                                     else {
                                         if(scannedItem!=null && currentItem != null){
                                             itemShelfProximityFeedback(scannedItem, currentItem);
+                                        //Shopping list is empty
+                                        else{
+                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
+                                           //Directions.setCurrentPath(Map.user, );
                                         }
+                                    } else {
+                                        //Else scanned item is not on the shopping list
+                                        itemShelfProximityFeedback(scannedItem, currentItem);
+
                                     }
-                                    Directions.setCurrentPath(Map.user, currentItem);
-                                    TTSHandler.speak(Directions.pathToString());
                                     break;
                             }
                             Log.d("debug", "" + menu[index]);
@@ -281,6 +294,7 @@ public class ShoppingActivity extends MyActivity {
      */
     public void itemShelfProximityFeedback(Item i, Item j) {
         //SAME AISLE
+
         if (i.getAisle() == j.getAisle()) {
             if (i.getShelf() == j.getShelf()) {
                 //SAME LEVEL
@@ -316,16 +330,11 @@ public class ShoppingActivity extends MyActivity {
                         TTSHandler.speak(j.getProductName() + " is above " + i.getProductName() + " and " + (Math.abs(sectionDifference) + 1) + spots + "  to the left");
                 }
             } else {
-                TTSHandler.speak("the item is on another shelf");
+                TTSHandler.speak("the item you are looking for is on another shelf");
+                TTSHandler.speak(Directions.pathToString());
             }
         }
-
-        //different aisle
-        else {
-            //re-route user from here?
-        }
     }
-
 
 
     /**
@@ -350,13 +359,6 @@ public class ShoppingActivity extends MyActivity {
 
     //TODO
     //Directions.getNextDirection() when user presses the button on their glove
-
-
-
-
-
-
-
 
 
 

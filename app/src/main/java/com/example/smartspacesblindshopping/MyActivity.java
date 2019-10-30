@@ -68,6 +68,7 @@ public class MyActivity extends Activity {
         TTSHandler = new TextToSpeechHandler(getApplicationContext());
 
         intent = new Intent(this, BluetoothService.class);
+
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if (dbItems.isEmpty()) {
@@ -77,9 +78,10 @@ public class MyActivity extends Activity {
             Log.d("DB debug", "database size is " + dbItems.size());
         }
 
-        if (dbItems.size() == 9) {
+        if (dbItems.size() == 24) {
             store = new Store(dbItems);
         }
+
     }
 
     @Override
