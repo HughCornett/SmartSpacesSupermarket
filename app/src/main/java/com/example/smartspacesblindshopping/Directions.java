@@ -164,6 +164,12 @@ public class Directions {
     public static String pathToString()
     {
         String turn = "[Error]";
+        //check if user isn't leaving the supermarket, is already at the right node and facing the right way
+        if(!exiting && currentPath.size() == 1 && Map.userFaceItem(Map.user, currentItem) == Map.user.getFacing())
+        {
+            //tell them that they are already in the right place
+            return "Your item is on the shelf in front of you";
+        }
 
         //get direction the user must face to walk to the next node
 
@@ -323,7 +329,7 @@ public class Directions {
             {
                 destination = " to the exit. ";
             }
-            if(currentPath.size()>1) {
+             if(currentPath.size()>1) {
                 //if the item is left of its node
                 if (Map.getItemXCoord(currentItem) < currentPath.get(currentPath.size() - 1).getXPosition()) {
 
@@ -349,12 +355,12 @@ public class Directions {
                     //if the user will be facing up
                     if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0)
                     {
-                        nextTurn = "Your item is on the left";
+                        nextTurn = "Your item is on the right";
                     }
                     //if the user will be facing down
                     else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2)
                     {
-                        nextTurn = "Your item is on the right";
+                        nextTurn = "Your item is on the left";
                     }
                     //if the user will be facing left or right (this should never happen)
                     else
@@ -364,7 +370,7 @@ public class Directions {
                 }
             }
         }
-        return turn+" | "+destination+" | "+nextTurn;
+        return turn+"  "+destination+" "+nextTurn;
     }
 
     /**
@@ -446,8 +452,15 @@ public class Directions {
      */
     public static void nextDirection()
     {
+
+        //if we aren't already at the last node
+        if(currentPathTurnsPos < currentPathTurns.size()-1)
+        {
+            //get the next node
+            currentPathTurnsPos += 1;
+        }
+
         //if this isn't the last node
-        currentPathTurnsPos += 1;
         if(currentPathTurnsPos < currentPathTurns.size()-1)
         {
 
