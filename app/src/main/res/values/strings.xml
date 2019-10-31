@@ -8,4 +8,5 @@
     <string name="deletetext">delete?</string>
     <string name="choosethis">choose this</string>
     <string name="deletethis">delete this</string>
+    <string name="no_current_item">no current item</string>
 </resources>

@@ -40,7 +40,6 @@ public class ShoppingActivity extends MyActivity {
     ArrayList<Item> shoppingList = new ArrayList<>();
     TextView currentItemText;
     Item currentItem;
-    NfcTag currentNfcTag;
     CustomItemAdapter customItemAdapter;
     ListView listView;
 
@@ -49,7 +48,7 @@ public class ShoppingActivity extends MyActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping);
-        currentItemText = new TextView(getApplicationContext());
+        currentItemText = (TextView) findViewById(R.id.currentItem);
 
         listView = (ListView) findViewById(R.id.shoppingList);
 
@@ -66,7 +65,7 @@ public class ShoppingActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "add items to the list", "next instructions", "previous instruction", "Go back"});
+        switchCallback(new String[]{"Choose a list", "next instructions", "previous instruction", "current item", "add items to the list", "Go back"});
 
     }
 
@@ -85,6 +84,7 @@ public class ShoppingActivity extends MyActivity {
 
     public void nextInstruction(View view) {
 
+        if(shoppingList.isEmpty()) Directions.setCurrentPathNode(Map.user,Map.exit);
         Directions.nextDirection();
         TTSHandler.speak(Directions.pathToString());
     }
@@ -98,9 +98,12 @@ public class ShoppingActivity extends MyActivity {
         Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
 
         shoppingList.remove(currentItem);
-        currentItem = Directions.getClosestItem(Map.user, shoppingList);
-        Directions.setCurrentPath(Map.user, currentItem);
-        TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
+
+        changeItem();
+
+        if(currentItem!=null)
+            TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
+
         TTSHandler.speak(Directions.pathToString());
         customItemAdapter.notifyDataSetChanged();
     }
@@ -113,8 +116,7 @@ public class ShoppingActivity extends MyActivity {
                 shoppingList.clear();
                 shoppingList.addAll(stringsToItems(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST))));
 
-                currentItem = Directions.getClosestItem(Map.user, shoppingList);
-                Directions.setCurrentPath(Map.user, currentItem);
+                changeItem();
 
                 ArrayList<Node> path = Directions.currentPath;
 
@@ -126,8 +128,7 @@ public class ShoppingActivity extends MyActivity {
         } else if (requestCode == 20) {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
-                currentItem = Directions.getClosestItem(Map.user, shoppingList);
-                Directions.setCurrentPath(Map.user, currentItem);
+                changeItem();
 
                 ArrayList<Node> path = Directions.currentPath;
 
@@ -140,6 +141,8 @@ public class ShoppingActivity extends MyActivity {
     }
 
     public void previousDirection(View view) {
+        if(shoppingList.isEmpty()) Directions.setCurrentPathNode(Map.user,Map.exit);
+
         TTSHandler.speak(Directions.pathToString());
     }
 
@@ -152,8 +155,16 @@ public class ShoppingActivity extends MyActivity {
                 ShoppingActivity.this.readLists(findViewById(R.id.nextItem));
                 break;
             case 1:
-                ShoppingActivity.this.addItem(findViewById(R.id.addItem));
+                ShoppingActivity.this.nextInstruction(findViewById(R.id.nextInstruction));
+                break;
             case 2:
+                ShoppingActivity.this.previousDirection(findViewById(R.id.previousButton));
+                break;
+            case 3:
+                TTSHandler.speak(currentItem.getFullName());
+            case 4:
+                ShoppingActivity.this.addItem(findViewById(R.id.addItem));
+            case 5:
                 finish();
             default:
                 break;
@@ -217,11 +228,9 @@ public class ShoppingActivity extends MyActivity {
 
                                                 shoppingList.remove(scannedItem);
 
-                                                currentItem = Directions.getClosestItem(Map.user, shoppingList);
+                                                changeItem();
 
                                                 TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
-
-                                                Directions.setCurrentPath(Map.user, currentItem);
 
                                                 TTSHandler.speak(Directions.pathToString());
 
@@ -235,9 +244,9 @@ public class ShoppingActivity extends MyActivity {
                                         else {
                                             shoppingList.clear();
 
-                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
+                                            changeItem();
 
-                                            Directions.setCurrentPathNode(Map.user, Map.exit);
+                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
 
                                             TTSHandler.speak(Directions.pathToString());
 
@@ -353,5 +362,22 @@ public class ShoppingActivity extends MyActivity {
     //Directions.getNextDirection() when user presses the button on their glove
 
 
+    private void changeItem()
+    {
+        if(shoppingList.isEmpty())
+        {
+            currentItem = null;
+            currentItemText.setText(R.string.no_current_item);
+            Directions.setCurrentPathNode(Map.user, Map.exit);
+
+        }
+        else
+        {
+            currentItem = Directions.getClosestItem(Map.user, shoppingList);
+            currentItemText.setText(currentItem.getProductName());
+            Directions.setCurrentPath(Map.user, currentItem);
+        }
+
+    }
 
 }

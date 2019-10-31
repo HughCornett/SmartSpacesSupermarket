@@ -161,7 +161,8 @@ public class DisplayListActivity extends MyActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                listView.setClickable(false);
+
+                if(mPopupWindow!=null) mPopupWindow.dismiss();
 
                 LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -183,7 +184,6 @@ public class DisplayListActivity extends MyActivity {
                     @Override
                     public void onClick(View view) {
                         mPopupWindow.dismiss();
-                        listView.setClickable(true);
                         customItemAdapter.notifyDataSetChanged();
                     }
                 });
@@ -197,7 +197,6 @@ public class DisplayListActivity extends MyActivity {
                         ReadWriteCSV.writeToCSV(getApplicationContext(),fileList,path);
                         itemList.remove(index);
                         mPopupWindow.dismiss();
-                        listView.setClickable(true);
                         if(itemList.isEmpty())
                         {
                             deleteList();

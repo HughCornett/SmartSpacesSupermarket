@@ -226,8 +226,10 @@ public class ListActivity extends MyActivity {
     private void createPopUp(final ArrayList<Item> chosenItemList) {
         chosenItemStrings = new ArrayList<>();
         for (Item i : chosenItemList) {
-            chosenItemStrings.add(i.getBrandName() + " " + i.getProductName());
+            chosenItemStrings.add(i.getFullName());
         }
+
+        if(mPopupWindow!=null) mPopupWindow.dismiss();
 
         LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 

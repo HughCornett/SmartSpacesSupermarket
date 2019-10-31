@@ -143,10 +143,10 @@ public class ReadActivity extends MyActivity
         ArrayList<String> menu = new ArrayList<>();
 
 
-        menu.addAll(fileList);
+        menu.addAll(displayList);
         menu.add("go back");
 
-        String[] array = new String[fileList.size()+2];
+        String[] array = new String[displayList.size()+1];
 
         array = menu.toArray(array);
         switchCallback(array);
