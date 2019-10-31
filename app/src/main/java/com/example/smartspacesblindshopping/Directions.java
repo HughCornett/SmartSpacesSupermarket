@@ -370,7 +370,7 @@ public class Directions {
                 }
             }
         }
-        return turn+" | "+destination+" | "+nextTurn;
+        return turn+"  "+destination+" "+nextTurn;
     }
 
     /**
