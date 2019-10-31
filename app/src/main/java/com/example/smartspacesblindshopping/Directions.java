@@ -164,6 +164,12 @@ public class Directions {
     public static String pathToString()
     {
         String turn = "[Error]";
+        //check if user isn't leaving the supermarket, is already at the right node and facing the right way
+        if(!exiting && currentPath.size() == 1 && Map.userFaceItem(Map.user, currentItem) == Map.user.getFacing())
+        {
+            //tell them that they are already in the right place
+            return "Your item is on the shelf in front of you";
+        }
 
         //get direction the user must face to walk to the next node
 
