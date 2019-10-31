@@ -90,22 +90,33 @@ public class Map extends MapActivity
             nodeYPos = shelfRect.top + ((shelfRect.bottom - shelfRect.top)/2);
             newNode = new Node(nodeXPos, nodeYPos, false);
             nodes.add(newNode);
-            edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
+
+            //only add an edge back to the top of the aisle if this isn't the first aisle
+            //this is because the first aisle is 1 way from top to bottom to simulate
+            //a real supermarkets forced entrance gateway for checkout before exit
+            if(i > 0)
+            {
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
+            }
             edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
 
             //add the bottom node of the aisle (intersection with row 1)
             nodeYPos = rows.get(1).bottom - ((rows.get(1).bottom - rows.get(1).top)/2);
             newNode = new Node(nodeXPos, nodeYPos, false);
             nodes.add(newNode);
+
             //add the edge with previous node in the aisle
-            edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
-            edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
             if(i > 0)
             {
+                //only add an edge back to the middle of the aisle if this isn't the first aisle
+                //this is because the first aisle is one-way from top to bottom to simulate
+                //a real supermarket's forced entrance gateway for checkout before exit
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
                 //add the previous node of the row
                 edges.add(newNode.addEdge(nodes.get(nodes.size()-4)));
                 edges.add(nodes.get(nodes.size()-4).addEdge(newNode));
             }
+            edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
 
             //if there is another aisle after this, add nodes between them on the rows
             if(i != aisles.size()-1)
