@@ -296,18 +296,27 @@ public class Directions {
         {
             if(!exiting)
             {
-                //distance is number of mid-aisle floor markers to walk.
-                //in the demo supermarket, there is only one in each aisle.
-                //in a real supermarket, there would be more
-                int distance  = 1;
-
-                if (distance == 1)
+                //if the user is already at the final node, they must need to the other shelf of this aisle
+                //if they were going to shelf they are already at, this function would never have been called
+                if(currentPath.size() == 1)
                 {
-                    destination = " to the next intersection, ";
+                    destination = " across the aisle. ";
                 }
                 else
                 {
-                    destination = distance + " intersections, ";
+                    //distance is number of mid-aisle floor markers to walk.
+                    //in the demo supermarket, there is only one in each aisle.
+                    //in a real supermarket, there would be more
+                    int distance  = 1;
+
+                    if (distance == 1)
+                    {
+                        destination = " to the next intersection, ";
+                    }
+                    else
+                    {
+                        destination = distance + " intersections, ";
+                    }
                 }
             }
             else
