@@ -44,7 +44,7 @@ public class TextToSpeechHandler {
     {
             if(ttsIsInitialized)
 
-                textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, LocalDateTime.now().toString());
+                textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, LocalDateTime.now().toString());
 
     }
 
