@@ -230,6 +230,8 @@ public class ShoppingActivity extends MyActivity {
 
                                                 changeItem();
 
+                                                if(Directions.currentPath.size()==1)
+                                                    itemShelfProximityFeedback(scannedItem, currentItem);
                                                 TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
 
                                                 TTSHandler.speak(Directions.pathToString());
@@ -376,13 +378,13 @@ public class ShoppingActivity extends MyActivity {
             currentItem = null;
             currentItemText.setText(R.string.no_current_item);
             Directions.setCurrentPathNode(Map.user, Map.exit);
-
         }
         else
         {
             currentItem = Directions.getClosestItem(Map.user, shoppingList);
             currentItemText.setText(currentItem.getProductName());
             Directions.setCurrentPath(Map.user, currentItem);
+
         }
 
     }
