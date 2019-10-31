@@ -323,7 +323,7 @@ public class Directions {
             {
                 destination = " to the exit. ";
             }
-            if(currentPath.size()>1) {
+             if(currentPath.size()>1) {
                 //if the item is left of its node
                 if (Map.getItemXCoord(currentItem) < currentPath.get(currentPath.size() - 1).getXPosition()) {
 
@@ -349,12 +349,12 @@ public class Directions {
                     //if the user will be facing up
                     if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 0)
                     {
-                        nextTurn = "Your item is on the left";
+                        nextTurn = "Your item is on the right";
                     }
                     //if the user will be facing down
                     else if (currentPath.get(currentPath.size() - 2).getEdgeTo(currentPath.get(currentPath.size() - 1)).getDirection() == 2)
                     {
-                        nextTurn = "Your item is on the right";
+                        nextTurn = "Your item is on the left";
                     }
                     //if the user will be facing left or right (this should never happen)
                     else
