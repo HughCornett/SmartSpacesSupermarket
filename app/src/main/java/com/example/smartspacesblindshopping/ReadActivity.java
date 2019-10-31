@@ -40,19 +40,6 @@ public class ReadActivity extends MyActivity
         mode = getIntent().getStringExtra(MANAGE_OR_SHOP);
         listView = (ListView) findViewById(R.id.FileList);
 
-        readPaths();
-
-        Collections.reverse(fileList);
-
-        for(int i = 0; i<fileList.size();++i)
-        {
-            displayList.add("list " + (i+1));
-        }
-
-        if(displayList.isEmpty()){
-            displayList.add("No shopping lists have been created yet");
-        }
-
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, displayList );
 
         listView.setAdapter(arrayAdapter);
@@ -160,7 +147,15 @@ public class ReadActivity extends MyActivity
     private void readPaths()
     {
         fileList.clear();
+        displayList.clear();
         fileList.addAll(ReadWriteCSV.readCSV(this, PATH));
+
+        Collections.reverse(fileList);
+
+        for(int i = 0; i<fileList.size();++i)
+        {
+            displayList.add("list " + (i+1));
+        }
 
     }
 

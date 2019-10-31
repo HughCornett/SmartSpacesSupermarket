@@ -227,6 +227,8 @@ public class Directions {
 
         String destination = "[Error]";
         String nextTurn = "";
+
+        //if the path continues after the next turn
         if(currentPath.size() > nodesUntilNextTurn + 1)
         {
             int nextDirection = currentPath.get(nodesUntilNextTurn).getEdgeTo(currentPath.get(nodesUntilNextTurn+1)).getDirection();
@@ -289,14 +291,16 @@ public class Directions {
                 }
             }
         }
+        //else, the next 'turn' is the final node
         else
         {
-            //distance is number of mid-aisle floor markers to walk.
-            //in the demo supermarket, there is only one in each aisle.
-            //in a real supermarket, there would be more
-            int distance  = 1;
             if(!exiting)
             {
+                //distance is number of mid-aisle floor markers to walk.
+                //in the demo supermarket, there is only one in each aisle.
+                //in a real supermarket, there would be more
+                int distance  = 1;
+
                 if (distance == 1)
                 {
                     destination = " to the next intersection, ";
@@ -414,7 +418,8 @@ public class Directions {
         {
             Node node = Map.nodes.get(i);
             double thisDistance = distance(x, y, node.getXPosition(), node.getYPosition());
-            if(thisDistance < minDistance && !(aisle && node.getAisle() == -1))
+            //if this is closer than the last one and (it's not a row if aisle is true)
+            if(thisDistance < minDistance && !(aisle && node.getRow() != -1))
             {
                 minDistance = thisDistance;
                 closestNode = node;
@@ -443,10 +448,12 @@ public class Directions {
             int posInFullPath = currentPath.indexOf(currentPathTurns.get(currentPathTurnsPos));
             Map.user.setFacing(currentPath.get(posInFullPath).getEdgeTo(currentPath.get(posInFullPath+1)).getDirection());
 
+            //if the user isn't going to the exit, set the path from here to the current item
             if(!exiting)
             {
                 Directions.setCurrentPath(Map.user, currentItem);
             }
+            //if they are, set the path from here to the exit
             else
             {
                 Directions.setCurrentPathNode(Map.user, Map.exit);
@@ -457,11 +464,13 @@ public class Directions {
         {
             Map.user.setX(currentPathTurns.get(currentPathTurns.size()-1).getXPosition());
             Map.user.setY(currentPathTurns.get(currentPathTurns.size()-1).getYPosition());
-            //get the direction the user will now be facing
+
+            //if the user isn't exiting, make them face the item
             if(!exiting)
             {
                 Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
             }
+            //if they are exiting, make them face the exit (always 3 because exit is on the leftmost wall)
             else
             {
                 Map.user.setFacing(3);

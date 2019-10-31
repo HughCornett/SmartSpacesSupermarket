@@ -191,11 +191,10 @@ public class DisplayListActivity extends MyActivity {
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ArrayList<String> fileList = ReadWriteCSV.readCSV(getApplicationContext(),path);
-                        ReadWriteCSV.flush(getApplicationContext(),path);
-                        fileList.remove(itemList.get(index));
-                        ReadWriteCSV.writeToCSV(getApplicationContext(),fileList,path);
                         itemList.remove(index);
+                        ReadWriteCSV.flush(getApplicationContext(),path);
+                        ReadWriteCSV.writeToCSV(getApplicationContext(),itemsToStrings(itemList),path);
+
                         mPopupWindow.dismiss();
                         if(itemList.isEmpty())
                         {

@@ -62,8 +62,6 @@ public class Map extends MapActivity
         shelfRect = new RectF((aisles.get(1).right + (aisles.get(2).left - aisles.get(1).right)/2), rows.get(0).top, aisles.get(2).left, rows.get(1).bottom);
         shelves.add(new Shelf(3, 2, false, SECTIONS_PER_SHELF, 2, shelfRect));
 
-        item = new Item("", "Coffee 150g", 3, 1, 0);
-
         //initialise direction nodes
         //assumes all shelves are level and the same length
         //could be modified to work with multiple rows of shelves in the future
@@ -87,27 +85,26 @@ public class Map extends MapActivity
                 edges.add(nodes.get(nodes.size()-3).addEdge(newNode));
             }
 
-            //nodes in the middle of the aisles, one for each section
-            for(int j = 0; j < SECTIONS_PER_SHELF; j++)
-            {
-                nodeYPos = shelves.get(0).getRect().top + (j+0.5)*shelves.get(i).getSectionWidth();
-                newNode = new Node(nodeXPos, nodeYPos, false);
-                nodes.add(newNode);
-                edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
-                edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
-            }
-            //add the bottom of the aisle (intersection with row 1)
+            //add the node in the middle of the aisle
+            shelfRect = shelves.get(0).getRect();
+            nodeYPos = shelfRect.top + ((shelfRect.bottom - shelfRect.top)/2);
+            newNode = new Node(nodeXPos, nodeYPos, false);
+            nodes.add(newNode);
+            edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
+            edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
+
+            //add the bottom node of the aisle (intersection with row 1)
             nodeYPos = rows.get(1).bottom - ((rows.get(1).bottom - rows.get(1).top)/2);
             newNode = new Node(nodeXPos, nodeYPos, false);
             nodes.add(newNode);
-            //add the previous node in the aisle
+            //add the edge with previous node in the aisle
             edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
             edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
             if(i > 0)
             {
                 //add the previous node of the row
-                edges.add(newNode.addEdge(nodes.get(nodes.size()-6)));
-                edges.add(nodes.get(nodes.size()-6).addEdge(newNode));
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-4)));
+                edges.add(nodes.get(nodes.size()-4).addEdge(newNode));
             }
 
             //if there is another aisle after this, add nodes between them on the rows
@@ -118,8 +115,8 @@ public class Map extends MapActivity
 
                 newNode = new Node(nodeXPos, nodeYPos, false);
                 nodes.add(newNode);
-                edges.add(newNode.addEdge(nodes.get(nodes.size()-6)));
-                edges.add(nodes.get(nodes.size()-6).addEdge(newNode));
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-4)));
+                edges.add(nodes.get(nodes.size()-4).addEdge(newNode));
 
                 nodeYPos = rows.get(1).bottom - ((rows.get(1).bottom - rows.get(1).top)/2);
 
@@ -135,8 +132,8 @@ public class Map extends MapActivity
         newNode = new Node(nodeXPos, nodeYPos, true);
         nodes.add(newNode);
         //add the neighbour
-        edges.add(newNode.addEdge(nodes.get(2)));
-        edges.add(nodes.get(2).addEdge(newNode));
+        edges.add(newNode.addEdge(nodes.get(1)));
+        edges.add(nodes.get(1).addEdge(newNode));
         exit = newNode;
     }
 

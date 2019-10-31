@@ -74,7 +74,7 @@ public class MapActivity extends MyActivity {
 
 
             ArrayList<Node> path = Directions.currentPath;
-            if(path.size()>1)
+            if(path != null && path.size()>1)
             {
                 Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
                 Log.d("direction", ""+Directions.pathToString());

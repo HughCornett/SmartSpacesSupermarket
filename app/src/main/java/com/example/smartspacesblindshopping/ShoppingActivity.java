@@ -230,6 +230,8 @@ public class ShoppingActivity extends MyActivity {
 
                                                 changeItem();
 
+                                                if(Directions.currentPath.size()==1)
+                                                    itemShelfProximityFeedback(scannedItem, currentItem);
                                                 TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
 
                                                 TTSHandler.speak(Directions.pathToString());
@@ -375,15 +377,43 @@ public class ShoppingActivity extends MyActivity {
             currentItem = null;
             currentItemText.setText(R.string.no_current_item);
             Directions.setCurrentPathNode(Map.user, Map.exit);
-
         }
         else
         {
             currentItem = Directions.getClosestItem(Map.user, shoppingList);
             currentItemText.setText(currentItem.getProductName());
             Directions.setCurrentPath(Map.user, currentItem);
+
         }
 
+    }
+
+    public void blockageReported()
+    {
+        //if the user isn't at the final node of the path
+        if(Directions.currentPathTurnsPos < Directions.currentPathTurns.size() - 1)
+        {
+            //set the blockage to between their current node and the next node they have to get to
+            Node blockageStart = Directions.currentPathTurns.get(Directions.currentPathTurnsPos);
+            Node blockageEnd = Directions.currentPathTurns.get(Directions.currentPathTurnsPos+1);
+
+            //get the indexes of the nodes in currentPath
+            int blockageStartIndex = Directions.currentPath.indexOf(blockageStart);
+            int blockageEndIndex = Directions.currentPath.indexOf(blockageEnd);
+
+            //for each node between blockageStart and blockageEnd (not including blockage end)
+            for(int i = blockageStartIndex; i < blockageEndIndex; i++)
+            {
+                //add a blockage between this node and the next one
+                Map.addBlockage(Directions.currentPath.get(i), Directions.currentPath.get(i+1));
+            }
+        }
+        //if they are
+        else
+        {
+            Log.e("blockage", "user reports error at final node");
+        }
+        Directions.computeMatrices();;
     }
 
 }
