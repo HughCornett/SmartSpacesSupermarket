@@ -446,8 +446,15 @@ public class Directions {
      */
     public static void nextDirection()
     {
+
+        //if we aren't already at the last node
+        if(currentPathTurnsPos < currentPathTurns.size()-1)
+        {
+            //get the next node
+            currentPathTurnsPos += 1;
+        }
+
         //if this isn't the last node
-        currentPathTurnsPos += 1;
         if(currentPathTurnsPos < currentPathTurns.size()-1)
         {
 
