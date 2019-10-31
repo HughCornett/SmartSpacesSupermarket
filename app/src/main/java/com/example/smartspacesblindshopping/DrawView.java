@@ -113,7 +113,7 @@ public class DrawView extends View
             canvas.drawRect(aisleOnScreen, paint);
         }
 
-        //draw all the rows
+        /*draw all the rows
         for(int i = 0; i < Map.rows.size(); i++)
         {
             Point rowTopLeft = getScreenCoords(Map.rows.get(i).left, Map.rows.get(i).top);
@@ -122,7 +122,7 @@ public class DrawView extends View
             Rect rowOnScreen = new Rect(rowTopLeft.x, rowTopLeft.y, rowBottomRight.x, rowBottomRight.y);
             canvas.drawRect(rowOnScreen, paint);
         }
-
+        */
 
         paint.setColor(Color.RED);
         for(int i = 0; i < Map.shelves.size(); i++)
@@ -168,9 +168,9 @@ public class DrawView extends View
         }
 
         paint.setColor(ITEM_COLOR);
-        if(Map.item != null)
+        if(Directions.currentItem != null && !Directions.exiting)
         {
-            itemScreenPosition = getScreenCoords(Map.getItemXCoord(Map.item), Map.getItemYCoord(Map.item));
+            itemScreenPosition = getScreenCoords(Map.getItemXCoord(Directions.currentItem), Map.getItemYCoord(Directions.currentItem));
             canvas.drawCircle(itemScreenPosition.x, itemScreenPosition.y, ITEM_RADIUS, paint);
         }
     }

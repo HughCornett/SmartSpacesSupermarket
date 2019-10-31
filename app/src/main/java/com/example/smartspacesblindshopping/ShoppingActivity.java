@@ -387,4 +387,32 @@ public class ShoppingActivity extends MyActivity {
 
     }
 
+    public void blockageReported()
+    {
+        //if the user isn't at the final node of the path
+        if(Directions.currentPathTurnsPos < Directions.currentPathTurns.size() - 1)
+        {
+            //set the blockage to between their current node and the next node they have to get to
+            Node blockageStart = Directions.currentPathTurns.get(Directions.currentPathTurnsPos);
+            Node blockageEnd = Directions.currentPathTurns.get(Directions.currentPathTurnsPos+1);
+
+            //get the indexes of the nodes in currentPath
+            int blockageStartIndex = Directions.currentPath.indexOf(blockageStart);
+            int blockageEndIndex = Directions.currentPath.indexOf(blockageEnd);
+
+            //for each node between blockageStart and blockageEnd (not including blockage end)
+            for(int i = blockageStartIndex; i < blockageEndIndex; i++)
+            {
+                //add a blockage between this node and the next one
+                Map.addBlockage(Directions.currentPath.get(i), Directions.currentPath.get(i+1));
+            }
+        }
+        //if they are
+        else
+        {
+            Log.e("blockage", "user reports error at final node");
+        }
+        Directions.computeMatrices();;
+    }
+
 }
