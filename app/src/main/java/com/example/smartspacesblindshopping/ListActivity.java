@@ -65,10 +65,6 @@ public class ListActivity extends MyActivity {
 
         listView.setAdapter(customItemAdapter);
 
-
-
-
-
     }
 
 
@@ -257,10 +253,11 @@ public class ListActivity extends MyActivity {
                 popUpOnClick(i);
             }
         });
+
         mPopupWindow.showAtLocation(findViewById(R.id.ListLayout), Gravity.CENTER, 0, 0);
 
-
         state = 1;
+
         ArrayList<String> menu = new ArrayList<>();
 
         menu.addAll(chosenItemStrings);

@@ -84,7 +84,7 @@ public class ShoppingActivity extends MyActivity {
 
     public void nextInstruction(View view) {
 
-        if(shoppingList.isEmpty()) Directions.setCurrentPathNode(Map.user,Map.exit);
+        if (shoppingList.isEmpty()) Directions.setCurrentPathNode(Map.user, Map.exit);
         Directions.nextDirection();
         TTSHandler.speak(Directions.pathToString());
     }
@@ -101,7 +101,7 @@ public class ShoppingActivity extends MyActivity {
 
         changeItem();
 
-        if(currentItem!=null)
+        if (currentItem != null)
             TTSHandler.speak("your next item is " + currentItem.getBrandName() + " " + currentItem.getProductName());
 
         TTSHandler.speak(Directions.pathToString());
@@ -141,7 +141,7 @@ public class ShoppingActivity extends MyActivity {
     }
 
     public void previousDirection(View view) {
-        if(shoppingList.isEmpty()) Directions.setCurrentPathNode(Map.user,Map.exit);
+        if (shoppingList.isEmpty()) Directions.setCurrentPathNode(Map.user, Map.exit);
 
         TTSHandler.speak(Directions.pathToString());
     }
@@ -217,13 +217,13 @@ public class ShoppingActivity extends MyActivity {
 
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
                                     //currentNfcTag = new NfcTag(scannedItem);
-                                    if(scannedItem!=null) {
+                                    if (scannedItem != null) {
                                         //set user position and facing direction
                                         Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                         Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
                                         Map.user.setFacing(Map.userFaceItem(Map.user, scannedItem));
 
-                                        if (shoppingList.size()>1) {
+                                        if (shoppingList.size() > 1) {
                                             if (ItemOnShoppingList(scannedItem)) {
 
                                                 shoppingList.remove(scannedItem);
@@ -233,51 +233,44 @@ public class ShoppingActivity extends MyActivity {
                                                 TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
 
                                                 itemShelfProximityFeedback(scannedItem, currentItem);
-                                                
+
                                                 customItemAdapter.notifyDataSetChanged();
-                                            }
-                                            else if (currentItem != null) {
+                                            } else if (currentItem != null) {
                                                 itemShelfProximityFeedback(scannedItem, currentItem);
 
                                             }
-                                        }
-                                        else {
-                                            shoppingList.clear();
-
-                                            changeItem();
-
-                                            TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-
+                                        }else if (shoppingList.size() == 1) {
+                                            if (ItemOnShoppingList(scannedItem)) {
+                                                shoppingList.clear();
+                                                TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
+                                            }
                                             TTSHandler.speak(Directions.pathToString());
-
                                             customItemAdapter.notifyDataSetChanged();
                                         }
                                     }
-                                    break;
-                            }
-                            Log.d("debug", "" + menu[index]);
+                            break;
                         }
-
-                        return true;
-                    case MyActivity.MESSAGE_STATE_CHANGE:
-                        Log.d("debug", "state:" + message.arg1);
-                        return true;
-                    case MyActivity.MESSAGE_TOAST:
-                        Log.d("debug", "message_toast");
-
-                        return true;
-                    case MyActivity.MESSAGE_WRITE:
-                        Log.d("debug", "write");
-                        return true;
-
-                    default:
-                        return false;
+                        Log.d("debug", "" + menu[index]);
                 }
+
+                return true;
+                case MyActivity.MESSAGE_STATE_CHANGE:
+                Log.d("debug", "state:" + message.arg1);
+                return true;
+                case MyActivity.MESSAGE_TOAST:
+                Log.d("debug", "message_toast");
+
+                return true;
+                case MyActivity.MESSAGE_WRITE:
+                Log.d("debug", "write");
+                return true;
+
+                default:
+                return false;
             }
-        });
-    }
-
-
+        }
+    });
+}
 
 
     /**
@@ -289,7 +282,6 @@ public class ShoppingActivity extends MyActivity {
      */
     public void itemShelfProximityFeedback(Item i, Item j) {
         //SAME AISLE
-
 
 
         if (i.getAisle() == j.getAisle()) {
@@ -358,8 +350,7 @@ public class ShoppingActivity extends MyActivity {
         return false;
     }
 
-    public void map(View view)
-    {
+    public void map(View view) {
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
@@ -368,16 +359,12 @@ public class ShoppingActivity extends MyActivity {
     //Directions.getNextDirection() when user presses the button on their glove
 
 
-    private void changeItem()
-    {
-        if(shoppingList.isEmpty())
-        {
+    private void changeItem() {
+        if (shoppingList.isEmpty()) {
             currentItem = null;
             currentItemText.setText(R.string.no_current_item);
             Directions.setCurrentPathNode(Map.user, Map.exit);
-        }
-        else
-        {
+        } else {
             currentItem = Directions.getClosestItem(Map.user, shoppingList);
             currentItemText.setText(currentItem.getProductName());
             Directions.setCurrentPath(Map.user, currentItem);
@@ -386,38 +373,34 @@ public class ShoppingActivity extends MyActivity {
 
     }
 
-    public void blockageReported()
-    {
+    public void blockageReported() {
         //if the user isn't at the final node of the path
-        if(Directions.currentPathTurnsPos < Directions.currentPathTurns.size() - 1)
-        {
+        if (Directions.currentPathTurnsPos < Directions.currentPathTurns.size() - 1) {
             //set the blockage to between their current node and the next node they have to get to
             Node blockageStart = Directions.currentPathTurns.get(Directions.currentPathTurnsPos);
-            Node blockageEnd = Directions.currentPathTurns.get(Directions.currentPathTurnsPos+1);
+            Node blockageEnd = Directions.currentPathTurns.get(Directions.currentPathTurnsPos + 1);
 
             //get the indexes of the nodes in currentPath
             int blockageStartIndex = Directions.currentPath.indexOf(blockageStart);
             int blockageEndIndex = Directions.currentPath.indexOf(blockageEnd);
 
             //for each node between blockageStart and blockageEnd (not including blockage end)
-            for(int i = blockageStartIndex; i < blockageEndIndex; i++)
-            {
+            for (int i = blockageStartIndex; i < blockageEndIndex; i++) {
                 //add a blockage between this node and the next one
-                Map.addBlockage(Directions.currentPath.get(i), Directions.currentPath.get(i+1));
+                Map.addBlockage(Directions.currentPath.get(i), Directions.currentPath.get(i + 1));
             }
         }
         //if they are
-        else
-        {
+        else {
             Log.e("blockage", "user reports error at final node");
         }
-        Directions.computeMatrices();;
+        Directions.computeMatrices();
+        ;
     }
 
 
-    private boolean isOnTheSameShelf(Item i, Item j)
-    {
-        return i.getShelf()==j.getShelf();
+    private boolean isOnTheSameShelf(Item i, Item j) {
+        return i.getShelf() == j.getShelf();
     }
 
 }
