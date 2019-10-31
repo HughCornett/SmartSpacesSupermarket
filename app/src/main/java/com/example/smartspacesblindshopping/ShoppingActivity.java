@@ -230,12 +230,10 @@ public class ShoppingActivity extends MyActivity {
 
                                                 changeItem();
 
-                                                if(Directions.currentPath.size()==1)
-                                                    itemShelfProximityFeedback(scannedItem, currentItem);
                                                 TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
 
-                                                TTSHandler.speak(Directions.pathToString());
-
+                                                itemShelfProximityFeedback(scannedItem, currentItem);
+                                                
                                                 customItemAdapter.notifyDataSetChanged();
                                             }
                                             else if (currentItem != null) {
@@ -415,6 +413,12 @@ public class ShoppingActivity extends MyActivity {
             Log.e("blockage", "user reports error at final node");
         }
         Directions.computeMatrices();;
+    }
+
+
+    private boolean isOnTheSameShelf(Item i, Item j)
+    {
+        return i.getShelf()==j.getShelf();
     }
 
 }
