@@ -132,8 +132,8 @@ public class Map extends MapActivity
         newNode = new Node(nodeXPos, nodeYPos, true);
         nodes.add(newNode);
         //add the neighbour
-        edges.add(newNode.addEdge(nodes.get(2)));
-        edges.add(nodes.get(2).addEdge(newNode));
+        edges.add(newNode.addEdge(nodes.get(1)));
+        edges.add(nodes.get(1).addEdge(newNode));
         exit = newNode;
     }
 
