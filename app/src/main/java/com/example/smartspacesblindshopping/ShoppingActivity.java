@@ -65,7 +65,7 @@ public class ShoppingActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "next instructions", "previous instruction", "current item", "add items to the list", "Go back"});
+        switchCallback(new String[]{"Choose a list", "next instructions", "previous instruction", "current item", "add items to the list", "Go back"}, "you are in the shopping menu");
 
     }
 
@@ -173,7 +173,9 @@ public class ShoppingActivity extends MyActivity {
 
 
     @Override
-    public void switchCallback(final String[] menu) {
+    public void switchCallback(final String[] menu, String firstMessage) {
+        TTSHandler.speak(firstMessage+" your first option is " + menu[0]);
+
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
 

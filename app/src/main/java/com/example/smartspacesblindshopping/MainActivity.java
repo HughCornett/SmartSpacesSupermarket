@@ -30,7 +30,9 @@ public class MainActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
-        switchCallback(new String[]{"create a new list", "Do your shopping"});
+
+        switchCallback(new String[]{"manage lists", "Do your shopping"}, "you are in the main menu");
+
 
     }
 
