@@ -140,7 +140,7 @@ public class ReadActivity extends MyActivity
         String[] array = new String[displayList.size()+1];
 
         array = menu.toArray(array);
-        switchCallback(array);
+        switchCallback(array, "you are in the read lists menu");
     }
 
 

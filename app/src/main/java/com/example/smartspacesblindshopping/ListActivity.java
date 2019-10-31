@@ -65,17 +65,13 @@ public class ListActivity extends MyActivity {
 
         listView.setAdapter(customItemAdapter);
 
-
-
-
-
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"add item to the list", "go back"});
+        switchCallback(new String[]{"add item to the list", "go back"},"you are in the create a list menu");
     }
 
     public void addToList(View view) {
@@ -219,6 +215,7 @@ public class ListActivity extends MyActivity {
                     break;
             }
         } else {
+            popUpOnClick(index);
 
         }
     }
@@ -257,10 +254,11 @@ public class ListActivity extends MyActivity {
                 popUpOnClick(i);
             }
         });
+
         mPopupWindow.showAtLocation(findViewById(R.id.ListLayout), Gravity.CENTER, 0, 0);
 
-
         state = 1;
+
         ArrayList<String> menu = new ArrayList<>();
 
         menu.addAll(chosenItemStrings);
@@ -269,13 +267,13 @@ public class ListActivity extends MyActivity {
 
         array = menu.toArray(array);
 
-        switchCallback(array);
+        switchCallback(array, "");
     }
 
     private void popUpOnClick(int i) {
         ListActivity.this.itemList.add(firebase.fullNameToItem(chosenItemStrings.get(i)));
         state = 0;
-        switchCallback(new String[]{"add item to the list", "go back"});
+        switchCallback(new String[]{"add item to the list", "go back"}, "you are in the create a list menu");
         customItemAdapter.notifyDataSetChanged();
         Intent intent = new Intent();
         intent.putExtra(APPEND_TO_LIST, itemsToStrings(itemList));

@@ -39,6 +39,9 @@ public class DisplayListActivity extends MyActivity {
 
     Button button;
 
+    int state=0;
+    int item=0;
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +97,6 @@ public class DisplayListActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         switchMenu();
 
     }
@@ -103,14 +105,22 @@ public class DisplayListActivity extends MyActivity {
     protected void chooseOption(int index) {
         super.chooseOption(index);
 
-        int state=0;
-        int item=0;
-
         if(state == 0) {
-            if (index == itemList.size()) {
+            if (index == itemList.size()+1) {
                 DisplayListActivity.this.finish();
-            } else {
-                switchCallback(new String[]{"delete", "cancel"});
+            }
+            else if (index== itemList.size()){
+                if(mode .equals("shop")) {
+                    chooseList();
+                }
+                else if(mode.equals("manage"))
+                {
+                    deleteList();
+                    finish();
+                }
+            }
+            else {
+                switchCallback(new String[]{"delete", "cancel"}, "do you want to delete a list");
                 item=index;
                 state = 1;
             }
@@ -139,12 +149,20 @@ public class DisplayListActivity extends MyActivity {
 
         menu.addAll(itemsToStrings(itemList));
 
+        if(mode .equals("shop")) {
+            menu.add("choose this list");
+        }
+        else if(mode.equals("manage"))
+        {
+            menu.add("delete this list");
+        }
+
         menu.add("go back");
 
-        String[] array = new String[itemList.size()+1];
+        String[] array = new String[itemList.size()+2];
 
         array = menu.toArray(array);
-        switchCallback(array);
+        switchCallback(array, "you are reading a list");
     }
 
     private void deleteList()

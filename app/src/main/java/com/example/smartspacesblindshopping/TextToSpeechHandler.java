@@ -14,7 +14,7 @@ import java.util.Locale;
 public class TextToSpeechHandler {
 
     static TextToSpeech textToSpeech;
-    boolean ttsIsInitialized = false;
+    volatile boolean ttsIsInitialized = false;
 
     TextToSpeechHandler(Context context)
     {
@@ -40,11 +40,31 @@ public class TextToSpeechHandler {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void speak(String message)
+    public void speak(final String message)
     {
-            if(ttsIsInitialized)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
 
-                textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, LocalDateTime.now().toString());
+                    while (!ttsIsInitialized)
+                    {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if(ttsIsInitialized)
+
+
+                        textToSpeech.speak(message, TextToSpeech.QUEUE_ADD, null, LocalDateTime.now().toString());
+
+                    Log.d("ttsIsInitialized", ""+ttsIsInitialized);
+
+                }
+            }).start();
+
 
     }
 

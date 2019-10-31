@@ -122,10 +122,11 @@ public class MyActivity extends Activity {
     };
 
 
-    public void switchCallback(final String[] menu) {
+    public void switchCallback(final String[] menu, String firstMessage) {
+        TTSHandler.speak(firstMessage+" your first option is " + menu[0]);
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
-            boolean first = true;
+
 
             @Override
             public boolean handleMessage(@NonNull Message message) {
