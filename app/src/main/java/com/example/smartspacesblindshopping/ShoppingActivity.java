@@ -242,16 +242,21 @@ public class ShoppingActivity extends MyActivity {
 
                                         }else if (shoppingList.size() == 1) {
                                             if (ItemOnShoppingList(scannedItem)) {
-                                                shoppingList.clear();
                                                 TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-                                            }
-                                            //Sets current path to exit if shopping list is empty
-                                            //or else it sets the path to the next item in the shopping list
-                                            changeItem();
 
-                                            //Speaks the new path set in changeItem()
-                                            TTSHandler.speak(Directions.pathToString());
-                                            customItemAdapter.notifyDataSetChanged();
+                                                shoppingList.clear();
+                                                //Sets current path to exit if shopping list is empty
+                                                //or else it sets the path to the next item in the shopping list
+                                                changeItem();
+
+                                                //Speaks the new path set in changeItem()
+                                                TTSHandler.speak(Directions.pathToString());
+
+                                                customItemAdapter.notifyDataSetChanged();
+
+                                            }else if(currentItem !=null) {
+                                                itemShelfProximityFeedback(scannedItem,currentItem);
+                                            }
                                         }
                                     }
                             break;
@@ -262,6 +267,13 @@ public class ShoppingActivity extends MyActivity {
                 return true;
                 case MyActivity.MESSAGE_STATE_CHANGE:
                 Log.d("debug", "state:" + message.arg1);
+                    if(state ==3 && message.arg1==2)
+                    {
+                        disconnect();
+                        connectToWearable();
+                    }
+                    state = message.arg1;
+
                 return true;
                 case MyActivity.MESSAGE_TOAST:
                 Log.d("debug", "message_toast");
