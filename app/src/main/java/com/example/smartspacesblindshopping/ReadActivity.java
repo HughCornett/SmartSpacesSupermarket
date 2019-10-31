@@ -49,6 +49,10 @@ public class ReadActivity extends MyActivity
             displayList.add("list " + (i+1));
         }
 
+        if(displayList.isEmpty()){
+            displayList.add("No shopping lists have been created yet");
+        }
+
         arrayAdapter = new ArrayAdapter<>(this, R.layout.textinadapter, R.id.textthing, displayList );
 
         listView.setAdapter(arrayAdapter);

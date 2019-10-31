@@ -252,6 +252,9 @@ public class ShoppingActivity extends MyActivity {
 
                                             customItemAdapter.notifyDataSetChanged();
                                         }
+                                    } else if (scannedItem != null && currentItem != null) {
+                                        itemShelfProximityFeedback(scannedItem, currentItem);
+
                                     }
                                     break;
                             }
@@ -341,11 +344,15 @@ public class ShoppingActivity extends MyActivity {
     public boolean ItemOnShoppingList(Item i) {
         if (i != null) {
             if ((i.getProductName()).equals(currentItem.getProductName())) {
-                TTSHandler.speak("That item is on your list");
-
+                TTSHandler.speak("That item is on your list - please select it now");
                 return true;
             } else {
-                //TTSHandler.speak("That item is not correct - the next item on your shopping list is " + currentItemText.getText());
+                for (Item j : shoppingList) {
+                    if ((i.getProductName()).equals(j.getProductName())) {
+                        TTSHandler.speak("That item is also on your list - you may select it now");
+                        return true;
+                    }
+                }
                 return false;
             }
         }
