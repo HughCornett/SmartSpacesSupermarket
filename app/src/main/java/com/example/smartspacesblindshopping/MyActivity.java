@@ -60,6 +60,8 @@ public class MyActivity extends Activity {
 
     static protected Store store;
 
+    protected int state = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +95,11 @@ public class MyActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        disconnect();
+    }
+
+    protected void disconnect()
+    {
         if (bound) {
             unbindService(mConnection);
             stopService(intent);
@@ -176,6 +183,12 @@ public class MyActivity extends Activity {
                         return true;
                     case MyActivity.MESSAGE_STATE_CHANGE:
                         Log.d("debug", "state:" + message.arg1);
+                        if(state ==3 && message.arg1==2)
+                        {
+                            disconnect();
+                            connectToWearable();
+                        }
+                        state = message.arg1;
 
                         return true;
                     case MyActivity.MESSAGE_TOAST:
@@ -241,5 +254,16 @@ public class MyActivity extends Activity {
     }
 
 
+    protected void connectToWearable()
+    {
+        ArrayList<String> btdevice = ReadWriteCSV.readCSV(getApplicationContext(),"btdevice.csv");
+        if(!btdevice.isEmpty()) {
+            intent = new Intent(this, BluetoothService.class);
+            intent.putExtra(BluetoothService.BT_NAME, btdevice.get(0));
+            intent.putExtra(BluetoothService.BT_ADDRESS, btdevice.get(1));
+            startService(intent);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
 
 }

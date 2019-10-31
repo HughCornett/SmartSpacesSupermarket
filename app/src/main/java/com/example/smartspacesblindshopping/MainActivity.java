@@ -111,15 +111,5 @@ public class MainActivity extends MyActivity {
 
     }
 
-    private void connectToWearable()
-    {
-        ArrayList<String> btdevice = ReadWriteCSV.readCSV(getApplicationContext(),"btdevice.csv");
-        if(!btdevice.isEmpty()) {
-            intent = new Intent(this, BluetoothService.class);
-            intent.putExtra(BluetoothService.BT_NAME, btdevice.get(0));
-            intent.putExtra(BluetoothService.BT_ADDRESS, btdevice.get(1));
-            startService(intent);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
+
 }

@@ -267,6 +267,13 @@ public class ShoppingActivity extends MyActivity {
                 return true;
                 case MyActivity.MESSAGE_STATE_CHANGE:
                 Log.d("debug", "state:" + message.arg1);
+                    if(state ==3 && message.arg1==2)
+                    {
+                        disconnect();
+                        connectToWearable();
+                    }
+                    state = message.arg1;
+
                 return true;
                 case MyActivity.MESSAGE_TOAST:
                 Log.d("debug", "message_toast");
