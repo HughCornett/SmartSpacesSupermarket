@@ -369,7 +369,6 @@ public class ShoppingActivity extends MyActivity {
             currentItem = null;
             currentItemText.setText(R.string.no_current_item);
             Directions.setCurrentPathNode(Map.user, Map.exit);
-
         }
         else
         {
