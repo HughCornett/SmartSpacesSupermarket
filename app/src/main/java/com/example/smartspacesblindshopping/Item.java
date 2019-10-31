@@ -85,6 +85,7 @@ public class Item {
         this.section = section;
     }
 
+
     public String getFullName(){
         return this.getBrandName() + " " + getProductName();
     }
@@ -134,7 +135,7 @@ public class Item {
     @NonNull
     @Override
     public String toString() {
-        return this.getProductName() + " " + this.getCategoryName() + " " + this.getBrandName() + " " + this.getSection() + " " + this.getLevel() + " " + this.getAisle() + " " + this.getShelf();
+        return this.getProductName() + " " + this.getCategoryName() + " " + this.getBrandName() + " " + this.getNfcTag() + " " + this.getSection() + " " + this.getLevel() + " " + this.getAisle() + " " + this.getShelf();
     }
 
     public String getId() {
