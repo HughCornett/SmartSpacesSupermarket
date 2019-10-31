@@ -118,8 +118,17 @@ public class Directions {
             currentNode = nextMatrix[Map.nodes.indexOf(currentNode)][destinationIndex];
             currentPath.add(currentNode);
             currentNode.setPathNode(true);
-            currentNode.getEdgeTo(currentPath.get(currentPath.size()-2)).setPathEdge(true);
-            currentPath.get(currentPath.size()-2).getEdgeTo(currentNode).setPathEdge(true);
+            Edge edge = currentNode.getEdgeTo(currentPath.get(currentPath.size()-2));
+
+            if(edge != null)
+            {
+                edge.setPathEdge(true);
+            }
+            edge = currentPath.get(currentPath.size()-2).getEdgeTo(currentNode);
+            if(edge != null)
+            {
+                edge.setPathEdge(true);
+            }
         }
 
         setCurrentPathTurns();
