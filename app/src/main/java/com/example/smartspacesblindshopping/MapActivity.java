@@ -78,7 +78,7 @@ public class MapActivity extends MyActivity {
             {
                 Log.d("path", "Path from "+path.get(0)+" to "+path.get(path.size()-1)+": "+path);
                 Log.d("direction", ""+Directions.pathToString());
-                TTSHandler.speak(Directions.pathToString());
+                //TTSHandler.speak(Directions.pathToString());
             }
 
 
@@ -105,6 +105,12 @@ public class MapActivity extends MyActivity {
     protected void onResume() {
         super.onResume();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stop();
     }
 
     public void userScansTag(String tag)

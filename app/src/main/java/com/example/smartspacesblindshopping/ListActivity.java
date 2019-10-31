@@ -75,7 +75,7 @@ public class ListActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"add item to the list", "save the list", "go back"});
+        switchCallback(new String[]{"add item to the list", "go back"});
     }
 
     public void addToList(View view) {
@@ -273,7 +273,7 @@ public class ListActivity extends MyActivity {
     private void popUpOnClick(int i) {
         ListActivity.this.itemList.add(firebase.fullNameToItem(chosenItemStrings.get(i)));
         state = 0;
-        switchCallback(new String[]{"add item to the list", "save the list", "go back"});
+        switchCallback(new String[]{"add item to the list", "go back"});
         customItemAdapter.notifyDataSetChanged();
         Intent intent = new Intent();
         intent.putExtra(APPEND_TO_LIST, itemsToStrings(itemList));

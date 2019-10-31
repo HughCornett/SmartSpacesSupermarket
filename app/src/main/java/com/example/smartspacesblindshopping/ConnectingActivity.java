@@ -44,19 +44,7 @@ public class ConnectingActivity extends MyActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                final int state 		= intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int prevState	= intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    showToast("Paired");
-                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
-                    showToast("Unpaired");
-                }
-
-                mAdapter.notifyDataSetChanged();
-            }
-            else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
                 if (state == BluetoothAdapter.STATE_ON) {
@@ -113,6 +101,7 @@ public class ConnectingActivity extends MyActivity {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //Log.d("debug",""+mBondedDevices.size());
+        makeDiscoverable();
         mBluetoothAdapter.startDiscovery();
 
         Log.d("debug",""+mDeviceList.size());

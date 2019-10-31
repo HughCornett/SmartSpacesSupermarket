@@ -65,4 +65,25 @@ public class ManageListsActivity extends MyActivity {
             }
         }
     }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        switchCallback(new String[]{"create a list", "read lists", "go back"});
+    }
+
+    @Override
+    protected void chooseOption(int index) {
+        super.chooseOption(index);
+
+        switch (index)
+        {
+            case 0: ManageListsActivity.this.createLists(findViewById(R.id.createButton)); break;
+
+            case 1: ManageListsActivity.this.readList(findViewById(R.id.readButton)); break;
+
+            case 2: finish();
+        }
+    }
 }

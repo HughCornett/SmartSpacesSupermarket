@@ -147,4 +147,8 @@ public class Node
     {
         return ""+Map.nodes.indexOf(this);
     }
+    public boolean getExit()
+    {
+        return this.exit;
+    }
 }

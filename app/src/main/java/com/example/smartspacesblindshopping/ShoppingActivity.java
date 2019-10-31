@@ -95,13 +95,8 @@ public class ShoppingActivity extends MyActivity {
 
         Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getXPosition());
         Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(currentItem), Map.getItemYCoord(currentItem), true).getYPosition());
-        if (Map.getItemXCoord(currentItem) < Map.user.getX()) {
-            Map.user.setFacing(3);
-        } else if (Map.getItemXCoord(currentItem) > Map.user.getX()) {
-            Map.user.setFacing(1);
-        } else {
-            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-        }
+        Map.user.setFacing(Map.userFaceItem(Map.user, currentItem));
+
         shoppingList.remove(currentItem);
         currentItem = Directions.getClosestItem(Map.user, shoppingList);
         Directions.setCurrentPath(Map.user, currentItem);
@@ -208,27 +203,34 @@ public class ShoppingActivity extends MyActivity {
 
                                 default:
                                     //or here?
+
                                     Item scannedItem = firebase.getItemByNFCTag(sbprint);
+                                    //currentNfcTag = new NfcTag(scannedItem);
+                                    if(scannedItem!=null) {
+                                        //set user position and facing direction
+                                        Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
+                                        Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
+                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                            Map.user.setFacing(3);
+                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                            Map.user.setFacing(1);
+                                        } else {
+                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                        }
+
+                                        if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
+                                            Map.user.setFacing(3);
+                                        } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
+                                            Map.user.setFacing(1);
+                                        } else {
+                                            Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
+                                        }
                                     currentNfcTag = new NfcTag(scannedItem);
 
                                     //set user position and facing direction
                                     Map.user.setX(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemYCoord(scannedItem), true).getXPosition());
                                     Map.user.setY(Directions.getClosestNode(Map.getItemXCoord(scannedItem), Map.getItemXCoord(scannedItem), true).getYPosition());
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                        Map.user.setFacing(3);
-                                    } else if (Map.getItemXCoord(scannedItem) > Map.user.getX()) {
-                                        Map.user.setFacing(1);
-                                    } else {
-                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                    }
-
-                                    if (Map.getItemXCoord(scannedItem) < Map.user.getX()) {
-                                        Map.user.setFacing(3);
-                                    } else if (Map.getItemXCoord(scannedItem)  > Map.user.getX()) {
-                                        Map.user.setFacing(1);
-                                    } else {
-                                        Log.e("Direction error", "nearest node's xpos = scanned item's xpos");
-                                    }
+                                    Map.user.setFacing(Map.userFaceItem(Map.user, scannedItem));
 
                                     if (ItemOnShoppingList(scannedItem)) {
                                         if (!shoppingList.isEmpty()) {
@@ -245,11 +247,12 @@ public class ShoppingActivity extends MyActivity {
                                         } else {
                                             //shopping list is empty
                                             TTSHandler.speak("Your shopping list is complete, please make you way through to the checkout");
-                                            //Directions.setCurrentPath(Map.user, );
+                                            Directions.setCurrentPathNode(Map.user, Map.exit);
                                         }
                                     }else if (scannedItem != null && currentItem != null) {
                                         itemShelfProximityFeedback(scannedItem, currentItem);
 
+                                        }
                                     }
                                     break;
                             }
@@ -348,8 +351,15 @@ public class ShoppingActivity extends MyActivity {
         return false;
     }
 
+    public void map(View view)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+    }
+
     //TODO
     //Directions.getNextDirection() when user presses the button on their glove
+
 
 
 }
