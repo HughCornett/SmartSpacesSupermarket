@@ -279,11 +279,11 @@ public class Directions {
                 }
                 if(turnIn == 0)
                 {
-                    destination = "to the next row, ";
+                    destination = "to the next intersection, ";
                 }
                 else
                 {
-                    destination = (turnIn+1)+" rows, ";
+                    destination = (turnIn+1)+" intersections, ";
                 }
             }
             //if it is vertical (therefore if it is an aisle)
@@ -298,11 +298,11 @@ public class Directions {
                 }
                 if(turnIn == 0)
                 {
-                    destination = "to the next aisle, ";
+                    destination = "to the next intersection, ";
                 }
                 else
                 {
-                    destination = (turnIn+1)+" aisles, ";
+                    destination = (turnIn+1)+" intersections, ";
                 }
             }
         }
