@@ -298,12 +298,13 @@ public class FirebaseAdapter {
                         if (task.isSuccessful()) {
                             if (task.getResult() != null) {
                                 List<Item> data = task.getResult().toObjects(Item.class);
-                                for (Item i : data) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Item i = document.toObject(Item.class);
                                     i.setBrandName(getBrandNameByRef(i.getProductBrand()));
                                     i.setCategoryName(getCategoryNameByRef(i.getProductCategory()));
                                     i.setFakeItem(false);
+                                    Log.d(i.getProductName(), i.toString());
                                     products.add(i);
-                                    Log.d(i.getProductName(), i.toString() );
                                 }
                                 firestoreCallback.onCallback(products);
                                 Log.d("DB Load all products", "task successful");
