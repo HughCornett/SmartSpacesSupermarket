@@ -58,17 +58,7 @@ public class DrawView extends View
         double scale1 = ((double)(displaySize.x) / (double)(mapImage.getIntrinsicWidth()));
         double scale2 = ((double)(displaySize.y) / (double)(mapImage.getIntrinsicHeight()));
 
-        double scale=1.0;
-        /*
-        if (scale1<1.0 || scale2<1.0)
-        {
-        */
-            if(scale1>=scale2)
-            {
-                scale = scale2;
-            }
-            else scale = scale1;
-        //}
+        double scale = Math.min(scale1, scale2);
 
         double right = Math.round(mapImage.getIntrinsicWidth()*scale);
         double bottom = Math.round(mapImage.getIntrinsicHeight()*scale);
