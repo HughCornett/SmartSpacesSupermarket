@@ -44,6 +44,7 @@ public class BluetoothService extends Service {
     public static String deviceName;
     public static String macAddress;
     public Vector<Byte> packdata = new Vector<Byte>(2048);
+
     @Override
     public void onCreate() {
         Log.d("BluetoothService", "Service started");

@@ -70,7 +70,7 @@ public class ManageListsActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"create a list", "read lists", "go back"},"you are in the manage lists menu");
+        switchCallback(new String[]{"create a list", "read lists", "go back"},"you are in the manage lists menu", true);
     }
 
     @Override
