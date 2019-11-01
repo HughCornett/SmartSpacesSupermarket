@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
 import android.util.Log;
@@ -49,7 +50,7 @@ public class DrawView extends View
     Paint paint = new Paint();
     public DrawView(Context context, Display display) {
         super(context);
-        mapImage = ContextCompat.getDrawable(context, R.drawable.map1);
+        mapImage = ContextCompat.getDrawable(context, R.drawable.background);
 
         this.display = display;
         display.getSize(displaySize);
@@ -58,17 +59,23 @@ public class DrawView extends View
         double scale2 = ((double)(displaySize.y) / (double)(mapImage.getIntrinsicHeight()));
 
         double scale=1.0;
+        /*
         if (scale1<1.0 || scale2<1.0)
         {
+        */
             if(scale1>=scale2)
             {
                 scale = scale2;
             }
             else scale = scale1;
-        }
+        //}
+
         double right = Math.round(mapImage.getIntrinsicWidth()*scale);
         double bottom = Math.round(mapImage.getIntrinsicHeight()*scale);
-        Rect rect = new Rect(0,0,(int) right,(int) bottom);
+        Log.d("dimensions", "right: "+right);
+        Log.d("dimensions", "bottom: "+bottom);
+        Log.d("display", ""+displaySize);
+        Rect rect = new Rect(0,0,(int) Math.round(right),(int) Math.round(bottom));
 
         //calculate the bounds of the background image
 
@@ -103,7 +110,7 @@ public class DrawView extends View
         paint.setColor(AISLE_ROW_COLOR);
         paint.setAlpha(AISLE_ROW_ALPHA);
 
-        //draw all the aisles
+        /*draw all the aisles
         for(int i = 0; i < Map.aisles.size(); i++)
         {
             Point aisleTopLeft = getScreenCoords(Map.aisles.get(i).left, Map.aisles.get(i).top);
@@ -113,7 +120,7 @@ public class DrawView extends View
             canvas.drawRect(aisleOnScreen, paint);
         }
 
-        /*draw all the rows
+        //draw all the rows
         for(int i = 0; i < Map.rows.size(); i++)
         {
             Point rowTopLeft = getScreenCoords(Map.rows.get(i).left, Map.rows.get(i).top);
@@ -122,17 +129,14 @@ public class DrawView extends View
             Rect rowOnScreen = new Rect(rowTopLeft.x, rowTopLeft.y, rowBottomRight.x, rowBottomRight.y);
             canvas.drawRect(rowOnScreen, paint);
         }
-        */
 
+        */
         paint.setColor(Color.RED);
         for(int i = 0; i < Map.shelves.size(); i++)
         {
-            Point rowTopLeft = getScreenCoords(Map.shelves.get(i).getRect().left, Map.shelves.get(i).getRect().top);
-            Point rowBottomRight = getScreenCoords(Map.shelves.get(i).getRect().right, Map.shelves.get(i).getRect().bottom);
-
-            Rect rowOnScreen = new Rect(rowTopLeft.x, rowTopLeft.y, rowBottomRight.x, rowBottomRight.y);
-            canvas.drawRect(rowOnScreen, paint);
+            drawBox(canvas, Map.shelves.get(i).getRect());
         }
+
 
         paint.setStrokeWidth(10);
         for(int i = 0; i < Map.edges.size(); i++)
@@ -182,11 +186,6 @@ public class DrawView extends View
         return new Point(newX, newY);
 
     }
-    //adds a box to the list
-    public void addBox(Rect box)
-    {
-        drawnBoxes.add(box);
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -195,8 +194,23 @@ public class DrawView extends View
         return performClick();
     }
 
+    public void addBox(Rect rect)
+    {
+        //TODO remove this method and all methods calling it
+    }
     public void clearBoxes()
     {
         drawnBoxes.clear();
+    }
+
+    public void drawBox(Canvas canvas, RectF rect)
+    {
+        Point topLeft = new Point(getScreenCoords(rect.left, rect.top));
+        Point bottomRight = new Point(getScreenCoords(rect.right, rect.bottom));
+
+        canvas.drawLine(topLeft.x, topLeft.y, topLeft.x, bottomRight.y, paint);
+        canvas.drawLine(topLeft.x, bottomRight.y, bottomRight.x, bottomRight.y, paint);
+        canvas.drawLine(bottomRight.x, bottomRight.y, bottomRight.x, topLeft.y, paint);
+        canvas.drawLine(bottomRight.x, topLeft.y, topLeft.x, topLeft.y, paint);
     }
 }

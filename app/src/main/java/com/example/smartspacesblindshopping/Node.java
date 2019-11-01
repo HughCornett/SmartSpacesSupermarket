@@ -58,6 +58,11 @@ public class Node
         //get city block distance between the two nodes, this distance is the weight
         double distance = Math.abs(neighbour.getXPosition()-this.xPosition)+Math.abs(neighbour.getYPosition()-this.yPosition);
 
+        return addEdge(neighbour, distance);
+
+    }
+    public Edge addEdge(Node neighbour, double weight)
+    {
         //find the direction of this edge automatically
         double horizontalDifference = neighbour.getXPosition() - this.xPosition;
         double verticalDifference = neighbour.getYPosition() - this.yPosition;
@@ -79,7 +84,7 @@ public class Node
             else {direction = 2; }
         }
 
-        Edge edge = new Edge(this, neighbour, distance, direction);
+        Edge edge = new Edge(this, neighbour, weight, direction);
         edges.add(edge);
         return edge;
     }

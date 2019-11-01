@@ -40,7 +40,7 @@ public class MapActivity extends MyActivity {
 
         //initialise the drawView
         drawView = new DrawView(this,getWindowManager().getDefaultDisplay());
-        drawView.setBackgroundColor(Color.WHITE);
+        drawView.setBackgroundColor(Color.DKGRAY);
         setContentView(drawView);
 
         //initialise the display object and calculate relevant variables from this
