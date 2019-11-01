@@ -178,7 +178,6 @@ public class Map extends MapActivity
         first.removeEdge(second);
         second.removeEdge(first);
 
-        Directions.computeMatrices();
         if(!Directions.exiting)
         {
             Directions.setCurrentPath(Map.user, Directions.currentItem);
