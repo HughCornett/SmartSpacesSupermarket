@@ -65,7 +65,7 @@ public class ShoppingActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchCallback(new String[]{"Choose a list", "next instructions", "previous instruction", "current item", "add items to the list", "Go back"}, "you are in the shopping menu");
+        switchCallback(new String[]{"Choose a list", "next instructions", "previous instruction", "current item", "add items to the list", "Go back"}, "you are in the shopping menu", true);
 
     }
 
@@ -117,6 +117,7 @@ public class ShoppingActivity extends MyActivity {
                 shoppingList.addAll(stringsToItems(ReadWriteCSV.readCSV(getApplicationContext(), data.getStringExtra(CHOOSE_LIST))));
 
                 changeItem();
+                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
 
                 ArrayList<Node> path = Directions.currentPath;
 
@@ -129,7 +130,7 @@ public class ShoppingActivity extends MyActivity {
             if (resultCode == RESULT_OK && data != null) {
                 shoppingList.addAll(stringsToItems(data.getStringArrayListExtra(APPEND_TO_LIST)));
                 changeItem();
-
+                TTSHandler.speak("The next item on your shopping list is" + currentItemText.getText());
                 ArrayList<Node> path = Directions.currentPath;
 
                 Log.d("path", "Path from " + path.get(0) + " to " + path.get(path.size() - 1) + ": " + path);
@@ -173,8 +174,10 @@ public class ShoppingActivity extends MyActivity {
 
 
     @Override
-    public void switchCallback(final String[] menu, String firstMessage) {
-        TTSHandler.speak(firstMessage+" your first option is " + menu[0]);
+    public void switchCallback(final String[] menu, String firstMessage, boolean initMessage) {
+
+        if(initMessage)
+            TTSHandler.speak(firstMessage+" your first option is " + menu[0]);
 
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
@@ -306,7 +309,7 @@ public class ShoppingActivity extends MyActivity {
                 int sectionDifference = i.getSection() - j.getSection();
 
                 String spots = "spots";
-                if (sectionDifference == 1) spots = "spot";
+                if (sectionDifference == 1 || sectionDifference == -1) spots = "spot";
 
                 if (i.getLevel() == j.getLevel()) {
                     if (sectionDifference <= 0)

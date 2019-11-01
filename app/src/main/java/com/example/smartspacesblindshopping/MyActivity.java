@@ -73,6 +73,7 @@ public class MyActivity extends Activity {
 
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
+        state = BluetoothService.mState;
         if (dbItems.isEmpty()) {
             Log.d("DB debug", "database is loading data");
             firebase.loadAllData();
@@ -129,8 +130,11 @@ public class MyActivity extends Activity {
     };
 
 
-    public void switchCallback(final String[] menu, String firstMessage) {
-        TTSHandler.speak(firstMessage+" your first option is " + menu[0]);
+    public void switchCallback(final String[] menu, String firstMessage, boolean initMessage) {
+
+        if(initMessage) {
+            TTSHandler.flushAndSpeak(firstMessage + " your first option is " + menu[0]);
+        }
         ((MyApplication) getApplication()).setCallBack(new Handler.Callback() {
             int index = 0;
 

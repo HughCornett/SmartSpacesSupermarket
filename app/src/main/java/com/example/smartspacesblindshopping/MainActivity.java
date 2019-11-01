@@ -31,7 +31,7 @@ public class MainActivity extends MyActivity {
         super.onResume();
 
 
-        switchCallback(new String[]{"manage lists", "Do your shopping"}, "you are in the main menu");
+        switchCallback(new String[]{"manage lists", "Do your shopping"}, "you are in the main menu",true);
 
 
     }

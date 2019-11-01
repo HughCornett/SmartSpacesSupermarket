@@ -49,7 +49,7 @@ public class TextToSpeechHandler {
                     while (!ttsIsInitialized)
                     {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -64,6 +64,34 @@ public class TextToSpeechHandler {
 
                 }
             }).start();
+
+
+    }
+
+    public void flushAndSpeak(final String message)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (!ttsIsInitialized)
+                {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(ttsIsInitialized)
+
+
+                    textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, LocalDateTime.now().toString());
+
+                Log.d("ttsIsInitialized", ""+ttsIsInitialized);
+
+            }
+        }).start();
 
 
     }

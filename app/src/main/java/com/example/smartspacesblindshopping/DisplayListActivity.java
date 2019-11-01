@@ -97,7 +97,14 @@ public class DisplayListActivity extends MyActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        switchMenu();
+        try {
+            wait(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        switchMenu(false);
+        readOutTheList();
+
 
     }
 
@@ -106,10 +113,10 @@ public class DisplayListActivity extends MyActivity {
         super.chooseOption(index);
 
         if(state == 0) {
-            if (index == itemList.size()+1) {
+            if (index == 3) {
                 DisplayListActivity.this.finish();
             }
-            else if (index== itemList.size()){
+            else if (index== 1){
                 if(mode .equals("shop")) {
                     chooseList();
                 }
@@ -119,10 +126,15 @@ public class DisplayListActivity extends MyActivity {
                     finish();
                 }
             }
-            else {
-                switchCallback(new String[]{"delete", "cancel"}, "do you want to delete a list");
-                item=index;
-                state = 1;
+            else if(index == 0){
+                readOutTheList();
+            }
+            else if(index==2)
+            {
+                iterateTheList();
+
+                state = 2;
+
             }
         }
         else if (state==1)
@@ -130,24 +142,43 @@ public class DisplayListActivity extends MyActivity {
             if(index == 0)
             {
                 itemList.remove(item);
-                switchMenu();
+                iterateTheList();
                 customItemAdapter.notifyDataSetChanged();
-                state = 0;
+                mPopupWindow.dismiss();
+                state = 2;
 
             }
             else {
-                switchMenu();
+                iterateTheList();
+                mPopupWindow.dismiss();
+                state = 2;
+            }
+        }
+
+        else if (state == 2)
+        {
+            if(index==itemList.size())
+            {
+                switchMenu(false);
                 state = 0;
+            }
+            else
+            {
+                createPopUp(index);
+                switchCallback(new String[]{"delete", "cancel"}, "Do you want to delete " +itemList.get(index).getFullName()+
+                "from the list?", true);
+                item = index;
+                state = 1;
             }
         }
 
     }
 
-    private void switchMenu()
+    private void switchMenu(boolean initMessage)
     {
         ArrayList<String> menu = new ArrayList<>();
 
-        menu.addAll(itemsToStrings(itemList));
+        menu.add("read out the list");
 
         if(mode .equals("shop")) {
             menu.add("choose this list");
@@ -157,12 +188,14 @@ public class DisplayListActivity extends MyActivity {
             menu.add("delete this list");
         }
 
+        menu.add("delete an item from the list");
+
         menu.add("go back");
 
-        String[] array = new String[itemList.size()+2];
+        String[] array = new String[4];
 
         array = menu.toArray(array);
-        switchCallback(array, "you are reading a list");
+        switchCallback(array, "you are reading a list",initMessage);
     }
 
     private void deleteList()
@@ -179,52 +212,8 @@ public class DisplayListActivity extends MyActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                createPopUp(i);
 
-                if(mPopupWindow!=null) mPopupWindow.dismiss();
-
-                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-
-                View customView = inflater.inflate(R.layout.popup_delete,null);
-
-                final int index = i;
-                mPopupWindow = new PopupWindow(
-                        customView,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
-
-                if(Build.VERSION.SDK_INT>=21){
-                    mPopupWindow.setElevation(5.0f);
-                }
-
-                Button closeButton = (Button) customView.findViewById(R.id.cancel);
-                closeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mPopupWindow.dismiss();
-                        customItemAdapter.notifyDataSetChanged();
-                    }
-                });
-                Button deleteButton = (Button) customView.findViewById(R.id.deleteItem);
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        itemList.remove(index);
-                        ReadWriteCSV.flush(getApplicationContext(),path);
-                        ReadWriteCSV.writeToCSV(getApplicationContext(),itemsToStrings(itemList),path);
-
-                        mPopupWindow.dismiss();
-                        if(itemList.isEmpty())
-                        {
-                            deleteList();
-                            DisplayListActivity.this.finish();
-                        }
-                        customItemAdapter.notifyDataSetChanged();
-                    }
-                });
-
-
-                mPopupWindow.showAtLocation(findViewById(R.id.displaylayout), Gravity.CENTER,0,0);
             }
         });
 
@@ -237,4 +226,76 @@ public class DisplayListActivity extends MyActivity {
             setResult(RESULT_OK, resultIntent);
             finish();
     }
+
+    private void createPopUp(int i)
+    {
+        if(mPopupWindow!=null) mPopupWindow.dismiss();
+
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View customView = inflater.inflate(R.layout.popup_delete,null);
+
+        final int index = i;
+        mPopupWindow = new PopupWindow(
+                customView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
+        if(Build.VERSION.SDK_INT>=21){
+            mPopupWindow.setElevation(5.0f);
+        }
+
+        Button closeButton = (Button) customView.findViewById(R.id.cancel);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPopupWindow.dismiss();
+                customItemAdapter.notifyDataSetChanged();
+            }
+        });
+        Button deleteButton = (Button) customView.findViewById(R.id.deleteItem);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemList.remove(index);
+                ReadWriteCSV.flush(getApplicationContext(),path);
+                ReadWriteCSV.writeToCSV(getApplicationContext(),itemsToStrings(itemList),path);
+
+                mPopupWindow.dismiss();
+                if(itemList.isEmpty())
+                {
+                    deleteList();
+                    DisplayListActivity.this.finish();
+                }
+                customItemAdapter.notifyDataSetChanged();
+            }
+        });
+
+
+        mPopupWindow.showAtLocation(findViewById(R.id.displaylayout), Gravity.CENTER,0,0);
+    }
+
+
+    private void readOutTheList()
+    {
+        TTSHandler.speak("this list contains ");
+        for(Item i: itemList)
+        {
+            TTSHandler.speak(i.getFullName());
+        }
+    }
+
+    private void iterateTheList()
+    {
+        ArrayList<String> menu = new ArrayList<>();
+        menu.addAll(itemsToStrings(itemList));
+        menu.add("go back");
+
+        String[] array = new String[itemList.size()+1];
+
+        array = menu.toArray(array);
+        switchCallback(array, "Do you want to delete any items from your list?",true);
+    }
+
 }
