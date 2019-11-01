@@ -23,15 +23,17 @@ public class Map extends MapActivity
     public static ArrayList<Edge> edges;
     public static Node exit;
 
-    public static User user = new User(0,1.5, 1);
+    public static User user = new User(0,1.4, 1);
     public static ArrayList<Item> items = new ArrayList<>();
     public static Item item;
+
+    public static final double ONE_WAY_WEIGHT = 99;
 
     public static void init()
     {
         aisles = new ArrayList<>();
         //aisle 0 (leftmost)
-        aisles.add(new RectF(0, 0, 1.9f, 3));
+        aisles.add(new RectF(0.8f, 0, 1.9f, 3));
         //aisle 1 (middle)
         aisles.add(new RectF(2.7f, 0, 3.8f, 3));
         //aisle 2 (rightmost)
@@ -39,7 +41,7 @@ public class Map extends MapActivity
 
         rows = new ArrayList<>();
         //row 0 (top)
-        rows.add(new RectF(0,2f, 5.6f,3f));
+        rows.add(new RectF(0,2f, 5.6f,2.8f));
         //row 1 (bottom)
         rows.add(new RectF(0, 0f, 5.6f, 0.8f));
 
@@ -91,12 +93,17 @@ public class Map extends MapActivity
             newNode = new Node(nodeXPos, nodeYPos, false);
             nodes.add(newNode);
 
-            //only add an edge back to the top of the aisle if this isn't the first aisle
+            //only add a normal edge back to the top of the aisle if this isn't the first aisle
             //this is because the first aisle is 1 way from top to bottom to simulate
             //a real supermarkets forced entrance gateway for checkout before exit
             if(i > 0)
             {
                 edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
+            }
+            else
+            {
+                //add a very bad edge back if this is the first aisle
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-2), ONE_WAY_WEIGHT));
             }
             edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
 
@@ -108,13 +115,18 @@ public class Map extends MapActivity
             //add the edge with previous node in the aisle
             if(i > 0)
             {
-                //only add an edge back to the middle of the aisle if this isn't the first aisle
+                //only add a normal edge back to the middle of the aisle if this isn't the first aisle
                 //this is because the first aisle is one-way from top to bottom to simulate
                 //a real supermarket's forced entrance gateway for checkout before exit
                 edges.add(newNode.addEdge(nodes.get(nodes.size()-2)));
                 //add the previous node of the row
                 edges.add(newNode.addEdge(nodes.get(nodes.size()-4)));
                 edges.add(nodes.get(nodes.size()-4).addEdge(newNode));
+            }
+            else
+            {
+                //add a very bad edge back if this is the first aisle
+                edges.add(newNode.addEdge(nodes.get(nodes.size()-2), ONE_WAY_WEIGHT));
             }
             edges.add(nodes.get(nodes.size()-2).addEdge(newNode));
 
@@ -139,7 +151,7 @@ public class Map extends MapActivity
         }
         //add the exit node
         double nodeXPos = 0;
-        double nodeYPos = 1.5;
+        double nodeYPos = 1.4;
         newNode = new Node(nodeXPos, nodeYPos, true);
         nodes.add(newNode);
         //add the neighbour
@@ -151,14 +163,18 @@ public class Map extends MapActivity
     public static double getItemXCoord(Item item)
     {
         if(item ==null)  Log.e("Map error", "item null");
+
         Shelf shelf = Map.shelves.get(item.getShelf());
+        //get the x coordinate of the middle of the shelf
         return shelf.getRect().left + ((shelf.getRect().right - shelf.getRect().left)/2);
     }
     public static double getItemYCoord(Item item)
     {
-        Shelf shelf = Map.shelves.get(item.getShelf());
+        if(item ==null)  Log.e("Map error", "item null");
 
-        return shelf.getRect().top + (item.getSection() * shelf.getSectionWidth());
+        Shelf shelf = Map.shelves.get(item.getShelf());
+        //get the y-coordinate of the middle of the section
+        return shelf.getRect().top + ((item.getSection()+0.5) * shelf.getSectionWidth());
     }
 
     public static void addBlockage(Node first, Node second)
@@ -166,16 +182,11 @@ public class Map extends MapActivity
         first.removeEdge(second);
         second.removeEdge(first);
 
-        Directions.computeMatrices();
-        Directions.setCurrentPath(Map.user, Directions.currentItem);
     }
     public static void addBlockage(int first, int second)
     {
         nodes.get(first).removeEdge(nodes.get(second));
         nodes.get(second).removeEdge(nodes.get(first));
-
-        Directions.computeMatrices();
-        Directions.setCurrentPath(Map.user, Directions.currentItem);
     }
     public static void resetPathNodes()
     {

@@ -410,10 +410,22 @@ public class ShoppingActivity extends MyActivity {
         }
         //if they are
         else {
-            Log.e("blockage", "user reports error at final node");
+            Log.e("blockage", "user reports blockage at final node, item is unreachable");
+            //TODO does user go to next item and skip this?
+            //maybe call for help
         }
+        //recompute the distance/directions matrices
         Directions.computeMatrices();
-        ;
+
+        //get the new directions to the next item or the exit (wherever the user is going)
+        if(Directions.exiting)
+        {
+            Directions.setCurrentPathNode(Map.user, Map.exit);
+        }
+        else
+        {
+            Directions.setCurrentPath(Map.user, Directions.currentItem);
+        }
     }
 
 
