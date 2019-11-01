@@ -178,15 +178,6 @@ public class Map extends MapActivity
         first.removeEdge(second);
         second.removeEdge(first);
 
-        if(!Directions.exiting)
-        {
-            Directions.setCurrentPath(Map.user, Directions.currentItem);
-        }
-        else
-        {
-            Directions.setCurrentPathNode(Map.user, Map.exit);
-        }
-
     }
     public static void addBlockage(int first, int second)
     {
