@@ -412,8 +412,18 @@ public class ShoppingActivity extends MyActivity {
         else {
             Log.e("blockage", "user reports error at final node");
         }
+        //recompute the distance/directions matrices
         Directions.computeMatrices();
-        ;
+
+        //get the new directions to the next item or the exit (wherever the user is going)
+        if(Directions.exiting)
+        {
+            Directions.setCurrentPathNode(Map.user, Map.exit);
+        }
+        else
+        {
+            Directions.setCurrentPath(Map.user, Directions.currentItem);
+        }
     }
 
 
