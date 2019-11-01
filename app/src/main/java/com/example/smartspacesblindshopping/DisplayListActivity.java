@@ -88,11 +88,7 @@ public class DisplayListActivity extends MyActivity {
         listView.setAdapter(customItemAdapter);
 
         createPopUpOnClick();
-
-
-
     }
-
 
     @Override
     protected void onResume() {
@@ -104,8 +100,6 @@ public class DisplayListActivity extends MyActivity {
         }
         switchMenu(false);
         readOutTheList();
-
-
     }
 
     @Override

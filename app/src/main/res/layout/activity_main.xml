@@ -6,39 +6,56 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
+
     <Button
         android:id="@+id/manageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="229dp"
+        android:layout_height="59dp"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
         android:layout_marginTop="192dp"
+        android:typeface="sans"
+        android:textSize="18"
         android:onClick="manageLists"
-        android:text="manage lists"></Button>
-
-
-
+        android:text="Manage Shopping Lists"></Button>
 
     <Button
         android:id="@+id/shoppingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="229dp"
+        android:layout_height="59dp"
         android:layout_below="@+id/manageButton"
         android:layout_centerHorizontal="true"
+        android:typeface="sans"
+        android:textSize="20"
         android:onClick="doShopping"
-        android:text="do shopping"></Button>
+        android:text="Start shopping"></Button>
 
 
     <Button
+        android:id="@+id/bluetoothButton"
+        android:layout_width="142dp"
+        android:layout_height="61dp"
+        android:layout_below="@+id/shoppingButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="123dp"
+        android:layout_marginTop="360dp"
+        android:layout_marginEnd="130dp"
+        android:typeface="sans"
+        android:textSize="15"
+        android:onClick="connect"
+        android:text="connect to the device"></Button>
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/shoppingButton"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/bluetoothButton"
-        android:text="connect to the device"
-        android:onClick="connect"
-        ></Button>
+        android:gravity="center"
+        android:text="Smart Spaces Shopping Assistant"
+        android:textSize="36.5"
+        android:textStyle="bold"
+        app:fontFamily="@font/krona_one" />
 
 
 </RelativeLayout>
