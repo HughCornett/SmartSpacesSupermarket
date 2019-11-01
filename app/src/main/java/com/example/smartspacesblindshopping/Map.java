@@ -163,14 +163,18 @@ public class Map extends MapActivity
     public static double getItemXCoord(Item item)
     {
         if(item ==null)  Log.e("Map error", "item null");
+
         Shelf shelf = Map.shelves.get(item.getShelf());
+        //get the x coordinate of the middle of the shelf
         return shelf.getRect().left + ((shelf.getRect().right - shelf.getRect().left)/2);
     }
     public static double getItemYCoord(Item item)
     {
-        Shelf shelf = Map.shelves.get(item.getShelf());
+        if(item ==null)  Log.e("Map error", "item null");
 
-        return shelf.getRect().top + (item.getSection() * shelf.getSectionWidth());
+        Shelf shelf = Map.shelves.get(item.getShelf());
+        //get the y-coordinate of the middle of the section
+        return shelf.getRect().top + ((item.getSection()+0.5) * shelf.getSectionWidth());
     }
 
     public static void addBlockage(Node first, Node second)
@@ -181,10 +185,8 @@ public class Map extends MapActivity
     }
     public static void addBlockage(int first, int second)
     {
-        Node firstNode = nodes.get(first);
-        Node secondNode = nodes.get(second);
-
-        addBlockage(firstNode, secondNode);
+        nodes.get(first).removeEdge(nodes.get(second));
+        nodes.get(second).removeEdge(nodes.get(first));
     }
     public static void resetPathNodes()
     {
